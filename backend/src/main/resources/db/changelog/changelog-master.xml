@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="1" author="codex">
+        <createTable tableName="privilege">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="name" type="VARCHAR(50)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="2" author="codex">
+        <createTable tableName="users">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="username" type="VARCHAR(50)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="password" type="VARCHAR(100)"/>
+            <column name="deleted" type="BOOLEAN" defaultValue="false"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="3" author="codex">
+        <createTable tableName="user_privilege">
+            <column name="user_id" type="BIGINT"/>
+            <column name="privilege_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="4" author="codex">
+        <insert tableName="privilege">
+            <column name="name" value="dashboard"/>
+        </insert>
+        <insert tableName="privilege">
+            <column name="name" value="users"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="5" author="codex">
+        <insert tableName="users">
+            <column name="username" value="admin"/>
+            <column name="password" value="{noop}admin"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="6" author="codex">
+        <insert tableName="user_privilege">
+            <column name="user_id" valueNumeric="1"/>
+            <column name="privilege_id" valueNumeric="1"/>
+        </insert>
+        <insert tableName="user_privilege">
+            <column name="user_id" valueNumeric="1"/>
+            <column name="privilege_id" valueNumeric="2"/>
+        </insert>
+    </changeSet>
+
+</databaseChangeLog>
