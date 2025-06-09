@@ -8,25 +8,34 @@ import { AuthService } from './auth.service';
 @Component({
   selector: 'app-root',
   template: `
-    <h1>Codex Dashboard</h1>
     <app-top-menu [user]="auth.user" (logout)="logout()"></app-top-menu>
     <div *ngIf="!auth.user" class="login">
-      <input [(ngModel)]="username" placeholder="username" />
-      <input [(ngModel)]="password" placeholder="password" type="password" />
-      <button (click)="login()">Login</button>
-      <button (click)="register()">Register</button>
+      <mat-form-field appearance="fill">
+        <mat-label>Username</mat-label>
+        <input matInput [(ngModel)]="username" />
+      </mat-form-field>
+      <mat-form-field appearance="fill">
+        <mat-label>Password</mat-label>
+        <input matInput [(ngModel)]="password" type="password" />
+      </mat-form-field>
+      <div class="buttons">
+        <button mat-raised-button color="primary" (click)="login()">Login</button>
+        <button mat-button (click)="register()">Register</button>
+      </div>
     </div>
-    <div *ngIf="auth.user" class="layout">
-      <app-navbar [user]="auth.user"></app-navbar>
-      <section class="content">
+    <mat-sidenav-container *ngIf="auth.user" class="layout">
+      <mat-sidenav mode="side" opened>
+        <app-navbar [user]="auth.user"></app-navbar>
+      </mat-sidenav>
+      <mat-sidenav-content class="content">
         <router-outlet></router-outlet>
-      </section>
-    </div>
+      </mat-sidenav-content>
+    </mat-sidenav-container>
   `,
   styles: [`
-    .layout { display: flex; }
-    .content { flex: 1; padding: 1rem; }
-    .login { margin: 1rem; }
+    .layout { height: calc(100vh - 64px); }
+    .login { padding: 1rem; display: flex; flex-direction: column; gap: 0.5rem; max-width: 300px; }
+    .buttons { display: flex; gap: 0.5rem; }
   `]
 })
 export class AppComponent {

@@ -4,15 +4,15 @@ import { User } from './app.component';
 @Component({
   selector: 'app-top-menu',
   template: `
-    <div class="top-menu" *ngIf="user">
-      <span>Welcome {{user.username}}</span>
-      <button (click)="logout.emit()">Logout</button>
-    </div>
+    <mat-toolbar color="primary" *ngIf="user">
+      <span class="user">Welcome {{user.username}}</span>
+      <span class="spacer"></span>
+      <button mat-button (click)="logout.emit()">Logout</button>
+    </mat-toolbar>
   `,
   styles: [`
-    .top-menu { background: #333; color: white; padding: 10px; display: flex; justify-content: flex-end; align-items: center; }
-    .top-menu span { flex: 1; }
-    .top-menu button { margin-left: 10px; }
+    .spacer { flex: 1 1 auto; }
+    .user { margin-right: 1rem; }
   `]
 })
 export class TopMenuComponent {

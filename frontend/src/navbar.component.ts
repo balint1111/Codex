@@ -4,17 +4,12 @@ import { User } from './app.component';
 @Component({
   selector: 'app-navbar',
   template: `
-    <nav class="navbar">
-      <ul>
-        <li *ngIf="hasPrivilege('dashboard')"><a routerLink="/dashboard" routerLinkActive="active">Dashboard</a></li>
-        <li *ngIf="hasPrivilege('users')"><a routerLink="/users" routerLinkActive="active">Users</a></li>
-      </ul>
-    </nav>
+    <mat-nav-list>
+      <a mat-list-item routerLink="/dashboard" routerLinkActive="active" *ngIf="hasPrivilege('dashboard')">Dashboard</a>
+      <a mat-list-item routerLink="/users" routerLinkActive="active" *ngIf="hasPrivilege('users')">Users</a>
+    </mat-nav-list>
   `,
   styles: [`
-    .navbar { width: 200px; background: #f0f0f0; padding: 1rem; }
-    .navbar ul { list-style: none; padding: 0; }
-    .navbar li { margin: 0.5rem 0; }
     .active { font-weight: bold; }
   `]
 })
