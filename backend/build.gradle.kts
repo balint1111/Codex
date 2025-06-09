@@ -51,13 +51,17 @@ jooq {
                     database.apply {
                         name = "org.jooq.meta.extensions.liquibase.LiquibaseDatabase"
                         properties.add(Property().apply {
+                            key = "rootPath"
+                            value = "${projectDir}/src/main/resources"
+                        })
+						properties.add(Property().apply {
                             key = "scripts"
-                            value = "${projectDir}/src/main/resources/db/changelog/db.changelog-master.yaml"
+                            value = "db/changelog/db.changelog-master.yaml"
                         })
                     }
                     target.apply {
                         packageName = "com.example.codex.jooq"
-                        directory = "src/main/kotlin"
+                        directory = "src/main/generated"
                     }
                 }
             }
