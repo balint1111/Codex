@@ -46,13 +46,20 @@ export class AppComponent {
 
   login() {
     this.auth.credentials = btoa(`${this.username}:${this.password}`);
+    localStorage.setItem('credentials', this.auth.credentials);
     fetch(`${this.auth.API_URL}/api/users/me`, { headers: { 'Authorization': 'Basic ' + this.auth.credentials } })
       .then(res => {
         if (!res.ok) throw new Error('login failed');
         return res.json();
       })
-      .then((u: User) => this.auth.user = u)
-      .catch(() => alert('Login failed'));
+      .then((u: User) => {
+        this.auth.user = u;
+        localStorage.setItem('user', JSON.stringify(u));
+      })
+      .catch(() => {
+        localStorage.removeItem('credentials');
+        alert('Login failed');
+      });
   }
 
   register() {
@@ -67,5 +74,7 @@ export class AppComponent {
   logout() {
     this.auth.user = undefined;
     this.auth.credentials = '';
+    localStorage.removeItem('credentials');
+    localStorage.removeItem('user');
   }
 }
