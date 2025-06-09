@@ -6,6 +6,7 @@ plugins {
     id("org.springframework.boot") version "3.1.1"
     id("io.spring.dependency-management") version "1.1.0"
     id("org.liquibase.gradle") version "2.2.1"
+    id("nu.studer.jooq") version "10.1"
 }
 
 group = "com.example"
@@ -23,6 +24,7 @@ dependencies {
 
     implementation("org.jooq:jooq:3.18.4")
     runtimeOnly("org.postgresql:postgresql")
+    jooqGenerator("org.postgresql:postgresql")
     implementation("org.liquibase:liquibase-core")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
@@ -37,5 +39,34 @@ tasks.withType<Test> {
 tasks.withType<KotlinCompile> {
     compilerOptions {
         jvmTarget.set(JvmTarget.JVM_17)
+    }
+}
+
+jooq {
+    version.set("3.18.4")
+    configurations {
+        create("main") {
+            generateSchemaSourceOnCompilation.set(false)
+            jooqConfiguration.apply {
+                logging = org.jooq.meta.jaxb.Logging.WARN
+                jdbc.apply {
+                    driver = "org.postgresql.Driver"
+                    url = "jdbc:postgresql://localhost:5432/codex"
+                    user = "codex"
+                    password = "codex"
+                }
+                generator.apply {
+                    name = "org.jooq.codegen.KotlinGenerator"
+                    database.apply {
+                        name = "org.jooq.meta.postgres.PostgresDatabase"
+                        inputSchema = "public"
+                    }
+                    target.apply {
+                        packageName = "com.example.codex.jooq"
+                        directory = "src/generated/kotlin"
+                    }
+                }
+            }
+        }
     }
 }

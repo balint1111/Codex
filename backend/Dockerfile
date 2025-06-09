@@ -13,7 +13,7 @@ RUN sed -i 's/\r$//' gradlew \
 
 # Copy source & build
 COPY src/ src/
-RUN ./gradlew bootJar --no-daemon
+RUN ./gradlew generateJooq bootJar --no-daemon
 
 # Stage 2: runtime
 FROM eclipse-temurin:24-jre
