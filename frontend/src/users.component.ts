@@ -1,34 +1,56 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
+import { Router } from '@angular/router';
+import { MatTableDataSource } from '@angular/material/table';
+import { MatPaginator } from '@angular/material/paginator';
 import { AuthService } from './auth.service';
-import { Privilege, User } from './app.component';
+import { User } from './app.component';
 
 @Component({
   selector: 'app-users',
   template: `
-    <table>
-      <tr>
-        <th>User</th>
-        <th *ngFor="let p of allPrivileges">{{p.name}}</th>
-        <th>Actions</th>
-      </tr>
-      <tr *ngFor="let u of users">
-        <td>{{u.username}}</td>
-        <td *ngFor="let p of allPrivileges">
-          <input type="checkbox" [checked]="hasUserPrivilege(u,p)" (change)="toggleUserPrivilege(u,p,$event)"/>
+    <table mat-table [dataSource]="dataSource" class="mat-elevation-z8 clickable">
+      <ng-container matColumnDef="id">
+        <th mat-header-cell *matHeaderCellDef>ID</th>
+        <td mat-cell *matCellDef="let u" (click)="editUser(u.id)">{{u.id}}</td>
+      </ng-container>
+      <ng-container matColumnDef="username">
+        <th mat-header-cell *matHeaderCellDef>Name</th>
+        <td mat-cell *matCellDef="let u" (click)="editUser(u.id)">{{u.username}}</td>
+      </ng-container>
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef>Actions</th>
+        <td mat-cell *matCellDef="let u">
+          <button mat-icon-button color="warn" (click)="deleteUser(u.id)">
+            <mat-icon>delete</mat-icon>
+          </button>
         </td>
-        <td><button (click)="deleteUser(u.id)">Delete</button></td>
-      </tr>
-    </table>
-  `
-})
-export class UsersComponent implements OnInit {
-  users: User[] = [];
-  allPrivileges: Privilege[] = [];
+      </ng-container>
 
-  constructor(private auth: AuthService) {}
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+    <mat-paginator [pageSize]="10" [pageSizeOptions]="[5,10,20]"></mat-paginator>
+  `,
+  styles: [`
+    table { width: 100%; }
+    .clickable td { cursor: pointer; }
+  `]
+})
+export class UsersComponent implements OnInit, AfterViewInit {
+  displayedColumns = ['id', 'username', 'actions'];
+  dataSource = new MatTableDataSource<User>([]);
+  @ViewChild(MatPaginator) paginator?: MatPaginator;
+
+  constructor(private auth: AuthService, private router: Router) {}
 
   ngOnInit() {
     this.loadUsers();
+  }
+
+  ngAfterViewInit() {
+    if (this.paginator) {
+      this.dataSource.paginator = this.paginator;
+    }
   }
 
   private authHeaders() {
@@ -38,34 +60,17 @@ export class UsersComponent implements OnInit {
   loadUsers() {
     fetch(`${this.auth.API_URL}/api/users`, { headers: this.authHeaders() })
       .then(r => r.json())
-      .then((d: User[]) => this.users = d);
-    if (this.allPrivileges.length === 0) {
-      fetch(`${this.auth.API_URL}/api/privileges`, { headers: this.authHeaders() })
-        .then(r => r.json())
-        .then((p: Privilege[]) => this.allPrivileges = p);
-    }
+      .then((d: User[]) => this.dataSource.data = d);
   }
 
-  hasUserPrivilege(u: User, p: Privilege): boolean {
-    return u.privileges.some(pp => pp.id === p.id);
-  }
-
-  toggleUserPrivilege(u: User, p: Privilege, ev: Event) {
-    const checked = (ev.target as HTMLInputElement).checked;
-    if (checked) {
-      if (!this.hasUserPrivilege(u, p)) u.privileges.push(p);
-    } else {
-      u.privileges = u.privileges.filter(pp => pp.id !== p.id);
-    }
-    fetch(`${this.auth.API_URL}/api/users/${u.id}/privileges`, {
-      method: 'POST',
-      headers: this.authHeaders(),
-      body: JSON.stringify(u.privileges.map(pr => pr.id))
-    });
+  editUser(id: number) {
+    this.router.navigate(['/users', id]);
   }
 
   deleteUser(id: number) {
-    fetch(`${this.auth.API_URL}/api/users/${id}`, { method: 'DELETE', headers: this.authHeaders() })
-      .then(() => this.loadUsers());
+    fetch(`${this.auth.API_URL}/api/users/${id}`, {
+      method: 'DELETE',
+      headers: this.authHeaders()
+    }).then(() => this.loadUsers());
   }
 }
