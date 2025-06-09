@@ -1,4 +1,5 @@
 import { Component, NgModule } from '@angular/core';
+import '@angular/compiler';
 import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule } from "@angular/forms";
 import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
