@@ -22,12 +22,16 @@ import { TopMenuComponent } from './top-menu.component';
 import { DashboardComponent } from './dashboard.component';
 import { UsersComponent } from './users.component';
 import { UserEditComponent } from './user-edit.component';
+import { LoginComponent } from './login.component';
+import { RegisterComponent } from './register.component';
 
 const routes: Routes = [
+  { path: 'login', component: LoginComponent },
+  { path: 'register', component: RegisterComponent },
   { path: 'dashboard', component: DashboardComponent },
   { path: 'users', component: UsersComponent },
   { path: 'users/:id', component: UserEditComponent },
-  { path: '', redirectTo: 'dashboard', pathMatch: 'full' }
+  { path: '', redirectTo: 'login', pathMatch: 'full' }
 ];
 
 @NgModule({
@@ -37,7 +41,9 @@ const routes: Routes = [
     TopMenuComponent,
     DashboardComponent,
     UsersComponent,
-    UserEditComponent
+    UserEditComponent,
+    LoginComponent,
+    RegisterComponent
   ],
   imports: [
     BrowserModule,
