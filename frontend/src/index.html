@@ -16,8 +16,12 @@
   <script>
     window.API_URL = 'http://localhost:8080';
     const dark = localStorage.getItem('darkMode') === 'true';
-    document.getElementById('dark-theme')!.toggleAttribute('disabled', !dark);
-    document.getElementById('light-theme')!.toggleAttribute('disabled', dark);
+    const darkLink = document.getElementById('dark-theme');
+    const lightLink = document.getElementById('light-theme');
+    if (darkLink && lightLink) {
+      darkLink.toggleAttribute('disabled', !dark);
+      lightLink.toggleAttribute('disabled', dark);
+    }
   </script>
   <script src="bundle.js"></script>
 </body>
