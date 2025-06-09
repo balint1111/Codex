@@ -11,7 +11,7 @@ class UserController(private val userService: UserService) {
     @GetMapping
     fun list(): List<User> = userService.allUsers()
 
-    @PostMapping
+    @PostMapping("/register")
     fun register(@RequestParam username: String, @RequestParam password: String) {
         userService.register(username, password)
     }
@@ -19,5 +19,15 @@ class UserController(private val userService: UserService) {
     @DeleteMapping("/{id}")
     fun delete(@PathVariable id: Long) {
         userService.delete(id)
+    }
+
+    @GetMapping("/me")
+    fun me(principal: java.security.Principal): User? {
+        return userService.findByUsername(principal.name)
+    }
+
+    @PostMapping("/{id}/privileges")
+    fun updatePrivileges(@PathVariable id: Long, @RequestBody privilegeIds: List<Long>) {
+        userService.updatePrivileges(id, privilegeIds)
     }
 }
