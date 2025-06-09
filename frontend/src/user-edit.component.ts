@@ -1,30 +1,39 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { AuthService } from './auth.service';
 import { User, Privilege } from './app.component';
 
 @Component({
   selector: 'app-user-edit',
   template: `
-    <div *ngIf="user">
-      <h2>Edit {{user.username}}</h2>
-      <div class="priv" *ngFor="let p of allPrivileges">
-        <mat-checkbox [checked]="hasPrivilege(p)" (change)="togglePrivilege(p, $event)">
-          {{p.name}}
-        </mat-checkbox>
-      </div>
-      <button mat-raised-button color="primary" routerLink="/users">Back</button>
-    </div>
+    <mat-card *ngIf="user" class="user-card">
+      <mat-card-title>Edit {{user.username}}</mat-card-title>
+      <mat-card-content>
+        <div class="priv" *ngFor="let p of allPrivileges">
+          <mat-checkbox [checked]="hasPrivilege(p)" (change)="togglePrivilege(p, $event)">
+            {{p.name}}
+          </mat-checkbox>
+        </div>
+      </mat-card-content>
+      <mat-card-actions>
+        <button mat-stroked-button color="primary" routerLink="/users">
+          <mat-icon>arrow_back</mat-icon>
+          Back
+        </button>
+      </mat-card-actions>
+    </mat-card>
   `,
   styles: [`
     .priv { display: block; margin: 0.25rem 0; }
+    .user-card { max-width: 400px; margin: 1rem auto; padding: 1rem; }
+    mat-card-title { margin-bottom: 0.5rem; }
   `]
 })
 export class UserEditComponent implements OnInit {
   user?: User;
   allPrivileges: Privilege[] = [];
 
-  constructor(private route: ActivatedRoute, private auth: AuthService, private router: Router) {}
+  constructor(private route: ActivatedRoute, private auth: AuthService) {}
 
   ngOnInit() {
     const id = Number(this.route.snapshot.paramMap.get('id'));

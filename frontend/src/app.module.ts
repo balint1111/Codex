@@ -13,6 +13,7 @@ import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatIconModule } from '@angular/material/icon';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatCardModule } from '@angular/material/card';
 
 import { AppComponent } from './app.component';
 import { NavbarComponent } from './navbar.component';
@@ -51,7 +52,8 @@ const routes: Routes = [
     MatTableModule,
     MatPaginatorModule,
     MatIconModule,
-    MatCheckboxModule
+    MatCheckboxModule,
+    MatCardModule
   ],
   bootstrap: [AppComponent]
 })
