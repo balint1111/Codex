@@ -19,4 +19,14 @@ class UserService(
     fun delete(id: Long) {
         userRepository.softDelete(id)
     }
+
+    fun findByUsername(username: String): User? = userRepository.findByUsername(username)
+
+    fun updatePrivileges(userId: Long, privilegeIds: List<Long>) {
+        userRepository.updateUserPrivileges(userId, privilegeIds)
+    }
+
+    fun allPrivileges() = userRepository.findAllPrivileges()
+
+    fun find(id: Long): User? = userRepository.findById(id)
 }
