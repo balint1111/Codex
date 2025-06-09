@@ -3,11 +3,21 @@
 <head>
   <meta charset="UTF-8">
   <title>Codex</title>
+  <base href="/">
+  <link id="light-theme" href="https://cdn.jsdelivr.net/npm/@angular/material@16.2.13/prebuilt-themes/indigo-pink.css" rel="stylesheet">
+  <link id="dark-theme" href="https://cdn.jsdelivr.net/npm/@angular/material@16.2.13/prebuilt-themes/pink-bluegrey.css" rel="stylesheet" disabled>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <style>
+    body,html { margin:0; font-family: Roboto, Arial, sans-serif; }
+  </style>
 </head>
 <body>
   <app-root></app-root>
   <script>
     window.API_URL = 'http://localhost:8080';
+    const dark = localStorage.getItem('darkMode') === 'true';
+    document.getElementById('dark-theme')!.toggleAttribute('disabled', !dark);
+    document.getElementById('light-theme')!.toggleAttribute('disabled', dark);
   </script>
   <script src="bundle.js"></script>
 </body>

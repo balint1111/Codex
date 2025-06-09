@@ -12,6 +12,9 @@ class UserController(private val userService: UserService) {
     @GetMapping
     fun list(): List<User> = userService.allUsers()
 
+    @GetMapping("/{id}")
+    fun find(@PathVariable id: Long): User? = userService.find(id)
+
     @PostMapping("/register")
     fun register(@RequestParam username: String, @RequestParam password: String) {
         userService.register(username, password)
