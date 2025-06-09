@@ -1,5 +1,6 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.liquibase.gradle.LiquibaseExtension
 plugins {
     kotlin("jvm") version "2.0.0"
     id("org.jetbrains.kotlin.plugin.spring") version "2.1.21"
@@ -51,6 +52,20 @@ liquibase {
             "driver" to "org.h2.Driver"
         ).toMutableMap()
     }
+}
+
+val liquibaseExt = extensions.getByType<org.liquibase.gradle.LiquibaseExtension>()
+
+tasks.register("updateJooq") {
+    doFirst { liquibaseExt.runList = "jooq" }
+    finalizedBy("update")
+    doLast { liquibaseExt.runList = null }
+}
+
+tasks.register("dropAllJooq") {
+    doFirst { liquibaseExt.runList = "jooq" }
+    finalizedBy("dropAll")
+    doLast { liquibaseExt.runList = null }
 }
 
 
