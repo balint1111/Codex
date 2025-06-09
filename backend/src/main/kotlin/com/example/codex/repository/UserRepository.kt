@@ -3,10 +3,13 @@ package com.example.codex.repository
 import com.example.codex.domain.Privilege
 import com.example.codex.domain.User
 import org.jooq.DSLContext
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Repository
 
 @Repository
-open class UserRepository(private val ctx: DSLContext) {
+open class UserRepository(
+    @Autowired private val ctx: DSLContext
+) {
     fun findAll(): List<User> {
         return ctx.fetch("SELECT * FROM users WHERE deleted = false").map { record ->
             val userId = record.get("id", Long::class.java)!!
