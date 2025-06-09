@@ -30,7 +30,7 @@ open class SecurityConfig {
     open fun passwordEncoder(): PasswordEncoder = BCryptPasswordEncoder()
 
     @Bean
-    fun corsFilter(): CorsFilter {
+    open fun corsFilter(): CorsFilter {
         val config = CorsConfiguration()
         config.allowedOrigins = listOf("http://localhost:4200")
         config.allowedMethods = listOf("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS")
