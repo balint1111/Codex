@@ -42,6 +42,37 @@ open class UserRepository(private val ctx: DSLContext) {
         ctx.execute("INSERT INTO user_privilege(user_id, privilege_id) VALUES (?, ?)", userId, privilegeId)
     }
 
+    fun updateUserPrivileges(userId: Long, privilegeIds: List<Long>) {
+        ctx.execute("DELETE FROM user_privilege WHERE user_id = ?", userId)
+        privilegeIds.forEach { pid ->
+            ctx.execute(
+                "INSERT INTO user_privilege(user_id, privilege_id) VALUES (?, ?)",
+                userId,
+                pid
+            )
+        }
+    }
+
+    fun findAllPrivileges(): List<Privilege> {
+        return ctx.fetch("SELECT id, name FROM privilege").map { r ->
+            Privilege(
+                r.get("id", Long::class.java)!!,
+                r.get("name", String::class.java)!!
+            )
+        }
+    }
+
+    fun findById(id: Long): User? {
+        val record = ctx.fetchOne("SELECT * FROM users WHERE id = ? AND deleted = false", id) ?: return null
+        val userId = record.get("id", Long::class.java)!!
+        return User(
+            id = userId,
+            username = record.get("username", String::class.java)!!,
+            password = record.get("password", String::class.java)!!,
+            privileges = findPrivilegesByUserId(userId)
+        )
+    }
+
     private fun findPrivilegesByUserId(userId: Long): List<Privilege> {
         return ctx.fetch("SELECT p.id, p.name FROM privilege p JOIN user_privilege up ON p.id = up.privilege_id WHERE up.user_id = ?", userId)
             .map { r -> Privilege(r.get("id", Long::class.java)!!, r.get("name", String::class.java)!!) }
