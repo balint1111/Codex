@@ -24,7 +24,8 @@ dependencies {
 
     implementation("org.jooq:jooq:3.18.4")
     runtimeOnly("org.postgresql:postgresql")
-    jooqGenerator("org.postgresql:postgresql")
+    implementation("com.h2database:h2")
+    jooqGenerator("com.h2database:h2")
     implementation("org.liquibase:liquibase-core")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
@@ -42,6 +43,17 @@ tasks.withType<KotlinCompile> {
     }
 }
 
+liquibase {
+    activities.register("jooq") {
+        arguments = mapOf(
+            "changeLogFile" to "src/main/resources/db/changelog/db.changelog-master.yaml",
+            "url" to "jdbc:h2:mem:codex_jooq;DB_CLOSE_DELAY=-1;MODE=PostgreSQL;DATABASE_TO_UPPER=false",
+            "driver" to "org.h2.Driver"
+        ).toMutableMap()
+    }
+}
+
+
 jooq {
     version.set("3.18.4")
     configurations {
@@ -50,16 +62,16 @@ jooq {
             jooqConfiguration.apply {
                 logging = org.jooq.meta.jaxb.Logging.WARN
                 jdbc.apply {
-                    driver = "org.postgresql.Driver"
-                    url = "jdbc:postgresql://localhost:5432/codex"
-                    user = "codex"
-                    password = "codex"
+                    driver = "org.h2.Driver"
+                    url = "jdbc:h2:mem:codex_jooq;DB_CLOSE_DELAY=-1;MODE=PostgreSQL;DATABASE_TO_UPPER=false"
+                    user = "sa"
+                    password = ""
                 }
                 generator.apply {
                     name = "org.jooq.codegen.KotlinGenerator"
                     database.apply {
-                        name = "org.jooq.meta.postgres.PostgresDatabase"
-                        inputSchema = "public"
+                        name = "org.jooq.meta.h2.H2Database"
+                        inputSchema = "PUBLIC"
                     }
                     target.apply {
                         packageName = "com.example.codex.jooq"
@@ -69,4 +81,9 @@ jooq {
             }
         }
     }
+}
+
+tasks.named("generateJooq").configure {
+    dependsOn("updateJooq")
+    finalizedBy("dropAllJooq")
 }
