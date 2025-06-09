@@ -6,7 +6,7 @@ import { User } from './app.component';
 @Component({
   selector: 'app-login',
   template: `
-    <div class="login">
+    <div class="login mat-app-background">
       <mat-card>
         <mat-card-title>Login</mat-card-title>
         <mat-card-content>
@@ -27,8 +27,13 @@ import { User } from './app.component';
     </div>
   `,
   styles: [`
-    .login { height: calc(100vh - 64px); display: flex; justify-content: center; align-items: center; background: #303030; color: #fff; }
-    mat-card { width: 300px; }
+    .login {
+      height: calc(100vh - 64px);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    mat-card { width: 400px; }
   `]
 })
 export class LoginComponent {

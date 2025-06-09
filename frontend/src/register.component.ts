@@ -5,7 +5,7 @@ import { AuthService } from './auth.service';
 @Component({
   selector: 'app-register',
   template: `
-    <div class="register">
+    <div class="register mat-app-background">
       <mat-card>
         <mat-card-title>Register</mat-card-title>
         <mat-card-content>
@@ -26,8 +26,13 @@ import { AuthService } from './auth.service';
     </div>
   `,
   styles: [`
-    .register { height: calc(100vh - 64px); display: flex; justify-content: center; align-items: center; background: #303030; color: #fff; }
-    mat-card { width: 300px; }
+    .register {
+      height: calc(100vh - 64px);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    mat-card { width: 400px; }
   `]
 })
 export class RegisterComponent {
