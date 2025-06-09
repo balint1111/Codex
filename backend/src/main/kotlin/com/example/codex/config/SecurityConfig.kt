@@ -8,9 +8,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
 
 @Configuration
-class SecurityConfig {
+open class SecurityConfig {
     @Bean
-    fun filterChain(http: HttpSecurity): SecurityFilterChain {
+    open fun filterChain(http: HttpSecurity): SecurityFilterChain {
         http.csrf { it.disable() }
             .authorizeHttpRequests {
                 it.requestMatchers("/api/users/**").permitAll()
@@ -21,5 +21,5 @@ class SecurityConfig {
     }
 
     @Bean
-    fun passwordEncoder(): PasswordEncoder = BCryptPasswordEncoder()
+    open fun passwordEncoder(): PasswordEncoder = BCryptPasswordEncoder()
 }

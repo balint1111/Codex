@@ -1,5 +1,5 @@
 # Stage 1: build
-FROM eclipse-temurin:17-jdk-jammy AS builder
+FROM eclipse-temurin:24-jdk AS builder
 WORKDIR /app
 
 # Copy only the wrapper + Gradle settings so Docker can cache layers
@@ -16,7 +16,7 @@ COPY src/ src/
 RUN ./gradlew bootJar --no-daemon
 
 # Stage 2: runtime
-FROM eclipse-temurin:17-jre-jammy
+FROM eclipse-temurin:24-jre
 WORKDIR /app
 COPY --from=builder /app/build/libs/*.jar app.jar
 ENTRYPOINT ["java","-jar","app.jar"]

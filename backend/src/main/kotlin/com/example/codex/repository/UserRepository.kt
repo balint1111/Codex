@@ -6,7 +6,7 @@ import org.jooq.DSLContext
 import org.springframework.stereotype.Repository
 
 @Repository
-class UserRepository(private val ctx: DSLContext) {
+open class UserRepository(private val ctx: DSLContext) {
     fun findAll(): List<User> {
         return ctx.fetch("SELECT * FROM users WHERE deleted = false").map { record ->
             val userId = record.get("id", Long::class.java)!!

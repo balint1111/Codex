@@ -1,0 +1,115 @@
+databaseChangeLog:
+  - changeSet:
+      id: "1"
+      author: codex
+      changes:
+        - createTable:
+            tableName: privilege
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: name
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+                    unique: true
+
+  - changeSet:
+      id: "2"
+      author: codex
+      changes:
+        - createTable:
+            tableName: users
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: username
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: password
+                  type: VARCHAR(100)
+              - column:
+                  name: deleted
+                  type: BOOLEAN
+                  defaultValue: false
+
+  - changeSet:
+      id: "3"
+      author: codex
+      changes:
+        - createTable:
+            tableName: user_privilege
+            columns:
+              - column:
+                  name: user_id
+                  type: BIGINT
+              - column:
+                  name: privilege_id
+                  type: BIGINT
+
+  - changeSet:
+      id: "4"
+      author: codex
+      changes:
+        - insert:
+            tableName: privilege
+            columns:
+              - column:
+                  name: name
+                  value: dashboard
+        - insert:
+            tableName: privilege
+            columns:
+              - column:
+                  name: name
+                  value: users
+
+  - changeSet:
+      id: "5"
+      author: codex
+      changes:
+        - insert:
+            tableName: users
+            columns:
+              - column:
+                  name: username
+                  value: admin
+              - column:
+                  name: password
+                  value: "{noop}admin"
+
+  - changeSet:
+      id: "6"
+      author: codex
+      changes:
+        - insert:
+            tableName: user_privilege
+            columns:
+              - column:
+                  name: user_id
+                  valueNumeric: 1
+              - column:
+                  name: privilege_id
+                  valueNumeric: 1
+        - insert:
+            tableName: user_privilege
+            columns:
+              - column:
+                  name: user_id
+                  valueNumeric: 1
+              - column:
+                  name: privilege_id
+                  valueNumeric: 2
