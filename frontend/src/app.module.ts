@@ -14,6 +14,7 @@ import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatIconModule } from '@angular/material/icon';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatCardModule } from '@angular/material/card';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 
 import { AppComponent } from './app.component';
 import { NavbarComponent } from './navbar.component';
@@ -53,7 +54,8 @@ const routes: Routes = [
     MatPaginatorModule,
     MatIconModule,
     MatCheckboxModule,
-    MatCardModule
+    MatCardModule,
+    MatSlideToggleModule
   ],
   bootstrap: [AppComponent]
 })

@@ -6,6 +6,7 @@ import { User } from './app.component';
   template: `
     <mat-toolbar color="primary" *ngIf="user">
       <span class="user">Welcome {{user.username}}</span>
+      <mat-slide-toggle [(ngModel)]="dark" (change)="toggleDark()">Dark mode</mat-slide-toggle>
       <span class="spacer"></span>
       <button mat-button (click)="logout.emit()">Logout</button>
     </mat-toolbar>
@@ -18,4 +19,15 @@ import { User } from './app.component';
 export class TopMenuComponent {
   @Input() user?: User;
   @Output() logout = new EventEmitter<void>();
+  dark = localStorage.getItem('darkMode') === 'true';
+
+  toggleDark() {
+    localStorage.setItem('darkMode', String(this.dark));
+    const darkLink = document.getElementById('dark-theme') as HTMLLinkElement;
+    const lightLink = document.getElementById('light-theme') as HTMLLinkElement;
+    if (darkLink && lightLink) {
+      darkLink.disabled = !this.dark;
+      lightLink.disabled = this.dark;
+    }
+  }
 }
