@@ -2,7 +2,11 @@ package com.example.codex.repository
 
 import com.example.codex.domain.Privilege
 import com.example.codex.domain.User
+import com.example.codex.jooq.tables.references.PRIVILEGE
+import com.example.codex.jooq.tables.references.USER_PRIVILEGE
+import com.example.codex.jooq.tables.references.USERS
 import org.jooq.DSLContext
+import org.jooq.impl.DSL
 import org.springframework.stereotype.Repository
 
 @Repository
@@ -10,78 +14,77 @@ class UserRepository(
     private val dSLContext: DSLContext
 ) {
 
+    private fun baseUserQuery() = dSLContext
+        .select(
+            *USERS.fields(),
+            DSL.multiset(
+                DSL.select(PRIVILEGE.ID, PRIVILEGE.NAME)
+                    .from(PRIVILEGE)
+                    .join(USER_PRIVILEGE)
+                    .on(PRIVILEGE.ID.eq(USER_PRIVILEGE.PRIVILEGE_ID))
+                    .where(USER_PRIVILEGE.USER_ID.eq(USERS.ID))
+            ).convertFrom { it.into(Privilege::class.java) }.`as`("privileges")
+        )
+        .from(USERS)
+
     fun findAll(): List<User> {
-        return dSLContext.fetch("SELECT * FROM users WHERE deleted = false").map { record ->
-            val userId = record.get("id", Long::class.java)!!
-            User(
-                id = userId,
-                username = record.get("username", String::class.java)!!,
-                password = record.get("password", String::class.java)!!,
-                privileges = findPrivilegesByUserId(userId)
-            )
-        }
+        return baseUserQuery()
+            .where(USERS.DELETED.eq(false))
+            .fetchInto(User::class.java)
     }
 
     fun save(username: String, password: String) {
-        print(dSLContext)
-        dSLContext.execute("INSERT INTO users(username, password) VALUES (?, ?)", username, password)
+        dSLContext.insertInto(USERS)
+            .set(USERS.USERNAME, username)
+            .set(USERS.PASSWORD, password)
+            .execute()
     }
 
     fun softDelete(id: Long) {
-        dSLContext.execute("UPDATE users SET deleted = true WHERE id = ?", id)
+        dSLContext.update(USERS)
+            .set(USERS.DELETED, true)
+            .where(USERS.ID.eq(id))
+            .execute()
     }
 
     fun findByUsername(username: String): User? {
-        val record = dSLContext.fetchOne("SELECT * FROM users WHERE username = ? AND deleted = false", username) ?: return null
-        val userId = record.get("id", Long::class.java)!!
-        return User(
-            id = userId,
-            username = record.get("username", String::class.java)!!,
-            password = record.get("password", String::class.java)!!,
-            privileges = findPrivilegesByUserId(userId)
-        )
+        return baseUserQuery()
+            .where(USERS.USERNAME.eq(username).and(USERS.DELETED.eq(false)))
+            .fetchOneInto(User::class.java)
     }
 
     fun addPrivilege(userId: Long, privilegeId: Long) {
-        dSLContext.execute("INSERT INTO user_privilege(user_id, privilege_id) VALUES (?, ?)", userId, privilegeId)
+        dSLContext.insertInto(USER_PRIVILEGE)
+            .set(USER_PRIVILEGE.USER_ID, userId)
+            .set(USER_PRIVILEGE.PRIVILEGE_ID, privilegeId)
+            .execute()
     }
 
     fun updateUserPrivileges(userId: Long, privilegeIds: List<Long>) {
-        dSLContext.execute("DELETE FROM user_privilege WHERE user_id = ?", userId)
-        privilegeIds.forEach { pid ->
-            dSLContext.execute(
-                "INSERT INTO user_privilege(user_id, privilege_id) VALUES (?, ?)",
-                userId,
-                pid
-            )
+        dSLContext.transaction { config ->
+            val ctx = DSL.using(config)
+            ctx.deleteFrom(USER_PRIVILEGE)
+                .where(USER_PRIVILEGE.USER_ID.eq(userId))
+                .execute()
+            privilegeIds.forEach { pid ->
+                ctx.insertInto(USER_PRIVILEGE)
+                    .set(USER_PRIVILEGE.USER_ID, userId)
+                    .set(USER_PRIVILEGE.PRIVILEGE_ID, pid)
+                    .execute()
+            }
         }
     }
 
     fun findAllPrivileges(): List<Privilege> {
-        return dSLContext.fetch("SELECT id, name FROM privilege").map { r ->
-            Privilege(
-                r.get("id", Long::class.java)!!,
-                r.get("name", String::class.java)!!
-            )
-        }
+        return dSLContext
+            .select(*PRIVILEGE.fields()).from(PRIVILEGE)
+            .fetchInto(Privilege::class.java)
     }
 
     fun findById(id: Long): User? {
-        val record = dSLContext.fetchOne("SELECT * FROM users WHERE id = ? AND deleted = false", id) ?: return null
-        val userId = record.get("id", Long::class.java)!!
-        return User(
-            id = userId,
-            username = record.get("username", String::class.java)!!,
-            password = record.get("password", String::class.java)!!,
-            privileges = findPrivilegesByUserId(userId)
-        )
+        return baseUserQuery()
+            .where(USERS.ID.eq(id).and(USERS.DELETED.eq(false)))
+            .fetchOneInto(User::class.java)
     }
 
-    private fun findPrivilegesByUserId(userId: Long): List<Privilege> {
-        return dSLContext.fetch(
-            "SELECT p.id, p.name FROM privilege p JOIN user_privilege up ON p.id = up.privilege_id WHERE up.user_id = ?",
-            userId
-        )
-            .map { r -> Privilege(r.get("id", Long::class.java)!!, r.get("name", String::class.java)!!) }
-    }
 }
