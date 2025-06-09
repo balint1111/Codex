@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/api/users")
+@CrossOrigin(origins = ["*"])
 class UserController(private val userService: UserService) {
 
     @GetMapping

@@ -8,6 +8,8 @@ import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
 interface Privilege { id: number; name: string; }
 interface User { id: number; username: string; privileges: Privilege[]; }
 
+const API_URL = (window as any).API_URL || 'http://localhost:8080';
+
 @Component({
   selector: 'app-root',
   template: `
@@ -81,7 +83,7 @@ class AppComponent {
     } else {
       u.privileges = u.privileges.filter(pp => pp.id !== p.id);
     }
-    fetch(`/api/users/${u.id}/privileges`, {
+    fetch(`${API_URL}/api/users/${u.id}/privileges`, {
       method: 'POST',
       headers: this.authHeaders(),
       body: JSON.stringify(u.privileges.map(pr => pr.id))
@@ -89,11 +91,11 @@ class AppComponent {
   }
 
   loadUsers() {
-    fetch('/api/users', { headers: this.authHeaders() })
+    fetch(`${API_URL}/api/users`, { headers: this.authHeaders() })
       .then(r => r.json())
       .then((d: User[]) => this.users = d);
     if (this.allPrivileges.length === 0) {
-      fetch('/api/privileges', { headers: this.authHeaders() })
+      fetch(`${API_URL}/api/privileges`, { headers: this.authHeaders() })
         .then(r => r.json())
         .then((p: Privilege[]) => this.allPrivileges = p);
     }
@@ -101,7 +103,7 @@ class AppComponent {
 
   login() {
     this.credentials = btoa(`${this.username}:${this.password}`);
-    fetch('/api/users/me', { headers: { 'Authorization': 'Basic ' + this.credentials } })
+    fetch(`${API_URL}/api/users/me`, { headers: { 'Authorization': 'Basic ' + this.credentials } })
       .then(res => {
         if (!res.ok) throw new Error('login failed');
         return res.json();
@@ -115,7 +117,7 @@ class AppComponent {
 
   register() {
     const body = `username=${encodeURIComponent(this.username)}&password=${encodeURIComponent(this.password)}`;
-    fetch('/api/users/register', {
+    fetch(`${API_URL}/api/users/register`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
       body
@@ -123,7 +125,7 @@ class AppComponent {
   }
 
   deleteUser(id: number) {
-    fetch(`/api/users/${id}`, { method: 'DELETE', headers: this.authHeaders() })
+    fetch(`${API_URL}/api/users/${id}`, { method: 'DELETE', headers: this.authHeaders() })
       .then(() => this.loadUsers());
   }
 

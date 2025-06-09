@@ -13,6 +13,7 @@ open class SecurityConfig {
     @Bean
     open fun filterChain(http: HttpSecurity): SecurityFilterChain {
         http.csrf { it.disable() }
+            .cors{}
             .authorizeHttpRequests {
                 it.requestMatchers(HttpMethod.POST, "/api/users/register").permitAll()
                 it.anyRequest().authenticated()
