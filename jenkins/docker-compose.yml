@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  jenkins:
+    image: codex-jenkins-agent:latest
+    container_name: jenkins
+    user: root
+    ports:
+      - "8080:8080"
+      - "50000:50000"
+    environment:
+      # Point Jenkins (and its Docker CLI) to the host Docker daemon
+      DOCKER_HOST: "tcp://host.docker.internal:2375"
+      # (Optional) if you want to expose the registry URL inside Jenkins jobs
+      REGISTRY_URL: "http://registry:5000"
+    volumes:
+      - jenkins_home:/var/jenkins_home
+    depends_on:
+      - registry
+    restart: unless-stopped
+
+  registry:
+    image: registry:2
+    container_name: local-registry
+    ports:
+      - "5000:5000"
+    restart: unless-stopped
+
+volumes:
+  jenkins_home:
+    driver: local
