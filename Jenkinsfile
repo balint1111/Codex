@@ -18,14 +18,6 @@ pipeline {
                 }
             }
         }
-        stage('Frontend Build') {
-            steps {
-                dir('frontend') {
-                    sh 'npm install'
-                    sh 'npm run build'
-                }
-            }
-        }
         stage('Build Images') {
             steps {
                 sh 'docker build -t $IMAGE_BACKEND ./backend'
