@@ -8,20 +8,20 @@ import { User } from './app.component';
   template: `
     <div class="login">
       <mat-card>
-        <mat-card-title>Login</mat-card-title>
+        <mat-card-title>{{ 'LOGIN' | t }}</mat-card-title>
         <mat-card-content>
           <mat-form-field appearance="fill">
-            <mat-label>Username</mat-label>
+            <mat-label>{{ 'USERNAME' | t }}</mat-label>
             <input matInput [(ngModel)]="username">
           </mat-form-field>
           <mat-form-field appearance="fill">
-            <mat-label>Password</mat-label>
+            <mat-label>{{ 'PASSWORD' | t }}</mat-label>
             <input matInput type="password" [(ngModel)]="password">
           </mat-form-field>
         </mat-card-content>
         <mat-card-actions>
-          <button mat-raised-button color="primary" (click)="login()">Login</button>
-          <a mat-button routerLink="/register">Register</a>
+          <button mat-raised-button color="primary" (click)="login()">{{ 'LOGIN' | t }}</button>
+          <a mat-button routerLink="/register">{{ 'REGISTER' | t }}</a>
         </mat-card-actions>
       </mat-card>
     </div>

@@ -7,7 +7,7 @@ import { User, Privilege } from './app.component';
   selector: 'app-user-edit',
   template: `
     <mat-card *ngIf="user" class="user-card">
-      <mat-card-title>Edit {{user.username}}</mat-card-title>
+      <mat-card-title>{{ 'EDIT_USER' | t:{username: user?.username} }}</mat-card-title>
       <mat-card-content>
         <div class="priv" *ngFor="let p of allPrivileges">
           <mat-checkbox [checked]="hasPrivilege(p)" (change)="togglePrivilege(p, $event)">
@@ -18,7 +18,7 @@ import { User, Privilege } from './app.component';
       <mat-card-actions>
         <button mat-stroked-button color="primary" routerLink="/users">
           <mat-icon>arrow_back</mat-icon>
-          Back
+          {{ 'BACK' | t }}
         </button>
       </mat-card-actions>
     </mat-card>

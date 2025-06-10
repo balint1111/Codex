@@ -5,8 +5,8 @@ import { User } from './app.component';
   selector: 'app-navbar',
   template: `
     <mat-nav-list>
-      <a mat-list-item routerLink="/dashboard" routerLinkActive="active" *ngIf="hasPrivilege('dashboard')">Dashboard</a>
-      <a mat-list-item routerLink="/users" routerLinkActive="active" *ngIf="hasPrivilege('users')">Users</a>
+      <a mat-list-item routerLink="/dashboard" routerLinkActive="active" *ngIf="hasPrivilege('dashboard')">{{ 'DASHBOARD' | t }}</a>
+      <a mat-list-item routerLink="/users" routerLinkActive="active" *ngIf="hasPrivilege('users')">{{ 'USERS' | t }}</a>
     </mat-nav-list>
   `,
   styles: [`
