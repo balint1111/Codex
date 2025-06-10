@@ -2,19 +2,17 @@ pipeline {
   agent any
 
   environment {
-    // let the in-container Docker CLI talk to Docker Desktop’s daemon
-    DOCKER_HOST        = "tcp://host.docker.internal:2375"
-    // your local registry on the Windows host
-    REGISTRY_URL       = "host.docker.internal:5000"
-    IMAGE_BACKEND      = "${REGISTRY_URL}/codex-backend:${env.BUILD_NUMBER}"
-    IMAGE_FRONTEND     = "${REGISTRY_URL}/codex-frontend:${env.BUILD_NUMBER}"
+    // point the in-container Docker CLI at Docker Desktop’s daemon
+    DOCKER_HOST    = "tcp://host.docker.internal:2375"
+    // local registry on the Windows host
+    REGISTRY_URL   = "host.docker.internal:5000"
+    IMAGE_BACKEND  = "${REGISTRY_URL}/codex-backend:${env.BUILD_NUMBER}"
+    IMAGE_FRONTEND = "${REGISTRY_URL}/codex-frontend:${env.BUILD_NUMBER}"
   }
 
   stages {
     stage('Checkout') {
-      steps {
-        checkout scm
-      }
+      steps { checkout scm }
     }
 
     stage('Backend Tests') {
@@ -28,14 +26,14 @@ pipeline {
     stage('Build & Push Images') {
       steps {
         script {
-          // wrap in withRegistry so Jenkins knows no credentials are needed
-          docker.withRegistry("http://${REGISTRY_URL}", '') {
+          // note the explicit "http://"
+          docker.withRegistry("http://${REGISTRY_URL}", "") {
             // build & push backend
-            def backImg = docker.build("${REGISTRY_URL}/codex-backend:${env.BUILD_NUMBER}", "backend")
-            backImg.push()
+            def back = docker.build(IMAGE_BACKEND, "backend")
+            back.push()
             // build & push frontend
-            def frontImg = docker.build("${REGISTRY_URL}/codex-frontend:${env.BUILD_NUMBER}", "frontend")
-            frontImg.push()
+            def front = docker.build(IMAGE_FRONTEND, "frontend")
+            front.push()
           }
         }
       }
@@ -50,7 +48,7 @@ pipeline {
     stage('Deploy to staging') {
       when { branch 'main' }
       steps {
-        input message: 'Deploy to staging?'
+        input 'Deploy to staging?'
         sh 'kubectl apply -f kubernetes/staging'
       }
     }
@@ -58,7 +56,7 @@ pipeline {
     stage('Deploy to prod') {
       when { branch 'main' }
       steps {
-        input message: 'Deploy to production?'
+        input 'Deploy to production?'
         sh 'kubectl apply -f kubernetes/prod'
       }
     }
@@ -66,7 +64,7 @@ pipeline {
 
   post {
     always {
-      echo "Cleaning up any dangling images..."
+      echo "Pruning dangling images…"
       sh 'docker image prune -f'
     }
   }
