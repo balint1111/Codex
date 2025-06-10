@@ -22,16 +22,16 @@ import org.jooq.impl.TableRecordImpl
 @Suppress("warnings")
 @Entity
 @Table(
-    name = "USER_PRIVILEGE"
+    name = "user_privilege"
 )
 open class UserPrivilegeRecord private constructor() : TableRecordImpl<UserPrivilegeRecord>(UserPrivilege.USER_PRIVILEGE), Record2<Long?, Long?> {
 
-    @get:Column(name = "USER_ID")
+    @get:Column(name = "user_id")
     open var userId: Long?
         set(value): Unit = set(0, value)
         get(): Long? = get(0) as Long?
 
-    @get:Column(name = "PRIVILEGE_ID")
+    @get:Column(name = "privilege_id")
     open var privilegeId: Long?
         set(value): Unit = set(1, value)
         get(): Long? = get(1) as Long?

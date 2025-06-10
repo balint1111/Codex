@@ -27,7 +27,7 @@ import org.jooq.impl.UpdatableRecordImpl
 @Suppress("warnings")
 @Entity
 @Table(
-    name = "USERS",
+    name = "users",
     uniqueConstraints = [
         UniqueConstraint(name = "CONSTRAINT_4D", columnNames = [ "USERNAME" ])
     ]
@@ -36,22 +36,22 @@ open class UsersRecord private constructor() : UpdatableRecordImpl<UsersRecord>(
 
     @get:Id
     @get:GeneratedValue(strategy = GenerationType.IDENTITY)
-    @get:Column(name = "ID", nullable = false)
+    @get:Column(name = "id", nullable = false)
     open var id: Long?
         set(value): Unit = set(0, value)
         get(): Long? = get(0) as Long?
 
-    @get:Column(name = "USERNAME", nullable = false, length = 50)
+    @get:Column(name = "username", nullable = false, length = 50)
     open var username: String
         set(value): Unit = set(1, value)
         get(): String = get(1) as String
 
-    @get:Column(name = "PASSWORD", length = 100)
+    @get:Column(name = "password", length = 100)
     open var password: String?
         set(value): Unit = set(2, value)
         get(): String? = get(2) as String?
 
-    @get:Column(name = "DELETED")
+    @get:Column(name = "deleted")
     open var deleted: Boolean?
         set(value): Unit = set(3, value)
         get(): Boolean? = get(3) as Boolean?

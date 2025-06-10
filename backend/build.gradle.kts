@@ -25,6 +25,8 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-jooq")
 
     implementation("org.jooq:jooq:3.20.0")
+
+    implementation("jakarta.persistence:jakarta.persistence-api:3.1.0")
     runtimeOnly("org.postgresql:postgresql")
     jooqGenerator("org.postgresql:postgresql")
     jooqGenerator("org.liquibase:liquibase-core")

@@ -17,12 +17,12 @@ import java.io.Serializable
 @Suppress("warnings")
 @Entity
 @Table(
-    name = "USER_PRIVILEGE"
+    name = "user_privilege"
 )
 data class UserPrivilege(
-    @get:Column(name = "USER_ID")
+    @get:Column(name = "user_id")
     val userId: Long? = null,
-    @get:Column(name = "PRIVILEGE_ID")
+    @get:Column(name = "privilege_id")
     val privilegeId: Long? = null
 ): Serializable {
 

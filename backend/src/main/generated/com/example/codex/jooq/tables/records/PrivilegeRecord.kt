@@ -27,7 +27,7 @@ import org.jooq.impl.UpdatableRecordImpl
 @Suppress("warnings")
 @Entity
 @Table(
-    name = "PRIVILEGE",
+    name = "privilege",
     uniqueConstraints = [
         UniqueConstraint(name = "CONSTRAINT_4", columnNames = [ "NAME" ])
     ]
@@ -36,12 +36,12 @@ open class PrivilegeRecord private constructor() : UpdatableRecordImpl<Privilege
 
     @get:Id
     @get:GeneratedValue(strategy = GenerationType.IDENTITY)
-    @get:Column(name = "ID", nullable = false)
+    @get:Column(name = "id", nullable = false)
     open var id: Long?
         set(value): Unit = set(0, value)
         get(): Long? = get(0) as Long?
 
-    @get:Column(name = "NAME", nullable = false, length = 50)
+    @get:Column(name = "name", nullable = false, length = 50)
     open var name: String
         set(value): Unit = set(1, value)
         get(): String = get(1) as String

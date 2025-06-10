@@ -21,7 +21,7 @@ import java.io.Serializable
 @Suppress("warnings")
 @Entity
 @Table(
-    name = "PRIVILEGE",
+    name = "privilege",
     uniqueConstraints = [
         UniqueConstraint(name = "CONSTRAINT_4", columnNames = [ "NAME" ])
     ]
@@ -29,9 +29,9 @@ import java.io.Serializable
 data class Privilege(
     @get:Id
     @get:GeneratedValue(strategy = GenerationType.IDENTITY)
-    @get:Column(name = "ID", nullable = false)
+    @get:Column(name = "id", nullable = false)
     val id: Long? = null,
-    @get:Column(name = "NAME", nullable = false, length = 50)
+    @get:Column(name = "name", nullable = false, length = 50)
     val name: String
 ): Serializable {
 

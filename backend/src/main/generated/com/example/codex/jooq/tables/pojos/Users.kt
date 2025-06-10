@@ -21,7 +21,7 @@ import java.io.Serializable
 @Suppress("warnings")
 @Entity
 @Table(
-    name = "USERS",
+    name = "users",
     uniqueConstraints = [
         UniqueConstraint(name = "CONSTRAINT_4D", columnNames = [ "USERNAME" ])
     ]
@@ -29,13 +29,13 @@ import java.io.Serializable
 data class Users(
     @get:Id
     @get:GeneratedValue(strategy = GenerationType.IDENTITY)
-    @get:Column(name = "ID", nullable = false)
+    @get:Column(name = "id", nullable = false)
     val id: Long? = null,
-    @get:Column(name = "USERNAME", nullable = false, length = 50)
+    @get:Column(name = "username", nullable = false, length = 50)
     val username: String,
-    @get:Column(name = "PASSWORD", length = 100)
+    @get:Column(name = "password", length = 100)
     val password: String? = null,
-    @get:Column(name = "DELETED")
+    @get:Column(name = "deleted")
     val deleted: Boolean? = null
 ): Serializable {
 
