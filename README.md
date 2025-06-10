@@ -24,3 +24,13 @@ The backend will be on `http://localhost:8080` and the frontend on `http://local
 ## Managing Environments in Kubernetes
 
 For deployments beyond local development, you can manage separate environments (development, staging, production) using Kubernetes. See [KUBERNETES.md](KUBERNETES.md) for a basic overview and example structure. A sample Jenkins pipeline is provided in the [Jenkinsfile](Jenkinsfile) to automate builds and deployments.
+
+## Jenkins Build Environment
+
+A Dockerfile is provided under `jenkins/` to build a Jenkins agent image with Node.js, the Docker CLI and `kubectl` installed. Build it with:
+
+```bash
+docker build -t codex-jenkins-agent ./jenkins
+```
+
+Use this image in your Jenkins setup to run the pipeline defined in `Jenkinsfile`.

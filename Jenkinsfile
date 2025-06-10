@@ -1,9 +1,10 @@
 pipeline {
     agent any
     environment {
-        REGISTRY = "myregistry"
-        IMAGE_BACKEND = "${REGISTRY}/codex-backend:${env.BUILD_NUMBER}"
-        IMAGE_FRONTEND = "${REGISTRY}/codex-frontend:${env.BUILD_NUMBER}"
+        // use the Docker Compose service name and port
+        REGISTRY         = "registry:5000"
+        IMAGE_BACKEND    = "${REGISTRY}/codex-backend:${env.BUILD_NUMBER}"
+        IMAGE_FRONTEND   = "${REGISTRY}/codex-frontend:${env.BUILD_NUMBER}"
     }
     stages {
         stage('Checkout') {
@@ -20,10 +21,12 @@ pipeline {
         }
         stage('Build Images') {
             steps {
-                sh 'docker build -t $IMAGE_BACKEND ./backend'
-                sh 'docker build -t $IMAGE_FRONTEND ./frontend'
-                sh 'docker push $IMAGE_BACKEND'
-                sh 'docker push $IMAGE_FRONTEND'
+                sh """
+                   docker build -t $IMAGE_BACKEND ./backend
+                   docker build -t $IMAGE_FRONTEND ./frontend
+                   docker push $IMAGE_BACKEND
+                   docker push $IMAGE_FRONTEND
+                """
             }
         }
         stage('Deploy to dev') {
@@ -32,18 +35,14 @@ pipeline {
             }
         }
         stage('Deploy to staging') {
-            when {
-                branch 'main'
-            }
+            when { branch 'main' }
             steps {
                 input message: 'Deploy to staging?'
                 sh 'kubectl apply -f kubernetes/staging'
             }
         }
         stage('Deploy to prod') {
-            when {
-                branch 'main'
-            }
+            when { branch 'main' }
             steps {
                 input message: 'Deploy to production?'
                 sh 'kubectl apply -f kubernetes/prod'
