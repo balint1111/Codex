@@ -12,12 +12,12 @@ import org.springframework.stereotype.Repository
 
 @Repository
 class UserRepository(
-    override val dsl: DSLContext
+    override val dslContext: DSLContext
 ) : CrudRepository<UsersTable, User> {
     override val table = USERS
     override val type = User::class.java
 
-    private fun baseUserQuery() = dsl
+    private fun baseUserQuery() = dslContext
         .select(
             *USERS.fields(),
             DSL.multiset(
@@ -37,14 +37,14 @@ class UserRepository(
     }
 
     fun save(username: String, password: String) {
-        dsl.insertInto(USERS)
+        dslContext.insertInto(USERS)
             .set(USERS.USERNAME, username)
             .set(USERS.PASSWORD, password)
             .execute()
     }
 
     fun softDelete(id: Long) {
-        dsl.update(USERS)
+        dslContext.update(USERS)
             .set(USERS.DELETED, true)
             .where(USERS.ID.eq(id))
             .execute()
@@ -57,14 +57,14 @@ class UserRepository(
     }
 
     fun addPrivilege(userId: Long, privilegeId: Long) {
-        dsl.insertInto(USER_PRIVILEGE)
+        dslContext.insertInto(USER_PRIVILEGE)
             .set(USER_PRIVILEGE.USER_ID, userId)
             .set(USER_PRIVILEGE.PRIVILEGE_ID, privilegeId)
             .execute()
     }
 
     fun updateUserPrivileges(userId: Long, privilegeIds: List<Long>) {
-        dsl.transaction { config ->
+        dslContext.transaction { config ->
             val ctx = DSL.using(config)
             ctx.deleteFrom(USER_PRIVILEGE)
                 .where(USER_PRIVILEGE.USER_ID.eq(userId))
@@ -79,7 +79,7 @@ class UserRepository(
     }
 
     fun findAllPrivileges(): List<Privilege> {
-        return dsl
+        return dslContext
             .select(*PRIVILEGE.fields()).from(PRIVILEGE)
             .fetchInto(Privilege::class.java)
     }

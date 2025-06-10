@@ -8,8 +8,6 @@ import org.springframework.stereotype.Repository
 
 @Repository
 class UserPrivilegeRepository(
-    override val dsl: DSLContext
+    override val dslContext: DSLContext
 ) : CrudRepository<UserPrivilegeTable, UserPrivilege> {
-    override val table = USER_PRIVILEGE
-    override val type = UserPrivilege::class.java
 }

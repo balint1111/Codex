@@ -24,11 +24,11 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-starter-jooq")
 
-    implementation("org.jooq:jooq:3.19.22")
+    implementation("org.jooq:jooq:3.20.0")
     runtimeOnly("org.postgresql:postgresql")
     jooqGenerator("org.postgresql:postgresql")
     jooqGenerator("org.liquibase:liquibase-core")
-    jooqGenerator("org.jooq:jooq-meta-extensions-liquibase:3.19.22")
+    jooqGenerator("org.jooq:jooq-meta-extensions-liquibase:3.20.0")
     implementation("org.liquibase:liquibase-core")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
@@ -40,7 +40,7 @@ tasks.withType<Test> {
 }
 
 jooq {
-    version.set("3.19.22")
+    version.set("3.20.0")
     edition.set(JooqEdition.OSS)
     configurations {
         create("main") {
@@ -62,6 +62,20 @@ jooq {
                     target.apply {
                         packageName = "com.example.codex.jooq"
                         directory = "src/main/generated"
+                    }
+                    generate.apply {
+                        withDeprecated(false)
+                        withRecords(true)
+                        withImmutablePojos(true)
+                        withFluentSetters(true)
+                        withJpaVersion("2.2")
+                        withJpaAnnotations(true)
+                        withImplicitJoinPathsAsKotlinProperties(true)
+                        withKotlinSetterJvmNameAnnotationsOnIsPrefix(true)
+                        withPojosAsKotlinDataClasses(true)
+                        withKotlinNotNullInterfaceAttributes(true)
+                        withKotlinNotNullPojoAttributes(true)
+                        withKotlinNotNullRecordAttributes(true)
                     }
                 }
             }
