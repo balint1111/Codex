@@ -10,15 +10,15 @@ import { User } from './app.component';
   template: `
     <table mat-table [dataSource]="dataSource" class="mat-elevation-z8 clickable">
       <ng-container matColumnDef="id">
-        <th mat-header-cell *matHeaderCellDef>ID</th>
+        <th mat-header-cell *matHeaderCellDef>{{ 'ID' | t }}</th>
         <td mat-cell *matCellDef="let u" (click)="editUser(u.id)">{{u.id}}</td>
       </ng-container>
       <ng-container matColumnDef="username">
-        <th mat-header-cell *matHeaderCellDef>Name</th>
+        <th mat-header-cell *matHeaderCellDef>{{ 'NAME' | t }}</th>
         <td mat-cell *matCellDef="let u" (click)="editUser(u.id)">{{u.username}}</td>
       </ng-container>
       <ng-container matColumnDef="actions">
-        <th mat-header-cell *matHeaderCellDef>Actions</th>
+        <th mat-header-cell *matHeaderCellDef>{{ 'ACTIONS' | t }}</th>
         <td mat-cell *matCellDef="let u">
           <button mat-icon-button color="warn" (click)="deleteUser(u.id)">
             <mat-icon>delete</mat-icon>

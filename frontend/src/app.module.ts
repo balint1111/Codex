@@ -15,6 +15,9 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatCardModule } from '@angular/material/card';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatSelectModule } from '@angular/material/select';
+
+import { TranslatePipe } from './i18n/translate.pipe';
 
 import { AppComponent } from './app.component';
 import { NavbarComponent } from './navbar.component';
@@ -43,7 +46,8 @@ const routes: Routes = [
     UsersComponent,
     UserEditComponent,
     LoginComponent,
-    RegisterComponent
+    RegisterComponent,
+    TranslatePipe
   ],
   imports: [
     BrowserModule,
@@ -61,7 +65,8 @@ const routes: Routes = [
     MatIconModule,
     MatCheckboxModule,
     MatCardModule,
-    MatSlideToggleModule
+    MatSlideToggleModule,
+    MatSelectModule
   ],
   bootstrap: [AppComponent]
 })

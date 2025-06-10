@@ -2,6 +2,6 @@ import { Component } from '@angular/core';
 
 @Component({
   selector: 'app-dashboard',
-  template: `<p>Welcome to the dashboard.</p>`
+  template: `<p>{{ 'DASHBOARD_WELCOME' | t }}</p>`
 })
 export class DashboardComponent {}
