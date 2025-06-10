@@ -48,6 +48,7 @@ jooq {
             jooqConfiguration.apply {
                 generator.apply {
                     name = "org.jooq.codegen.KotlinGenerator"
+                    strategy.name = "org.jooq.codegen.KeepNamesGeneratorStrategy"
                     database.apply {
                         name = "org.jooq.meta.extensions.liquibase.LiquibaseDatabase"
                         properties.add(Property().apply {
@@ -76,4 +77,19 @@ tasks.withType<KotlinCompile> {
     compilerOptions {
         jvmTarget.set(JvmTarget.JVM_17)
     }
+}
+
+tasks.register("lowercaseJooqNames") {
+    doLast {
+        println("Post-processing jOOQ sources to lowercase names")
+        fileTree("src/main/generated") { include("**/*.kt") }.forEach { file ->
+            exec {
+                commandLine("perl", "scripts/lowercase.pl", file.absolutePath)
+            }
+        }
+    }
+}
+
+tasks.named("generateJooq").configure {
+    finalizedBy("lowercaseJooqNames")
 }

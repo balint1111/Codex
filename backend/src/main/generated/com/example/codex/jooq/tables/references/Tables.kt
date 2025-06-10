@@ -4,23 +4,23 @@
 package com.example.codex.jooq.tables.references
 
 
-import com.example.codex.jooq.tables.Privilege
-import com.example.codex.jooq.tables.UserPrivilege
-import com.example.codex.jooq.tables.Users
+import com.example.codex.jooq.tables.PRIVILEGE
+import com.example.codex.jooq.tables.USERS
+import com.example.codex.jooq.tables.USER_PRIVILEGE
 
 
 
 /**
  * The table <code>PRIVILEGE</code>.
  */
-val PRIVILEGE: Privilege = Privilege.PRIVILEGE
+val PRIVILEGE: PRIVILEGE = com.example.codex.jooq.tables.PRIVILEGE.PRIVILEGE
 
 /**
  * The table <code>USER_PRIVILEGE</code>.
  */
-val USER_PRIVILEGE: UserPrivilege = UserPrivilege.USER_PRIVILEGE
+val USER_PRIVILEGE: USER_PRIVILEGE = com.example.codex.jooq.tables.USER_PRIVILEGE.USER_PRIVILEGE
 
 /**
  * The table <code>USERS</code>.
  */
-val USERS: Users = Users.USERS
+val USERS: USERS = com.example.codex.jooq.tables.USERS.USERS
