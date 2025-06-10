@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: codex-backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: codex-backend
+  template:
+    metadata:
+      labels:
+        app: codex-backend
+    spec:
+      containers:
+        - name: backend
+          image: myregistry/codex-backend:latest
+          ports:
+            - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: codex-backend
+spec:
+  selector:
+    app: codex-backend
+  ports:
+    - port: 80
+      targetPort: 8080
