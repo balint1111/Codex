@@ -5,6 +5,7 @@ pipeline {
         IMAGE_BACKEND = "${REGISTRY}/codex-backend:${env.BUILD_NUMBER}"
         IMAGE_FRONTEND = "${REGISTRY}/codex-frontend:${env.BUILD_NUMBER}"
     }
+	
     stages {
         stage('Checkout') {
             steps {
