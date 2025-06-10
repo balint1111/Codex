@@ -4,8 +4,10 @@
 package com.example.codex.jooq.keys
 
 
-import com.example.codex.jooq.tables.records.PRIVILEGE
-import com.example.codex.jooq.tables.records.USERS
+import com.example.codex.jooq.tables.Privilege
+import com.example.codex.jooq.tables.Users
+import com.example.codex.jooq.tables.records.PrivilegeRecord
+import com.example.codex.jooq.tables.records.UsersRecord
 
 import org.jooq.UniqueKey
 import org.jooq.impl.DSL
@@ -17,7 +19,7 @@ import org.jooq.impl.Internal
 // UNIQUE and PRIMARY KEY definitions
 // -------------------------------------------------------------------------
 
-val CONSTRAINT_4: UniqueKey<PRIVILEGE> = Internal.createUniqueKey(com.example.codex.jooq.tables.PRIVILEGE.PRIVILEGE, DSL.name("CONSTRAINT_4"), arrayOf(com.example.codex.jooq.tables.PRIVILEGE.PRIVILEGE.NAME), true)
-val PK_PRIVILEGE: UniqueKey<PRIVILEGE> = Internal.createUniqueKey(com.example.codex.jooq.tables.PRIVILEGE.PRIVILEGE, DSL.name("pk_privilege"), arrayOf(com.example.codex.jooq.tables.PRIVILEGE.PRIVILEGE.ID), true)
-val CONSTRAINT_4D: UniqueKey<USERS> = Internal.createUniqueKey(com.example.codex.jooq.tables.USERS.USERS, DSL.name("CONSTRAINT_4D"), arrayOf(com.example.codex.jooq.tables.USERS.USERS.USERNAME), true)
-val PK_USERS: UniqueKey<USERS> = Internal.createUniqueKey(com.example.codex.jooq.tables.USERS.USERS, DSL.name("pk_users"), arrayOf(com.example.codex.jooq.tables.USERS.USERS.ID), true)
+val CONSTRAINT_4: UniqueKey<PrivilegeRecord> = Internal.createUniqueKey(Privilege.PRIVILEGE, DSL.name("CONSTRAINT_4"), arrayOf(Privilege.PRIVILEGE.NAME), true)
+val PK_PRIVILEGE: UniqueKey<PrivilegeRecord> = Internal.createUniqueKey(Privilege.PRIVILEGE, DSL.name("pk_privilege"), arrayOf(Privilege.PRIVILEGE.ID), true)
+val CONSTRAINT_4D: UniqueKey<UsersRecord> = Internal.createUniqueKey(Users.USERS, DSL.name("CONSTRAINT_4D"), arrayOf(Users.USERS.USERNAME), true)
+val PK_USERS: UniqueKey<UsersRecord> = Internal.createUniqueKey(Users.USERS, DSL.name("pk_users"), arrayOf(Users.USERS.ID), true)

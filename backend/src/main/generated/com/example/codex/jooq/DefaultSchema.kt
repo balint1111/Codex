@@ -4,9 +4,9 @@
 package com.example.codex.jooq
 
 
-import com.example.codex.jooq.tables.PRIVILEGE
-import com.example.codex.jooq.tables.USERS
-import com.example.codex.jooq.tables.USER_PRIVILEGE
+import com.example.codex.jooq.tables.Privilege
+import com.example.codex.jooq.tables.UserPrivilege
+import com.example.codex.jooq.tables.Users
 
 import kotlin.collections.List
 
@@ -31,23 +31,23 @@ open class DefaultSchema : SchemaImpl("", DefaultCatalog.DEFAULT_CATALOG) {
     /**
      * The table <code>PRIVILEGE</code>.
      */
-    val PRIVILEGE: PRIVILEGE get() = com.example.codex.jooq.tables.PRIVILEGE.PRIVILEGE
+    val PRIVILEGE: Privilege get() = Privilege.PRIVILEGE
 
     /**
      * The table <code>USER_PRIVILEGE</code>.
      */
-    val USER_PRIVILEGE: USER_PRIVILEGE get() = com.example.codex.jooq.tables.USER_PRIVILEGE.USER_PRIVILEGE
+    val USER_PRIVILEGE: UserPrivilege get() = UserPrivilege.USER_PRIVILEGE
 
     /**
      * The table <code>USERS</code>.
      */
-    val USERS: USERS get() = com.example.codex.jooq.tables.USERS.USERS
+    val USERS: Users get() = Users.USERS
 
     override fun getCatalog(): Catalog = DefaultCatalog.DEFAULT_CATALOG
 
     override fun getTables(): List<Table<*>> = listOf(
-        com.example.codex.jooq.tables.PRIVILEGE.PRIVILEGE,
-        com.example.codex.jooq.tables.USER_PRIVILEGE.USER_PRIVILEGE,
-        com.example.codex.jooq.tables.USERS.USERS
+        Privilege.PRIVILEGE,
+        UserPrivilege.USER_PRIVILEGE,
+        Users.USERS
     )
 }

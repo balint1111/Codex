@@ -48,7 +48,6 @@ jooq {
             jooqConfiguration.apply {
                 generator.apply {
                     name = "org.jooq.codegen.KotlinGenerator"
-                    strategy.name = "org.jooq.codegen.KeepNamesGeneratorStrategy"
                     database.apply {
                         name = "org.jooq.meta.extensions.liquibase.LiquibaseDatabase"
                         properties.add(Property().apply {
