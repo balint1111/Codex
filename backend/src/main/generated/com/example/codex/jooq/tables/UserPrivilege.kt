@@ -74,12 +74,12 @@ open class UserPrivilege(
     /**
      * The column <code>USER_PRIVILEGE.USER_ID</code>.
      */
-    val USER_ID: TableField<UserPrivilegeRecord, Long?> = createField(DSL.name("USER_ID"), SQLDataType.BIGINT, this, "")
+    val USER_ID: TableField<UserPrivilegeRecord, Long?> = createField(DSL.name("user_id"), SQLDataType.BIGINT, this, "")
 
     /**
      * The column <code>USER_PRIVILEGE.PRIVILEGE_ID</code>.
      */
-    val PRIVILEGE_ID: TableField<UserPrivilegeRecord, Long?> = createField(DSL.name("PRIVILEGE_ID"), SQLDataType.BIGINT, this, "")
+    val PRIVILEGE_ID: TableField<UserPrivilegeRecord, Long?> = createField(DSL.name("privilege_id"), SQLDataType.BIGINT, this, "")
 
     private constructor(alias: Name, aliased: Table<UserPrivilegeRecord>?): this(alias, null, null, null, aliased, null, null)
     private constructor(alias: Name, aliased: Table<UserPrivilegeRecord>?, parameters: Array<Field<*>?>?): this(alias, null, null, null, aliased, parameters, null)
@@ -98,7 +98,7 @@ open class UserPrivilege(
     /**
      * Create a <code>USER_PRIVILEGE</code> table reference
      */
-    constructor(): this(DSL.name("USER_PRIVILEGE"), null)
+    constructor(): this(DSL.name("user_privilege"), null)
     override fun getSchema(): Schema? = if (aliased()) null else DefaultSchema.DEFAULT_SCHEMA
     override fun `as`(alias: String): UserPrivilege = UserPrivilege(DSL.name(alias), this)
     override fun `as`(alias: Name): UserPrivilege = UserPrivilege(alias, this)

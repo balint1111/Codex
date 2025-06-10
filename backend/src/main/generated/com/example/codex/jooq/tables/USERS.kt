@@ -79,22 +79,22 @@ open class Users(
     /**
      * The column <code>USERS.ID</code>.
      */
-    val ID: TableField<UsersRecord, Long?> = createField(DSL.name("ID"), SQLDataType.BIGINT.nullable(false).identity(true), this, "")
+    val ID: TableField<UsersRecord, Long?> = createField(DSL.name("id"), SQLDataType.BIGINT.nullable(false).identity(true), this, "")
 
     /**
      * The column <code>USERS.USERNAME</code>.
      */
-    val USERNAME: TableField<UsersRecord, String?> = createField(DSL.name("USERNAME"), SQLDataType.VARCHAR(50).nullable(false), this, "")
+    val USERNAME: TableField<UsersRecord, String?> = createField(DSL.name("username"), SQLDataType.VARCHAR(50).nullable(false), this, "")
 
     /**
      * The column <code>USERS.PASSWORD</code>.
      */
-    val PASSWORD: TableField<UsersRecord, String?> = createField(DSL.name("PASSWORD"), SQLDataType.VARCHAR(100), this, "")
+    val PASSWORD: TableField<UsersRecord, String?> = createField(DSL.name("password"), SQLDataType.VARCHAR(100), this, "")
 
     /**
      * The column <code>USERS.DELETED</code>.
      */
-    val DELETED: TableField<UsersRecord, Boolean?> = createField(DSL.name("DELETED"), SQLDataType.BOOLEAN.defaultValue(DSL.field(DSL.raw("FALSE"), SQLDataType.BOOLEAN)), this, "")
+    val DELETED: TableField<UsersRecord, Boolean?> = createField(DSL.name("deleted"), SQLDataType.BOOLEAN.defaultValue(DSL.field(DSL.raw("FALSE"), SQLDataType.BOOLEAN)), this, "")
 
     private constructor(alias: Name, aliased: Table<UsersRecord>?): this(alias, null, null, null, aliased, null, null)
     private constructor(alias: Name, aliased: Table<UsersRecord>?, parameters: Array<Field<*>?>?): this(alias, null, null, null, aliased, parameters, null)
@@ -113,7 +113,7 @@ open class Users(
     /**
      * Create a <code>USERS</code> table reference
      */
-    constructor(): this(DSL.name("USERS"), null)
+    constructor(): this(DSL.name("users"), null)
     override fun getSchema(): Schema? = if (aliased()) null else DefaultSchema.DEFAULT_SCHEMA
     override fun getIdentity(): Identity<UsersRecord, Long?> = super.getIdentity() as Identity<UsersRecord, Long?>
     override fun getPrimaryKey(): UniqueKey<UsersRecord> = PK_USERS

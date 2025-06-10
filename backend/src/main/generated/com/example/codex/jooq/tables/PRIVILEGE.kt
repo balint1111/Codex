@@ -79,12 +79,12 @@ open class Privilege(
     /**
      * The column <code>PRIVILEGE.ID</code>.
      */
-    val ID: TableField<PrivilegeRecord, Long?> = createField(DSL.name("ID"), SQLDataType.BIGINT.nullable(false).identity(true), this, "")
+    val ID: TableField<PrivilegeRecord, Long?> = createField(DSL.name("id"), SQLDataType.BIGINT.nullable(false).identity(true), this, "")
 
     /**
      * The column <code>PRIVILEGE.NAME</code>.
      */
-    val NAME: TableField<PrivilegeRecord, String?> = createField(DSL.name("NAME"), SQLDataType.VARCHAR(50).nullable(false), this, "")
+    val NAME: TableField<PrivilegeRecord, String?> = createField(DSL.name("name"), SQLDataType.VARCHAR(50).nullable(false), this, "")
 
     private constructor(alias: Name, aliased: Table<PrivilegeRecord>?): this(alias, null, null, null, aliased, null, null)
     private constructor(alias: Name, aliased: Table<PrivilegeRecord>?, parameters: Array<Field<*>?>?): this(alias, null, null, null, aliased, parameters, null)
@@ -103,7 +103,7 @@ open class Privilege(
     /**
      * Create a <code>PRIVILEGE</code> table reference
      */
-    constructor(): this(DSL.name("PRIVILEGE"), null)
+    constructor(): this(DSL.name("privilege"), null)
     override fun getSchema(): Schema? = if (aliased()) null else DefaultSchema.DEFAULT_SCHEMA
     override fun getIdentity(): Identity<PrivilegeRecord, Long?> = super.getIdentity() as Identity<PrivilegeRecord, Long?>
     override fun getPrimaryKey(): UniqueKey<PrivilegeRecord> = PK_PRIVILEGE

@@ -20,6 +20,6 @@ import org.jooq.impl.Internal
 // -------------------------------------------------------------------------
 
 val CONSTRAINT_4: UniqueKey<PrivilegeRecord> = Internal.createUniqueKey(Privilege.PRIVILEGE, DSL.name("CONSTRAINT_4"), arrayOf(Privilege.PRIVILEGE.NAME), true)
-val PK_PRIVILEGE: UniqueKey<PrivilegeRecord> = Internal.createUniqueKey(Privilege.PRIVILEGE, DSL.name("PK_PRIVILEGE"), arrayOf(Privilege.PRIVILEGE.ID), true)
+val PK_PRIVILEGE: UniqueKey<PrivilegeRecord> = Internal.createUniqueKey(Privilege.PRIVILEGE, DSL.name("pk_privilege"), arrayOf(Privilege.PRIVILEGE.ID), true)
 val CONSTRAINT_4D: UniqueKey<UsersRecord> = Internal.createUniqueKey(Users.USERS, DSL.name("CONSTRAINT_4D"), arrayOf(Users.USERS.USERNAME), true)
-val PK_USERS: UniqueKey<UsersRecord> = Internal.createUniqueKey(Users.USERS, DSL.name("PK_USERS"), arrayOf(Users.USERS.ID), true)
+val PK_USERS: UniqueKey<UsersRecord> = Internal.createUniqueKey(Users.USERS, DSL.name("pk_users"), arrayOf(Users.USERS.ID), true)
