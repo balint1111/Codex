@@ -2,6 +2,7 @@ package com.example.codex.repository
 
 import com.example.codex.domain.Privilege
 import com.example.codex.domain.User
+import com.example.codex.jooq.tables.Users as UsersTable
 import com.example.codex.jooq.tables.references.PRIVILEGE
 import com.example.codex.jooq.tables.references.USER_PRIVILEGE
 import com.example.codex.jooq.tables.references.USERS
@@ -11,10 +12,12 @@ import org.springframework.stereotype.Repository
 
 @Repository
 class UserRepository(
-    private val dSLContext: DSLContext
-) {
+    override val dsl: DSLContext
+) : CrudRepository<UsersTable, User> {
+    override val table = USERS
+    override val type = User::class.java
 
-    private fun baseUserQuery() = dSLContext
+    private fun baseUserQuery() = dsl
         .select(
             *USERS.fields(),
             DSL.multiset(
@@ -27,21 +30,21 @@ class UserRepository(
         )
         .from(USERS)
 
-    fun findAll(): List<User> {
+    override fun findAll(): List<User> {
         return baseUserQuery()
             .where(USERS.DELETED.eq(false))
             .fetchInto(User::class.java)
     }
 
     fun save(username: String, password: String) {
-        dSLContext.insertInto(USERS)
+        dsl.insertInto(USERS)
             .set(USERS.USERNAME, username)
             .set(USERS.PASSWORD, password)
             .execute()
     }
 
     fun softDelete(id: Long) {
-        dSLContext.update(USERS)
+        dsl.update(USERS)
             .set(USERS.DELETED, true)
             .where(USERS.ID.eq(id))
             .execute()
@@ -54,14 +57,14 @@ class UserRepository(
     }
 
     fun addPrivilege(userId: Long, privilegeId: Long) {
-        dSLContext.insertInto(USER_PRIVILEGE)
+        dsl.insertInto(USER_PRIVILEGE)
             .set(USER_PRIVILEGE.USER_ID, userId)
             .set(USER_PRIVILEGE.PRIVILEGE_ID, privilegeId)
             .execute()
     }
 
     fun updateUserPrivileges(userId: Long, privilegeIds: List<Long>) {
-        dSLContext.transaction { config ->
+        dsl.transaction { config ->
             val ctx = DSL.using(config)
             ctx.deleteFrom(USER_PRIVILEGE)
                 .where(USER_PRIVILEGE.USER_ID.eq(userId))
@@ -76,12 +79,12 @@ class UserRepository(
     }
 
     fun findAllPrivileges(): List<Privilege> {
-        return dSLContext
+        return dsl
             .select(*PRIVILEGE.fields()).from(PRIVILEGE)
             .fetchInto(Privilege::class.java)
     }
 
-    fun findById(id: Long): User? {
+    override fun findById(id: Long): User? {
         return baseUserQuery()
             .where(USERS.ID.eq(id).and(USERS.DELETED.eq(false)))
             .fetchOneInto(User::class.java)
