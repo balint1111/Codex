@@ -2,6 +2,8 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: codex-frontend
+  labels:
+    app: codex-frontend
 spec:
   replicas: 1
   selector:
@@ -14,15 +16,23 @@ spec:
     spec:
       containers:
         - name: frontend
-          image: myregistry/codex-frontend:latest
+          # pull the exact image Jenkins just pushed
+          image: ${IMAGE_FRONTEND}
+          imagePullPolicy: Always
           ports:
             - containerPort: 80
+      # uncomment/create this if your registry requires auth
+      # imagePullSecrets:
+      #   - name: regcred
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: codex-frontend
+  labels:
+    app: codex-frontend
 spec:
+  type: ClusterIP
   selector:
     app: codex-frontend
   ports:

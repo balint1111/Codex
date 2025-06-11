@@ -2,6 +2,8 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: codex-backend
+  labels:
+    app: codex-backend
 spec:
   replicas: 1
   selector:
@@ -14,15 +16,23 @@ spec:
     spec:
       containers:
         - name: backend
-          image: myregistry/codex-backend:latest
+          # dynamically use the image Jenkins pushed
+          image: ${IMAGE_BACKEND}
+          imagePullPolicy: Always
           ports:
             - containerPort: 8080
+      # if your registry needs auth, uncomment this:
+      # imagePullSecrets:
+      #   - name: regcred
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: codex-backend
+  labels:
+    app: codex-backend
 spec:
+  type: ClusterIP
   selector:
     app: codex-backend
   ports:
