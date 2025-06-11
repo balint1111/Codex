@@ -18,10 +18,6 @@ import { TranslationService } from './i18n/translation.service';
             <input matInput [(ngModel)]="endDate" placeholder="20240110">
           </mat-form-field>
           <mat-form-field appearance="fill">
-            <mat-label>{{ 'CURRENT_YEAR_LAST_DAY' | t }}</mat-label>
-            <input matInput [(ngModel)]="currentYearLastDay" placeholder="20231231">
-          </mat-form-field>
-          <mat-form-field appearance="fill">
             <mat-label>{{ 'AMOUNT' | t }}</mat-label>
             <input matInput [(ngModel)]="amount" placeholder="10000,50">
           </mat-form-field>
@@ -33,29 +29,40 @@ import { TranslationService } from './i18n/translation.service';
       </mat-card-actions>
       <mat-card-content *ngIf="totalDays !== undefined">
         <p>{{ 'TOTAL_DAYS' | t }}: {{ totalDays }}</p>
-        <p>{{ 'CURRENT_YEAR_DAYS' | t }}: {{ currentYearDays }}</p>
-        <p>{{ 'NEXT_YEAR_DAYS' | t }}: {{ nextYearDays }}</p>
-        <p>{{ 'CURRENT_YEAR_AMOUNT' | t }}: {{ currentYearAmount }}</p>
-        <p>{{ 'NEXT_YEAR_AMOUNT' | t }}: {{ nextYearAmount }}</p>
+        <table>
+          <thead>
+            <tr>
+              <th>{{ 'YEAR' | t }}</th>
+              <th>{{ 'DAYS' | t }}</th>
+              <th>{{ 'AMOUNT' | t }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let r of results">
+              <td>{{ r.year }}</td>
+              <td>{{ r.days }}</td>
+              <td>{{ r.amount }}</td>
+            </tr>
+          </tbody>
+        </table>
       </mat-card-content>
     </mat-card>
   `,
   styles: [`
     .cost-card { max-width: 600px; margin: 1rem auto; display: block; }
     .form-row { display: flex; flex-direction: column; gap: 0.5rem; }
+    table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+    th, td { border: 1px solid #ccc; padding: 0.25rem; text-align: right; }
+    th:first-child, td:first-child { text-align: left; }
   `]
 })
 export class CostSplitComponent {
   startDate = '20231201';
   endDate = '20240110';
-  currentYearLastDay = '20231231';
   amount = '10000,50';
 
   totalDays?: number;
-  currentYearDays?: number;
-  nextYearDays?: number;
-  currentYearAmount?: string;
-  nextYearAmount?: string;
+  results: { year: number; days: number; amount: string }[] = [];
 
   constructor(private ts: TranslationService) {}
 
@@ -71,7 +78,6 @@ export class CostSplitComponent {
     try {
       const start = this.parseDate(this.startDate);
       const end = this.parseDate(this.endDate);
-      const last = this.parseDate(this.currentYearLastDay);
 
       const amountNum = parseFloat(this.amount.replace(',', '.'));
       if (isNaN(amountNum)) throw new Error('amount');
@@ -88,19 +94,24 @@ export class CostSplitComponent {
       }
 
       this.totalDays = diff;
+      this.results = [];
 
-      let current = Math.floor((last.getTime() - start.getTime()) / 86400000) + 1;
-      current = Math.max(0, current);
-      current = Math.min(current, diff);
-      this.currentYearDays = current;
-
-      const next = diff - current;
-      this.nextYearDays = next;
-
-      const currentAmount = (amountNum / diff) * current;
-      const nextAmount = (amountNum / diff) * next;
-      this.currentYearAmount = currentAmount.toFixed(2).replace('.', ',');
-      this.nextYearAmount = nextAmount.toFixed(2).replace('.', ',');
+      for (let y = start.getFullYear(); y <= end.getFullYear(); y++) {
+        const yearStart = new Date(y, 0, 1);
+        const yearEnd = new Date(y, 11, 31);
+        const from = start > yearStart ? start : yearStart;
+        const to = end < yearEnd ? end : yearEnd;
+        let days = Math.floor((to.getTime() - from.getTime()) / 86400000) + 1;
+        if (days < 0) days = 0;
+        if (days > 0) {
+          const amt = (amountNum / diff) * days;
+          this.results.push({
+            year: y,
+            days,
+            amount: amt.toFixed(2).replace('.', ',')
+          });
+        }
+      }
     } catch (e: any) {
       if (e.message === 'bad date') {
         alert("Hibás dátumformátum. Kérlek 'ÉÉÉÉHHNN' formátumot használj.");
@@ -109,8 +120,8 @@ export class CostSplitComponent {
       } else {
         alert('Ismeretlen hiba történt.');
       }
-      this.totalDays = this.currentYearDays = this.nextYearDays = undefined;
-      this.currentYearAmount = this.nextYearAmount = undefined;
+      this.totalDays = undefined;
+      this.results = [];
     }
   }
 
@@ -118,10 +129,8 @@ export class CostSplitComponent {
     if (this.totalDays === undefined) return;
     const data = [
       [this.ts.translate('TOTAL_DAYS'), this.totalDays],
-      [this.ts.translate('CURRENT_YEAR_DAYS'), this.currentYearDays ?? 0],
-      [this.ts.translate('NEXT_YEAR_DAYS'), this.nextYearDays ?? 0],
-      [this.ts.translate('CURRENT_YEAR_AMOUNT'), this.currentYearAmount ?? ''],
-      [this.ts.translate('NEXT_YEAR_AMOUNT'), this.nextYearAmount ?? '']
+      [this.ts.translate('YEAR'), this.ts.translate('DAYS'), this.ts.translate('AMOUNT')],
+      ...this.results.map(r => [r.year, r.days, r.amount])
     ];
     const ws = XLSX.utils.aoa_to_sheet(data);
     const wb = XLSX.utils.book_new();
