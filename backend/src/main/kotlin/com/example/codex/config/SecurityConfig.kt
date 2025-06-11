@@ -15,12 +15,15 @@ import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.web.cors.CorsConfiguration
+import org.springframework.beans.factory.annotation.Value
 
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
 class SecurityConfig(
-    private val userService: UserService
+    private val userService: UserService,
+    @Value("\${FRONTEND_URL:http://localhost:30080}")
+    private val frontendUrl: String
 ) {
 
     companion object {
@@ -58,7 +61,7 @@ class SecurityConfig(
             .cors {
                 it.configurationSource { request ->
                     CorsConfiguration().apply {
-                        allowedOrigins = listOf("http://localhost:30080")
+                        allowedOrigins = listOf(frontendUrl)
                         allowedMethods = listOf("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS")
                         allowedHeaders = listOf("*")
                         allowCredentials = true

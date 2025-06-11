@@ -20,6 +20,8 @@ docker-compose up --build
 ```
 
 The backend will be on `http://localhost:8080` and the frontend on `http://localhost:4200`.
+You can override the backend URL by setting the `API_URL` environment variable
+for the frontend container. If unspecified it defaults to `http://localhost:8081`.
 
 ## Managing Environments in Kubernetes
 

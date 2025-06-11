@@ -1,8 +1,8 @@
 spring:
   datasource:
     url: jdbc:postgresql://${DB_HOST}:${DB_PORT}/codex
-    username: codex
-    password: codex
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
   jooq:
     sql-dialect: POSTGRES
 
