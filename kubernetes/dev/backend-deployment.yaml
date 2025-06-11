@@ -28,11 +28,12 @@ spec:
             - name: DB_PORT
               value: "5432"
             - name: FRONTEND_URL
-              value: "$localhos:30080"
+              value: "localhost:30080"
             - name: SPRING_DATASOURCE_USERNAME
               value: codex
             - name: SPRING_DATASOURCE_PASSWORD
               value: codex
+---
 apiVersion: v1
 kind: Service
 metadata:
