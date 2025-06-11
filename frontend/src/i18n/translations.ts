@@ -15,7 +15,18 @@ export const translations = {
     BACK: 'Back',
     ID: 'ID',
     NAME: 'Name',
-    ACTIONS: 'Actions'
+    ACTIONS: 'Actions',
+    COST_SPLIT: 'Period Cost Allocation',
+    START_DATE: 'Start date (YYYYMMDD)',
+    END_DATE: 'End date (YYYYMMDD)',
+    CURRENT_YEAR_LAST_DAY: 'Current year last day (YYYYMMDD)',
+    AMOUNT: 'Amount',
+    CALCULATE: 'Calculate',
+    TOTAL_DAYS: 'Total days',
+    CURRENT_YEAR_DAYS: 'Current year days',
+    NEXT_YEAR_DAYS: 'Next year days',
+    CURRENT_YEAR_AMOUNT: 'Current year amount',
+    NEXT_YEAR_AMOUNT: 'Next year amount'
   },
   hu: {
     LOGIN: 'Bejelentkezés',
@@ -33,6 +44,17 @@ export const translations = {
     BACK: 'Vissza',
     ID: 'Azonosító',
     NAME: 'Név',
-    ACTIONS: 'Műveletek'
+    ACTIONS: 'Műveletek',
+    COST_SPLIT: 'Időszaki költségfelosztó',
+    START_DATE: 'Kezdő dátum (ÉÉÉÉHHNN)',
+    END_DATE: 'Befejező dátum (ÉÉÉÉHHNN)',
+    CURRENT_YEAR_LAST_DAY: 'Tárgyév utolsó napja (ÉÉÉÉHHNN)',
+    AMOUNT: 'Összeg',
+    CALCULATE: 'Számítás',
+    TOTAL_DAYS: 'Összes napok száma',
+    CURRENT_YEAR_DAYS: 'Tárgyévi napok száma',
+    NEXT_YEAR_DAYS: 'Következő évi napok száma',
+    CURRENT_YEAR_AMOUNT: 'Tárgyévi összeg',
+    NEXT_YEAR_AMOUNT: 'Következő évi összeg'
   }
 } as const;
