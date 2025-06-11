@@ -2,7 +2,7 @@ FROM jenkins/jenkins:lts
 
 USER root
 RUN apt-get update \
- && apt-get install -y docker.io \
+ && apt-get install -y docker.io gettext-base \
  && rm -rf /var/lib/apt/lists/* \
  && groupadd -g 999 docker  || true \
  && usermod -aG docker jenkins
