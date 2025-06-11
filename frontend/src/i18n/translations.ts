@@ -26,7 +26,8 @@ export const translations = {
     CURRENT_YEAR_DAYS: 'Current year days',
     NEXT_YEAR_DAYS: 'Next year days',
     CURRENT_YEAR_AMOUNT: 'Current year amount',
-    NEXT_YEAR_AMOUNT: 'Next year amount'
+    NEXT_YEAR_AMOUNT: 'Next year amount',
+    EXPORT_EXCEL: 'Export to Excel',
   },
   hu: {
     LOGIN: 'Bejelentkezés',
@@ -55,6 +56,7 @@ export const translations = {
     CURRENT_YEAR_DAYS: 'Tárgyévi napok száma',
     NEXT_YEAR_DAYS: 'Következő évi napok száma',
     CURRENT_YEAR_AMOUNT: 'Tárgyévi összeg',
-    NEXT_YEAR_AMOUNT: 'Következő évi összeg'
+    NEXT_YEAR_AMOUNT: 'Következő évi összeg',
+    EXPORT_EXCEL: 'Excel export',
   }
 } as const;

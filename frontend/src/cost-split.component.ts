@@ -1,4 +1,6 @@
 import { Component } from '@angular/core';
+import * as XLSX from 'xlsx';
+import { TranslationService } from './i18n/translation.service';
 
 @Component({
   selector: 'app-cost-split',
@@ -27,6 +29,7 @@ import { Component } from '@angular/core';
       </mat-card-content>
       <mat-card-actions>
         <button mat-raised-button color="primary" (click)="calculate()">{{ 'CALCULATE' | t }}</button>
+        <button mat-raised-button color="accent" (click)="exportExcel()" [disabled]="totalDays === undefined">{{ 'EXPORT_EXCEL' | t }}</button>
       </mat-card-actions>
       <mat-card-content *ngIf="totalDays !== undefined">
         <p>{{ 'TOTAL_DAYS' | t }}: {{ totalDays }}</p>
@@ -53,6 +56,8 @@ export class CostSplitComponent {
   nextYearDays?: number;
   currentYearAmount?: string;
   nextYearAmount?: string;
+
+  constructor(private ts: TranslationService) {}
 
   private parseDate(s: string): Date {
     if (!/^(\d{8})$/.test(s)) throw new Error('bad date');
@@ -107,5 +112,20 @@ export class CostSplitComponent {
       this.totalDays = this.currentYearDays = this.nextYearDays = undefined;
       this.currentYearAmount = this.nextYearAmount = undefined;
     }
+  }
+
+  exportExcel() {
+    if (this.totalDays === undefined) return;
+    const data = [
+      [this.ts.translate('TOTAL_DAYS'), this.totalDays],
+      [this.ts.translate('CURRENT_YEAR_DAYS'), this.currentYearDays ?? 0],
+      [this.ts.translate('NEXT_YEAR_DAYS'), this.nextYearDays ?? 0],
+      [this.ts.translate('CURRENT_YEAR_AMOUNT'), this.currentYearAmount ?? ''],
+      [this.ts.translate('NEXT_YEAR_AMOUNT'), this.nextYearAmount ?? '']
+    ];
+    const ws = XLSX.utils.aoa_to_sheet(data);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Result');
+    XLSX.writeFile(wb, 'cost_split.xlsx');
   }
 }
