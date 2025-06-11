@@ -48,10 +48,10 @@ pipeline {
 			export IMAGE_FRONTEND=${REGISTRY_URL}/codex-frontend:${BUILD_NUMBER}
 
 			# Render & apply backend YAML
-			envsubst < kubernetes/dev/backend.yaml | kubectl apply -f -
+			envsubst < kubernetes/dev/backend-deployment.yaml | kubectl apply -f -
 
 			# Render & apply frontend YAML
-			envsubst < kubernetes/dev/frontend.yaml | kubectl apply -f -
+			envsubst < kubernetes/dev/frontend-deployment.yaml | kubectl apply -f -
 		  '''
 		}
       }
