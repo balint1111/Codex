@@ -61,6 +61,7 @@ class SecurityConfig(
             .csrf { it.disable() }
             .cors {
                 it.configurationSource { request ->
+					println(frontendUrl)
                     CorsConfiguration().apply {
                         allowedOrigins = listOf(frontendUrl)
                         allowedMethods = listOf("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS")
