@@ -5,7 +5,7 @@ import { User } from './app.component';
 export class AuthService {
   user?: User;
   credentials = '';
-  API_URL = (window as any).API_URL || 'http://localhost:8080';
+  API_URL = (window as any).API_URL || 'http://localhost:8081';
 
   constructor() {
     const creds = localStorage.getItem('credentials');
