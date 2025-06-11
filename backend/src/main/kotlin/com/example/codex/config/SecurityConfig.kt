@@ -26,6 +26,7 @@ class SecurityConfig(
     private val frontendUrl: String
 ) {
 
+
     companion object {
         private val AUTH_WHITELIST = arrayOf(
             "/api/users/register",
