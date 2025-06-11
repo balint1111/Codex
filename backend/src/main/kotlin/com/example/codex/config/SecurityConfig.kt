@@ -46,7 +46,7 @@ class SecurityConfig(
     }
 
     @Bean
-    fun userDetailsService(): UserDetailsService = MyUserDetailsService(userService)
+    fun userDetailsService(): UserDetailsService = MyUserDetailsService(userService).also{ println(frontendUrl) }
 
     @Bean
     fun authenticationManager(authConfig: AuthenticationConfiguration): AuthenticationManager =

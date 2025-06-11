@@ -1,6 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+  namespace: dev
   name: codex-backend
   labels:
     app: codex-backend
@@ -27,15 +28,17 @@ spec:
             - name: DB_PORT
               value: "5432"
             - name: FRONTEND_URL
-              value: "$localhos:30080"
+              value: "http://localhost:30080"
             - name: SPRING_DATASOURCE_USERNAME
               value: codex
             - name: SPRING_DATASOURCE_PASSWORD
               value: codex
+---
 apiVersion: v1
 kind: Service
 metadata:
   name: codex-backend
+  namespace: dev
   labels:
     app: codex-backend
 spec:
