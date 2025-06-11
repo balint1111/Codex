@@ -71,7 +71,7 @@ export class CostSplitComponent {
     const y = Number(s.slice(0, 4));
     const m = Number(s.slice(4, 6)) - 1;
     const d = Number(s.slice(6, 8));
-    return new Date(y, m, d);
+    return new Date(Date.UTC(y, m, d));
   }
 
   calculate() {
@@ -96,9 +96,9 @@ export class CostSplitComponent {
       this.totalDays = diff;
       this.results = [];
 
-      for (let y = start.getFullYear(); y <= end.getFullYear(); y++) {
-        const yearStart = new Date(y, 0, 1);
-        const yearEnd = new Date(y, 11, 31);
+      for (let y = start.getUTCFullYear(); y <= end.getUTCFullYear(); y++) {
+        const yearStart = new Date(Date.UTC(y, 0, 1));
+        const yearEnd = new Date(Date.UTC(y, 11, 31));
         const from = start > yearStart ? start : yearStart;
         const to = end < yearEnd ? end : yearEnd;
         let days = Math.floor((to.getTime() - from.getTime()) / 86400000) + 1;
