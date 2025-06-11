@@ -8,10 +8,6 @@ pipeline {
     REGISTRY_URL   = "host.docker.internal:5000"
     IMAGE_BACKEND  = "${REGISTRY_URL}/codex-backend:${env.BUILD_NUMBER}"
     IMAGE_FRONTEND = "${REGISTRY_URL}/codex-frontend:${env.BUILD_NUMBER}"
-    DB_HOST        = 'codex-db'
-    DB_PORT        = '5432'
-    BACKEND_PORT   = '8080'
-    FRONTEND_URL   = 'http://localhost:30080'
   }
 
   stages {
@@ -47,13 +43,9 @@ pipeline {
       steps {
         script {
 		  // Export both images with the current BUILD_NUMBER
-                  sh '''
-                        export IMAGE_BACKEND=${REGISTRY_URL}/codex-backend:${BUILD_NUMBER}
-                        export IMAGE_FRONTEND=${REGISTRY_URL}/codex-frontend:${BUILD_NUMBER}
-                        export DB_HOST=${DB_HOST}
-                        export DB_PORT=${DB_PORT}
-                        export BACKEND_PORT=${BACKEND_PORT}
-                        export FRONTEND_URL=${FRONTEND_URL}
+		  sh '''
+			export IMAGE_BACKEND=${REGISTRY_URL}/codex-backend:${BUILD_NUMBER}
+			export IMAGE_FRONTEND=${REGISTRY_URL}/codex-frontend:${BUILD_NUMBER}
 
 			# Render & apply backend YAML
 			envsubst < kubernetes/dev/backend-deployment.yaml | kubectl apply -f -
