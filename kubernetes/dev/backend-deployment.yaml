@@ -26,15 +26,12 @@ spec:
                 value: "codex-db"          # points to the Service name
               - name: DB_PORT
                 value: "5432"
-              - name: SERVER_PORT
-                value: "${BACKEND_PORT}"
               - name: FRONTEND_URL
                 value: "${FRONTEND_URL}"
-              - name: DB_USER
-      # if your registry needs auth, uncomment this:
-      # imagePullSecrets:
-      #   - name: regcred
----
+              - name: SPRING_DATASOURCE_USERNAME
+              	value: codex
+              - name: SPRING_DATASOURCE_PASSWORD
+              	value: codex
 apiVersion: v1
 kind: Service
 metadata:

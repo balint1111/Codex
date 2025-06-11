@@ -22,7 +22,7 @@ import org.springframework.beans.factory.annotation.Value
 @EnableMethodSecurity
 class SecurityConfig(
     private val userService: UserService,
-    @Value("\${FRONTEND_URL:http://localhost:30080}")
+    @Value("\${frontendUrl}")
     private val frontendUrl: String
 ) {
 
