@@ -15,12 +15,11 @@ services:
     environment:
       DB_HOST: ${DB_HOST:-db}
       DB_PORT: ${DB_PORT:-5432}
-      SERVER_PORT: ${BACKEND_PORT:-8080}
-      FRONTEND_URL: ${FRONTEND_URL:-http://localhost:30080}
+      FRONTEND_URL: ${FRONTEND_URL:-http://localhost:4200}
       SPRING_DATASOURCE_USERNAME: codex
       SPRING_DATASOURCE_PASSWORD: codex
     ports:
-      - "${BACKEND_PORT:-8080}:8080"
+      - "${BACKEND_PORT:-8081}:8080"
   frontend:
     build: ./frontend
     environment:
