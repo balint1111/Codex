@@ -2,6 +2,7 @@
 apiVersion: v1
 kind: Secret
 metadata:
+  namespace: dev
   name: codex-db-credentials
   labels:
     app: codex-db
@@ -15,6 +16,7 @@ stringData:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
+  namespace: dev
   name: codex-db-pvc
   labels:
     app: codex-db
@@ -29,6 +31,7 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+  namespace: dev
   name: codex-db
   labels:
     app: codex-db
@@ -76,6 +79,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
+  namespace: dev
   name: codex-db
   labels:
     app: codex-db

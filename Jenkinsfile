@@ -48,6 +48,7 @@ pipeline {
                         export IMAGE_BACKEND=${REGISTRY_URL}/codex-backend:${BUILD_NUMBER}
                         export IMAGE_FRONTEND=${REGISTRY_URL}/codex-frontend:${BUILD_NUMBER}
 
+                        kubectl apply -f kubernetes/dev/namespace.yaml
 			# Render & apply backend YAML
 			envsubst < kubernetes/dev/backend-deployment.yaml | kubectl apply -f -
 

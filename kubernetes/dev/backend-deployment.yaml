@@ -1,6 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+  namespace: dev
   name: codex-backend
   labels:
     app: codex-backend
@@ -36,6 +37,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: codex-backend
+  namespace: dev
   labels:
     app: codex-backend
 spec:
