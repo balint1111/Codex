@@ -41,7 +41,19 @@ pipeline {
 
     stage('Deploy to dev') {
       steps {
-        sh 'kubectl apply -f kubernetes/dev'
+        script {
+		  // Export both images with the current BUILD_NUMBER
+		  sh '''
+			export IMAGE_BACKEND=${REGISTRY_URL}/codex-backend:${BUILD_NUMBER}
+			export IMAGE_FRONTEND=${REGISTRY_URL}/codex-frontend:${BUILD_NUMBER}
+
+			# Render & apply backend YAML
+			envsubst < kubernetes/dev/backend.yaml | kubectl apply -f -
+
+			# Render & apply frontend YAML
+			envsubst < kubernetes/dev/frontend.yaml | kubectl apply -f -
+		  '''
+		}
       }
     }
 
