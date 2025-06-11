@@ -7,6 +7,7 @@ import { User } from './app.component';
     <mat-nav-list>
       <a mat-list-item routerLink="/dashboard" routerLinkActive="active" *ngIf="hasPrivilege('dashboard')">{{ 'DASHBOARD' | t }}</a>
       <a mat-list-item routerLink="/users" routerLinkActive="active" *ngIf="hasPrivilege('users')">{{ 'USERS' | t }}</a>
+      <a mat-list-item routerLink="/cost-split" routerLinkActive="active">{{ 'COST_SPLIT' | t }}</a>
     </mat-nav-list>
   `,
   styles: [`
