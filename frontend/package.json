@@ -3,8 +3,8 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "start": "webpack serve --mode development",
-    "build": "webpack --mode production"
+    "start": "cp src/index.html dist/ && cp src/env.js dist/ && webpack serve --mode development",
+    "build": "webpack --mode production && cp src/index.html dist/ && cp src/env.js dist/"
   },
   "dependencies": {
     "@angular/common": "^16.0.0",
