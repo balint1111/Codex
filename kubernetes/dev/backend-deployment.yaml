@@ -21,17 +21,17 @@ spec:
           imagePullPolicy: Always
           ports:
             - containerPort: 8080
-            env:
-              - name: DB_HOST
-                value: "codex-db"          # points to the Service name
-              - name: DB_PORT
-                value: "5432"
-              - name: FRONTEND_URL
-                value: "${FRONTEND_URL}"
-              - name: SPRING_DATASOURCE_USERNAME
-              	value: codex
-              - name: SPRING_DATASOURCE_PASSWORD
-              	value: codex
+          env:
+            - name: DB_HOST
+              value: "codex-db"          # points to the Service name
+            - name: DB_PORT
+              value: "5432"
+            - name: FRONTEND_URL
+              value: "${FRONTEND_URL}"
+            - name: SPRING_DATASOURCE_USERNAME
+              value: codex
+            - name: SPRING_DATASOURCE_PASSWORD
+              value: codex
 apiVersion: v1
 kind: Service
 metadata:
