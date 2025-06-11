@@ -32,7 +32,7 @@ metadata:
   labels:
     app: codex-frontend
 spec:
-  type: ClusterIP
+  type: NodePort
   selector:
     app: codex-frontend
   ports:
