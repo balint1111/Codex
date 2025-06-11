@@ -42,10 +42,10 @@ pipeline {
     stage('Deploy to dev') {
       steps {
         script {
-		  // Export both images with the current BUILD_NUMBER
-		  sh '''
-			export IMAGE_BACKEND=${REGISTRY_URL}/codex-backend:${BUILD_NUMBER}
-			export IMAGE_FRONTEND=${REGISTRY_URL}/codex-frontend:${BUILD_NUMBER}
+                  // Export both images with the current BUILD_NUMBER
+                  sh '''
+                        export IMAGE_BACKEND=${REGISTRY_URL}/codex-backend:${BUILD_NUMBER}
+                        export IMAGE_FRONTEND=${REGISTRY_URL}/codex-frontend:${BUILD_NUMBER}
 
 			# Render & apply backend YAML
 			envsubst < kubernetes/dev/backend-deployment.yaml | kubectl apply -f -
@@ -54,9 +54,26 @@ pipeline {
 			envsubst < kubernetes/dev/frontend-deployment.yaml | kubectl apply -f -
 			
 			# Apply the Postgres DB
-			kubectl apply -f kubernetes/dev/db.yaml
-		  '''
-		}
+                        kubectl apply -f kubernetes/dev/db.yaml
+                  '''
+                }
+      }
+    }
+
+    stage('Deploy to dani') {
+      when { branch 'dani' }
+      steps {
+        script {
+                  sh '''
+                        export IMAGE_BACKEND=${REGISTRY_URL}/codex-backend:${BUILD_NUMBER}
+                        export IMAGE_FRONTEND=${REGISTRY_URL}/codex-frontend:${BUILD_NUMBER}
+
+                        kubectl apply -f kubernetes/dani/namespace.yaml
+                        envsubst < kubernetes/dani/backend-deployment.yaml | kubectl apply -f -
+                        envsubst < kubernetes/dani/frontend-deployment.yaml | kubectl apply -f -
+                        kubectl apply -f kubernetes/dani/db.yaml
+                  '''
+                }
       }
     }
 
