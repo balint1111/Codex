@@ -40,6 +40,7 @@ pipeline {
     }
 
     stage('Deploy to dev') {
+	  when { branch 'dev' }
       steps {
         script {
                   // Export both images with the current BUILD_NUMBER
