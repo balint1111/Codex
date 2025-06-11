@@ -28,7 +28,7 @@ spec:
             - name: DB_PORT
               value: "5432"
             - name: FRONTEND_URL
-              value: "localhost:31080"
+              value: "http://localhost:31080"
             - name: SPRING_DATASOURCE_USERNAME
               value: codex
             - name: SPRING_DATASOURCE_PASSWORD
