@@ -52,6 +52,9 @@ pipeline {
 
 			# Render & apply frontend YAML
 			envsubst < kubernetes/dev/frontend-deployment.yaml | kubectl apply -f -
+			
+			# Apply the Postgres DB
+			kubectl apply -f kubernetes/dev/db.yaml
 		  '''
 		}
       }

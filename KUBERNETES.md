@@ -44,3 +44,9 @@ runs tests, builds the frontend and backend containers, and applies the files fo
 `dev`, `staging`, and `prod` namespaces.
 
 Refer to the official [Kubernetes documentation](https://kubernetes.io/docs/home/) for additional best practices.
+
+
+
+
+start "" /min kubectl proxy --address=0.0.0.0 --port=8080
+kubectl -n kubernetes-dashboard create token dashboard-admin
