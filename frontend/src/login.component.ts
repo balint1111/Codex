@@ -1,7 +1,8 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from './auth.service';
-import { User } from './app.component';
+import { User } from './models/user';
+import { UserService } from './services/user.service';
 
 @Component({
   selector: 'app-login',
@@ -35,24 +36,25 @@ export class LoginComponent {
   username = '';
   password = '';
 
-  constructor(private auth: AuthService, private router: Router) {}
+  constructor(
+    private auth: AuthService,
+    private router: Router,
+    private userService: UserService
+  ) {}
 
   login() {
     this.auth.credentials = btoa(`${this.username}:${this.password}`);
     localStorage.setItem('credentials', this.auth.credentials);
-    fetch(`${this.auth.API_URL}/api/users/me`, { headers: { 'Authorization': 'Basic ' + this.auth.credentials } })
-      .then(res => {
-        if (!res.ok) throw new Error('login failed');
-        return res.json();
-      })
-      .then((u: User) => {
+    this.userService.getCurrent().subscribe({
+      next: (u: User) => {
         this.auth.user = u;
         localStorage.setItem('user', JSON.stringify(u));
         this.router.navigate(['/dashboard']);
-      })
-      .catch(() => {
+      },
+      error: () => {
         localStorage.removeItem('credentials');
         alert('Login failed');
-      });
+      }
+    });
   }
 }
