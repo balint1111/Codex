@@ -1,7 +1,5 @@
 import { Component } from '@angular/core';
-
-export interface Privilege { id: number; name: string; }
-export interface User { id: number; username: string; privileges: Privilege[]; }
+import { User } from './models/user';
 
 import { AuthService } from './auth.service';
 import { Router } from '@angular/router';

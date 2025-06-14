@@ -1,7 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { AuthService } from './auth.service';
-import { User, Privilege } from './app.component';
+import { User } from './models/user';
+import { Privilege } from './models/privilege';
+import { UserService } from './services/user.service';
+import { PrivilegeService } from './services/privilege.service';
 
 @Component({
   selector: 'app-user-edit',
@@ -33,16 +36,17 @@ export class UserEditComponent implements OnInit {
   user?: User;
   allPrivileges: Privilege[] = [];
 
-  constructor(private route: ActivatedRoute, private auth: AuthService) {}
+  constructor(
+    private route: ActivatedRoute,
+    private auth: AuthService,
+    private userService: UserService,
+    private privilegeService: PrivilegeService
+  ) {}
 
   ngOnInit() {
     const id = Number(this.route.snapshot.paramMap.get('id'));
-    fetch(`${this.auth.API_URL}/api/users/${id}`, { headers: this.auth.authHeaders() })
-      .then(r => r.json())
-      .then((u: User) => this.user = u);
-    fetch(`${this.auth.API_URL}/api/privileges`, { headers: this.auth.authHeaders() })
-      .then(r => r.json())
-      .then((p: Privilege[]) => this.allPrivileges = p);
+    this.userService.get(id).subscribe(u => this.user = u);
+    this.privilegeService.list().subscribe(p => this.allPrivileges = p);
   }
 
   hasPrivilege(p: Privilege) {
@@ -57,10 +61,6 @@ export class UserEditComponent implements OnInit {
     } else {
       this.user.privileges = this.user.privileges.filter(pr => pr.id !== p.id);
     }
-    fetch(`${this.auth.API_URL}/api/users/${this.user.id}/privileges`, {
-      method: 'POST',
-      headers: this.auth.authHeaders(),
-      body: JSON.stringify(this.user.privileges.map(pr => pr.id))
-    });
+    this.userService.updatePrivileges(this.user.id, this.user.privileges).subscribe();
   }
 }

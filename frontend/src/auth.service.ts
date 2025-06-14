@@ -1,5 +1,7 @@
 import { Injectable } from '@angular/core';
-import { User } from './app.component';
+import { HttpClient } from '@angular/common/http';
+import { User } from './models/user';
+import { UserService } from './services/user.service';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -7,13 +9,11 @@ export class AuthService {
   credentials = '';
   API_URL = (window as any).API_URL || 'http://localhost:8081';
 
-  constructor() {
+  constructor(private http: HttpClient, private userService: UserService) {
     const creds = localStorage.getItem('credentials');
     if (creds) {
       this.credentials = creds;
-      fetch(`${this.API_URL}/api/users/me`, { headers: this.authHeaders() })
-        .then(r => r.ok ? r.json() : undefined)
-        .then(u => this.user = u);
+      this.userService.getCurrent().subscribe(u => this.user = u, () => {});
     }
   }
 

@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from './auth.service';
+import { UserService } from './services/user.service';
 
 @Component({
   selector: 'app-register',
@@ -34,15 +35,10 @@ export class RegisterComponent {
   username = '';
   password = '';
 
-  constructor(private auth: AuthService, private router: Router) {}
+  constructor(private auth: AuthService, private router: Router, private userService: UserService) {}
 
   register() {
-    const body = `username=${encodeURIComponent(this.username)}&password=${encodeURIComponent(this.password)}`;
-    fetch(`${this.auth.API_URL}/api/users/register`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body
-    }).then(() => {
+    this.userService.register(this.username, this.password).subscribe(() => {
       alert('Registered');
       this.router.navigate(['/login']);
     });

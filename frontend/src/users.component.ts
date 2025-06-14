@@ -3,7 +3,8 @@ import { Router } from '@angular/router';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
 import { AuthService } from './auth.service';
-import { User } from './app.component';
+import { UserService } from './services/user.service';
+import { User } from './models/user';
 
 @Component({
   selector: 'app-users',
@@ -41,7 +42,7 @@ export class UsersComponent implements OnInit, AfterViewInit {
   dataSource = new MatTableDataSource<User>([]);
   @ViewChild(MatPaginator) paginator?: MatPaginator;
 
-  constructor(private auth: AuthService, private router: Router) {}
+  constructor(private auth: AuthService, private router: Router, private userService: UserService) {}
 
   ngOnInit() {
     this.loadUsers();
@@ -53,14 +54,8 @@ export class UsersComponent implements OnInit, AfterViewInit {
     }
   }
 
-  private authHeaders() {
-    return this.auth.authHeaders();
-  }
-
   loadUsers() {
-    fetch(`${this.auth.API_URL}/api/users`, { headers: this.authHeaders() })
-      .then(r => r.json())
-      .then((d: User[]) => this.dataSource.data = d);
+    this.userService.list().subscribe(d => this.dataSource.data = d);
   }
 
   editUser(id: number) {
@@ -68,9 +63,6 @@ export class UsersComponent implements OnInit, AfterViewInit {
   }
 
   deleteUser(id: number) {
-    fetch(`${this.auth.API_URL}/api/users/${id}`, {
-      method: 'DELETE',
-      headers: this.authHeaders()
-    }).then(() => this.loadUsers());
+    this.userService.delete(id).subscribe(() => this.loadUsers());
   }
 }
