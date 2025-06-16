@@ -28,6 +28,7 @@ import { UserEditComponent } from './user-edit.component';
 import { LoginComponent } from './login.component';
 import { RegisterComponent } from './register.component';
 import { CostSplitComponent } from './cost-split.component';
+import { CalculatorComponent } from './calculator.component';
 
 const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -50,6 +51,7 @@ const routes: Routes = [
     LoginComponent,
     RegisterComponent,
     CostSplitComponent,
+    CalculatorComponent,
     TranslatePipe
   ],
   imports: [

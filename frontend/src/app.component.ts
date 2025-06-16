@@ -11,8 +11,10 @@ import { Router } from '@angular/router';
   template: `
     <app-top-menu [user]="auth.user" (logout)="logout()"></app-top-menu>
     <mat-sidenav-container *ngIf="auth.user" class="layout">
-      <mat-sidenav mode="side" opened>
+      <mat-sidenav mode="side" opened class="sidenav">
         <app-navbar [user]="auth.user"></app-navbar>
+        <span class="spacer"></span>
+        <app-calculator></app-calculator>
       </mat-sidenav>
       <mat-sidenav-content class="content">
         <router-outlet></router-outlet>
@@ -24,6 +26,8 @@ import { Router } from '@angular/router';
   `,
   styles: [`
     .layout { height: calc(100vh - 64px); }
+    .sidenav { display: flex; flex-direction: column; height: 100%; }
+    .spacer { flex: 1 1 auto; }
   `]
 })
 export class AppComponent {
