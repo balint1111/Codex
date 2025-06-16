@@ -4,7 +4,17 @@ import { Component, HostListener } from '@angular/core';
   selector: 'app-calculator',
   template: `
     <mat-card class="calc-card">
-      <div class="display">{{ display }}</div>
+      <div class="header">
+        <button
+          mat-icon-button
+          class="toggle"
+          (click)="toggleKeyboard()"
+          [attr.aria-label]="showKeyboard ? ('HIDE_KEYS' | t) : ('SHOW_KEYS' | t)"
+        >
+          <mat-icon>{{ showKeyboard ? 'expand_less' : 'expand_more' }}</mat-icon>
+        </button>
+        <div class="display">{{ display }}</div>
+      </div>
       <div class="keyboard" *ngIf="showKeyboard">
         <div class="keys">
           <button mat-button (click)="append('7')">7</button>
@@ -32,19 +42,12 @@ import { Component, HostListener } from '@angular/core';
           <button mat-button (click)="copy()">{{ 'COPY' | t }}</button>
         </div>
       </div>
-      <button
-        mat-icon-button
-        class="toggle"
-        (click)="toggleKeyboard()"
-        [attr.aria-label]="showKeyboard ? ('HIDE_KEYS' | t) : ('SHOW_KEYS' | t)"
-      >
-        <mat-icon>{{ showKeyboard ? 'expand_less' : 'expand_more' }}</mat-icon>
-      </button>
     </mat-card>
   `,
   styles: [`
     .calc-card { margin: 1rem; }
-    .display { font-family: monospace; text-align: right; padding: .5rem; }
+    .header { display: flex; align-items: center; }
+    .display { flex: 1; font-family: monospace; text-align: right; padding: .5rem; }
     .keyboard { margin-top: .5rem; }
     .keys {
       display: grid;
@@ -63,7 +66,7 @@ import { Component, HostListener } from '@angular/core';
       border-top: 1px solid rgba(0,0,0,.12);
       padding-top: .5rem;
     }
-    .toggle { margin-top: .5rem; }
+    .toggle { margin-right: .25rem; }
   `]
 })
 export class CalculatorComponent {
