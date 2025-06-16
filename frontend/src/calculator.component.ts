@@ -5,16 +5,47 @@ import { Component, HostListener } from '@angular/core';
   template: `
     <mat-card class="calc-card">
       <div class="display">{{ display }}</div>
+      <div class="keyboard" *ngIf="showKeyboard">
+        <button mat-button (click)="append('7')">7</button>
+        <button mat-button (click)="append('8')">8</button>
+        <button mat-button (click)="append('9')">9</button>
+        <button mat-button (click)="append('/')">/</button>
+
+        <button mat-button (click)="append('4')">4</button>
+        <button mat-button (click)="append('5')">5</button>
+        <button mat-button (click)="append('6')">6</button>
+        <button mat-button (click)="append('*')">*</button>
+
+        <button mat-button (click)="append('1')">1</button>
+        <button mat-button (click)="append('2')">2</button>
+        <button mat-button (click)="append('3')">3</button>
+        <button mat-button (click)="append('-')">-</button>
+
+        <button mat-button (click)="append('0')">0</button>
+        <button mat-button (click)="append('.')">.</button>
+        <button mat-button color="primary" (click)="evaluate()">=</button>
+        <button mat-button (click)="append('+')">+</button>
+
+        <button mat-button color="warn" class="wide" (click)="clear()">C</button>
+        <button mat-button class="wide" (click)="copy()">Copy</button>
+      </div>
+      <button mat-button class="toggle" (click)="toggleKeyboard()">
+        {{ showKeyboard ? 'Hide' : 'Show' }} Keys
+      </button>
     </mat-card>
   `,
   styles: [`
     .calc-card { margin: 1rem; }
     .display { font-family: monospace; text-align: right; padding: .5rem; }
+    .keyboard { display: grid; grid-template-columns: repeat(4, 1fr); gap: .25rem; margin-top: .5rem; }
+    .wide { grid-column: span 2; }
+    .toggle { margin-top: .5rem; }
   `]
 })
 export class CalculatorComponent {
   display = '0';
   private expr = '';
+  showKeyboard = false;
 
   @HostListener('window:keydown', ['$event'])
   handleKey(event: KeyboardEvent) {
@@ -35,7 +66,7 @@ export class CalculatorComponent {
       this.append('/');
     } else if (code === 'NumpadEnter' || code === 'Enter') {
       this.evaluate();
-    } else if (code === 'Escape') {
+    } else if (code === 'Escape' || code === 'Delete') {
       this.clear();
     }
   }
@@ -60,5 +91,15 @@ export class CalculatorComponent {
   private clear() {
     this.expr = '';
     this.display = '0';
+  }
+
+  toggleKeyboard() {
+    this.showKeyboard = !this.showKeyboard;
+  }
+
+  copy() {
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(this.display).catch(() => {});
+    }
   }
 }
