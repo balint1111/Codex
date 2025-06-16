@@ -28,6 +28,10 @@ export const translations = {
     CURRENT_YEAR_AMOUNT: 'Current year amount',
     NEXT_YEAR_AMOUNT: 'Next year amount',
     EXPORT_EXCEL: 'Export to Excel',
+    COPY: 'Copy',
+    CLEAR: 'Clear',
+    SHOW_KEYS: 'Show Keys',
+    HIDE_KEYS: 'Hide Keys',
   },
   hu: {
     LOGIN: 'Bejelentkezés',
@@ -58,5 +62,9 @@ export const translations = {
     CURRENT_YEAR_AMOUNT: 'Tárgyévi összeg',
     NEXT_YEAR_AMOUNT: 'Következő évi összeg',
     EXPORT_EXCEL: 'Excel export',
+    COPY: 'Másolás',
+    CLEAR: 'Törlés',
+    SHOW_KEYS: 'Billentyűzet megjelenítése',
+    HIDE_KEYS: 'Billentyűzet elrejtése',
   }
 } as const;

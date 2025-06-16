@@ -6,39 +6,43 @@ import { Component, HostListener } from '@angular/core';
     <mat-card class="calc-card">
       <div class="display">{{ display }}</div>
       <div class="keyboard" *ngIf="showKeyboard">
-        <button mat-button (click)="append('7')">7</button>
-        <button mat-button (click)="append('8')">8</button>
-        <button mat-button (click)="append('9')">9</button>
-        <button mat-button (click)="append('/')">/</button>
+        <div class="keys">
+          <button mat-button (click)="append('7')">7</button>
+          <button mat-button (click)="append('8')">8</button>
+          <button mat-button (click)="append('9')">9</button>
+          <button mat-button (click)="append('/')">/</button>
 
-        <button mat-button (click)="append('4')">4</button>
-        <button mat-button (click)="append('5')">5</button>
-        <button mat-button (click)="append('6')">6</button>
-        <button mat-button (click)="append('*')">*</button>
+          <button mat-button (click)="append('4')">4</button>
+          <button mat-button (click)="append('5')">5</button>
+          <button mat-button (click)="append('6')">6</button>
+          <button mat-button (click)="append('*')">*</button>
 
-        <button mat-button (click)="append('1')">1</button>
-        <button mat-button (click)="append('2')">2</button>
-        <button mat-button (click)="append('3')">3</button>
-        <button mat-button (click)="append('-')">-</button>
+          <button mat-button (click)="append('1')">1</button>
+          <button mat-button (click)="append('2')">2</button>
+          <button mat-button (click)="append('3')">3</button>
+          <button mat-button (click)="append('-')">-</button>
 
-        <button mat-button (click)="append('0')">0</button>
-        <button mat-button (click)="append('.')">.</button>
-        <button mat-button color="primary" (click)="evaluate()">=</button>
-        <button mat-button (click)="append('+')">+</button>
-
-        <button mat-button color="warn" class="wide" (click)="clear()">C</button>
-        <button mat-button class="wide" (click)="copy()">Copy</button>
+          <button mat-button (click)="append('0')">0</button>
+          <button mat-button (click)="append('.')">.</button>
+          <button mat-button color="primary" (click)="evaluate()">=</button>
+          <button mat-button (click)="append('+')">+</button>
+        </div>
+        <div class="actions">
+          <button mat-button color="warn" (click)="clear()">{{ 'CLEAR' | t }}</button>
+          <button mat-button (click)="copy()">{{ 'COPY' | t }}</button>
+        </div>
       </div>
       <button mat-button class="toggle" (click)="toggleKeyboard()">
-        {{ showKeyboard ? 'Hide' : 'Show' }} Keys
+        {{ showKeyboard ? ('HIDE_KEYS' | t) : ('SHOW_KEYS' | t) }}
       </button>
     </mat-card>
   `,
   styles: [`
     .calc-card { margin: 1rem; }
     .display { font-family: monospace; text-align: right; padding: .5rem; }
-    .keyboard { display: grid; grid-template-columns: repeat(4, 1fr); gap: .25rem; margin-top: .5rem; }
-    .wide { grid-column: span 2; }
+    .keyboard { margin-top: .5rem; }
+    .keys { display: grid; grid-template-columns: repeat(4, 1fr); gap: .25rem; }
+    .actions { display: grid; grid-template-columns: repeat(2, 1fr); gap: .25rem; margin-top: .5rem; border-top: 1px solid rgba(0,0,0,.12); padding-top: .5rem; }
     .toggle { margin-top: .5rem; }
   `]
 })
