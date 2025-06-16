@@ -32,8 +32,13 @@ import { Component, HostListener } from '@angular/core';
           <button mat-button (click)="copy()">{{ 'COPY' | t }}</button>
         </div>
       </div>
-      <button mat-button class="toggle" (click)="toggleKeyboard()">
-        {{ showKeyboard ? ('HIDE_KEYS' | t) : ('SHOW_KEYS' | t) }}
+      <button
+        mat-icon-button
+        class="toggle"
+        (click)="toggleKeyboard()"
+        [attr.aria-label]="showKeyboard ? ('HIDE_KEYS' | t) : ('SHOW_KEYS' | t)"
+      >
+        <mat-icon>{{ showKeyboard ? 'expand_less' : 'expand_more' }}</mat-icon>
       </button>
     </mat-card>
   `,
@@ -41,8 +46,23 @@ import { Component, HostListener } from '@angular/core';
     .calc-card { margin: 1rem; }
     .display { font-family: monospace; text-align: right; padding: .5rem; }
     .keyboard { margin-top: .5rem; }
-    .keys { display: grid; grid-template-columns: repeat(4, 1fr); gap: .25rem; }
-    .actions { display: grid; grid-template-columns: repeat(2, 1fr); gap: .25rem; margin-top: .5rem; border-top: 1px solid rgba(0,0,0,.12); padding-top: .5rem; }
+    .keys {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: .25rem;
+    }
+    .keys button,
+    .actions button {
+      border: 1px solid rgba(0, 0, 0, .12);
+    }
+    .actions {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: .25rem;
+      margin-top: .5rem;
+      border-top: 1px solid rgba(0,0,0,.12);
+      padding-top: .5rem;
+    }
     .toggle { margin-top: .5rem; }
   `]
 })
