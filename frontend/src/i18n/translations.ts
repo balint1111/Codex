@@ -28,6 +28,12 @@ export const translations = {
     CURRENT_YEAR_AMOUNT: 'Current year amount',
     NEXT_YEAR_AMOUNT: 'Next year amount',
     EXPORT_EXCEL: 'Export to Excel',
+    VAT_CHECK: 'VAT Validator',
+    COUNTRY_CODE: 'Country code',
+    VAT_NUMBER: 'VAT number',
+    CHECK: 'Check',
+    VALID: 'Valid',
+    ADDRESS: 'Address',
   },
   hu: {
     LOGIN: 'Bejelentkezés',
@@ -58,5 +64,11 @@ export const translations = {
     CURRENT_YEAR_AMOUNT: 'Tárgyévi összeg',
     NEXT_YEAR_AMOUNT: 'Következő évi összeg',
     EXPORT_EXCEL: 'Excel export',
+    VAT_CHECK: 'EU adószám ellenőrző',
+    COUNTRY_CODE: 'Országkód',
+    VAT_NUMBER: 'Adószám',
+    CHECK: 'Ellenőrzés',
+    VALID: 'Érvényes',
+    ADDRESS: 'Cím',
   }
 } as const;

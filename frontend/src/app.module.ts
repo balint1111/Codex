@@ -28,6 +28,7 @@ import { UserEditComponent } from './user-edit.component';
 import { LoginComponent } from './login.component';
 import { RegisterComponent } from './register.component';
 import { CostSplitComponent } from './cost-split.component';
+import { VatCheckComponent } from './vat-check.component';
 
 const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -36,6 +37,7 @@ const routes: Routes = [
   { path: 'users', component: UsersComponent },
   { path: 'users/:id', component: UserEditComponent },
   { path: 'cost-split', component: CostSplitComponent },
+  { path: 'vat-check', component: VatCheckComponent },
   { path: '', redirectTo: 'login', pathMatch: 'full' }
 ];
 
@@ -50,6 +52,7 @@ const routes: Routes = [
     LoginComponent,
     RegisterComponent,
     CostSplitComponent,
+    VatCheckComponent,
     TranslatePipe
   ],
   imports: [
