@@ -49,7 +49,7 @@ class GlobalExceptionHandler {
             path = request.getDescription(false).removePrefix("uri=")
         )
         
-        return ResponseEntity.notFound().build()
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse)
     }
 
     @ExceptionHandler(DuplicateUsernameException::class)
