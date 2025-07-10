@@ -1,10 +1,19 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/codex
-    username: codex
-    password: codex
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/codex
+    username: ${SPRING_DATASOURCE_USERNAME:codex}
+    password: ${SPRING_DATASOURCE_PASSWORD:codex}
   jooq:
     sql-dialect: POSTGRES
 
-logging.level.org.jooq.tools.LoggerListener: DEBUG
+# Default to localhost for development, override in production
+frontendUrl: ${FRONTEND_URL:http://localhost:3000}
+
+logging:
+  level:
+    org.jooq.tools.LoggerListener: DEBUG
+    com.example.codex: INFO
+    org.springframework.security: WARN
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} - %logger{36} - %level - %msg%n"
 
