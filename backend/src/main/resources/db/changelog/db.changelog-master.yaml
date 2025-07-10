@@ -45,6 +45,14 @@ databaseChangeLog:
                   name: deleted
                   type: BOOLEAN
                   defaultValue: false
+              - column:
+                  name: created_at
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
+              - column:
+                  name: updated_at
+                  type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP
 
   - changeSet:
       id: "3"
@@ -56,9 +64,15 @@ databaseChangeLog:
               - column:
                   name: user_id
                   type: BIGINT
+                  constraints:
+                    foreignKeyName: fk_user_privilege_user
+                    references: users(id)
               - column:
                   name: privilege_id
                   type: BIGINT
+                  constraints:
+                    foreignKeyName: fk_user_privilege_privilege
+                    references: privilege(id)
 
   - changeSet:
       id: "4"
@@ -99,3 +113,32 @@ databaseChangeLog:
               - column:
                   name: privilege_id
                   valueNumeric: 2
+
+  - changeSet:
+      id: "7"
+      author: codex
+      changes:
+        - createIndex:
+            indexName: idx_users_username
+            tableName: users
+            columns:
+              - column:
+                  name: username
+        - createIndex:
+            indexName: idx_users_deleted
+            tableName: users
+            columns:
+              - column:
+                  name: deleted
+        - createIndex:
+            indexName: idx_user_privilege_user_id
+            tableName: user_privilege
+            columns:
+              - column:
+                  name: user_id
+        - createIndex:
+            indexName: idx_user_privilege_privilege_id
+            tableName: user_privilege
+            columns:
+              - column:
+                  name: privilege_id
