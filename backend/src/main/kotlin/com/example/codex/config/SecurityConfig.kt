@@ -2,6 +2,7 @@ package com.example.codex.config
 
 import com.example.codex.service.MyUserDetailsService
 import com.example.codex.service.UserService
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.authentication.AuthenticationManager
@@ -20,12 +21,15 @@ import org.springframework.web.cors.CorsConfiguration
 @EnableWebSecurity
 @EnableMethodSecurity
 class SecurityConfig(
-    private val userService: UserService
+    private val userService: UserService,
+    @Value("\${frontendUrl}")
+    private val frontendUrl: String
 ) {
 
     companion object {
         private val AUTH_WHITELIST = arrayOf(
             "/api/users/register",
+            "/api/health",
         )
     }
 
