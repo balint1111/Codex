@@ -99,3 +99,45 @@ databaseChangeLog:
               - column:
                   name: privilege_id
                   valueNumeric: 2
+
+  - changeSet:
+      id: "7"
+      author: codex
+      changes:
+        - addForeignKeyConstraint:
+            baseTableName: user_privilege
+            baseColumnNames: user_id
+            constraintName: fk_user_privilege_user_id
+            referencedTableName: users
+            referencedColumnNames: id
+            onDelete: CASCADE
+        - addForeignKeyConstraint:
+            baseTableName: user_privilege
+            baseColumnNames: privilege_id
+            constraintName: fk_user_privilege_privilege_id
+            referencedTableName: privilege
+            referencedColumnNames: id
+            onDelete: CASCADE
+
+  - changeSet:
+      id: "8"
+      author: codex
+      changes:
+        - createIndex:
+            tableName: users
+            indexName: idx_users_username
+            columns:
+              - column:
+                  name: username
+        - createIndex:
+            tableName: users
+            indexName: idx_users_deleted
+            columns:
+              - column:
+                  name: deleted
+        - createIndex:
+            tableName: user_privilege
+            indexName: idx_user_privilege_user_id
+            columns:
+              - column:
+                  name: user_id
