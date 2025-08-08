@@ -5,6 +5,11 @@ spring:
     password: ${SPRING_DATASOURCE_PASSWORD}
   jooq:
     sql-dialect: POSTGRES
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${KEYCLOAK_ISSUER_URI}
 
 frontendUrl: ${FRONTEND_URL}
 

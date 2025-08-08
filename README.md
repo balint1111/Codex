@@ -19,9 +19,13 @@ Use Docker Compose:
 docker-compose up --build
 ```
 
-The backend will be on `http://localhost:8080` and the frontend on `http://localhost:4200`.
+The backend will be on `http://localhost:8081` and the frontend on `http://localhost:4200`.
 You can override the backend URL by setting the `API_URL` environment variable
 for the frontend container. If unspecified it defaults to `http://localhost:8081`.
+
+Keycloak is available on `http://localhost:8080` with default credentials `admin/admin`.
+The backend expects a realm called `codex`; override the issuer by setting the
+`KEYCLOAK_ISSUER_URI` environment variable.
 
 ## Managing Environments in Kubernetes
 

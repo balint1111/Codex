@@ -76,7 +76,8 @@ class SecurityConfig(
                 authz
                     .requestMatchers(*AUTH_WHITELIST).permitAll()
                     .anyRequest().authenticated()
-            }.httpBasic { }
+            }.oauth2ResourceServer { it.jwt {} }
+            .httpBasic { }
         return http.build()
     }
 

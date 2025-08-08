@@ -8,16 +8,26 @@ services:
       POSTGRES_PASSWORD: codex
     ports:
       - "${DB_PORT:-5432}:5432"
+  keycloak:
+    image: quay.io/keycloak/keycloak:22.0
+    command: start-dev
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+    ports:
+      - "${KEYCLOAK_PORT:-8080}:8080"
   backend:
     build: ./backend
     depends_on:
       - db
+      - keycloak
     environment:
       DB_HOST: ${DB_HOST:-db}
       DB_PORT: ${DB_PORT:-5432}
       FRONTEND_URL: ${FRONTEND_URL:-http://localhost:4200}
       SPRING_DATASOURCE_USERNAME: codex
       SPRING_DATASOURCE_PASSWORD: codex
+      KEYCLOAK_ISSUER_URI: ${KEYCLOAK_ISSUER_URI:-http://keycloak:8080/realms/codex}
     ports:
       - "${BACKEND_PORT:-8081}:8080"
   frontend:
