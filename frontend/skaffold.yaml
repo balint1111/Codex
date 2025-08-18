@@ -1,0 +1,17 @@
+apiVersion: skaffold/v2alpha3
+kind: Config
+metadata:
+  name: codex-frontend
+build:
+  artifacts:
+    - image: codex-frontend
+      context: .
+      docker:
+        dockerfile: Dockerfile
+  local:
+    push: true
+deploy:
+  kubectl:
+    manifests:
+      - ../kubernetes/dev/namespace.yaml
+      - ../kubernetes/dev/frontend-skaffold.yaml
