@@ -1,4 +1,4 @@
-apiVersion: skaffold/v4beta1
+apiVersion: skaffold/v2alpha3
 kind: Config
 metadata:
   name: codex-frontend
@@ -8,6 +8,8 @@ build:
       context: .
       docker:
         dockerfile: Dockerfile
+  local:
+    push: true
 deploy:
   kubectl:
     manifests:
