@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: dev
+  name: codex-backend
+  labels:
+    app: codex-backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: codex-backend
+  template:
+    metadata:
+      labels:
+        app: codex-backend
+    spec:
+      containers:
+        - name: backend
+          # image built by Skaffold
+          image: codex-backend
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+          env:
+            - name: DB_HOST
+              value: "codex-db"          # points to the Service name
+            - name: DB_PORT
+              value: "5432"
+            - name: FRONTEND_URL
+              value: "http://localhost:30080"
+            - name: SPRING_DATASOURCE_USERNAME
+              value: codex
+            - name: SPRING_DATASOURCE_PASSWORD
+              value: codex
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: codex-backend
+  namespace: dev
+  labels:
+    app: codex-backend
+spec:
+  type: NodePort
+  selector:
+    app: codex-backend
+  ports:
+    - port: 80
+      targetPort: 8080
+      nodePort: 30081

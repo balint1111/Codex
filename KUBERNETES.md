@@ -45,6 +45,16 @@ runs tests, builds the frontend and backend containers, and applies the files fo
 
 Refer to the official [Kubernetes documentation](https://kubernetes.io/docs/home/) for additional best practices.
 
+## Skaffold
+
+For a streamlined developer workflow, you can use [Skaffold](https://skaffold.dev) to build the backend image and deploy the dev environment manifests:
+
+```bash
+skaffold run -f backend/skaffold.yaml --default-repo host.docker.internal:5000
+```
+
+This mirrors the `dev` deployment performed in the Jenkins pipeline.
+
 
 
 
