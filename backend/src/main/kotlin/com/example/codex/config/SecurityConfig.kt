@@ -30,6 +30,9 @@ class SecurityConfig(
     companion object {
         private val AUTH_WHITELIST = arrayOf(
             "/api/users/register",
+            "/v3/api-docs/**",
+            "/swagger-ui.html",
+            "/swagger-ui/**",
         )
     }
 
@@ -46,7 +49,7 @@ class SecurityConfig(
     }
 
     @Bean
-    fun userDetailsService(): UserDetailsService = MyUserDetailsService(userService).also{ println(frontendUrl) }
+    fun userDetailsService(): UserDetailsService = MyUserDetailsService(userService)
 
     @Bean
     fun authenticationManager(authConfig: AuthenticationConfiguration): AuthenticationManager =
