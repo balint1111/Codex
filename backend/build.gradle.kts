@@ -2,6 +2,7 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import nu.studer.gradle.jooq.JooqEdition
 import org.jooq.meta.jaxb.Property
+import org.gradle.api.tasks.testing.Test
 plugins {
     kotlin("jvm") version "2.0.0"
     id("org.jetbrains.kotlin.plugin.spring") version "2.1.21"
@@ -43,7 +44,25 @@ dependencies {
 
 tasks.withType<Test> {
     useJUnitPlatform()
+    // exclude integration tests from the standard unit test task
+    exclude("**/*IT.*")
 }
+
+// Dedicated task for running integration tests (classes named *IT)
+val integrationTest by tasks.registering(Test::class) {
+    description = "Runs the integration tests."
+    group = "verification"
+    useJUnitPlatform()
+    testClassesDirs = sourceSets["test"].output.classesDirs
+    classpath = sourceSets["test"].runtimeClasspath
+    shouldRunAfter("test")
+    // Remove the global IT exclusion and only run classes that end with IT
+    excludes.clear()
+    include("**/*IT.*")
+    filter { includeTestsMatching("*IT") }
+}
+
+tasks.check { dependsOn(integrationTest) }
 
 jooq {
     version.set("3.20.0")
