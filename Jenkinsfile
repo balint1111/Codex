@@ -25,18 +25,8 @@ pipeline {
 
     stage('Integration Tests') {
       steps {
-        // Install and start a local Postgres instance, then run integration tests
-        sh '''
-          sudo apt-get update
-          sudo apt-get install -y postgresql
-          sudo -u postgres /usr/lib/postgresql/16/bin/pg_ctl \
-            -D /etc/postgresql/16/main \
-            -l /tmp/postgresql.log start
-          sudo -u postgres psql -c "ALTER USER postgres WITH PASSWORD 'postgres';"
-          sudo -u postgres psql -c 'CREATE DATABASE "postgresTest";'
-        '''
         dir('backend') {
-          sh 'DISABLE_TESTCONTAINERS=true ./gradlew integrationTest --no-daemon'
+          sh './gradlew integrationTest --no-daemon'
         }
       }
     }
