@@ -33,7 +33,7 @@ import { User } from './app.component';
   `,
   styles: [`
     .login-container { height: calc(100vh - 64px); display: flex; justify-content: center; align-items: center; background: linear-gradient(135deg, #1a237e, #303f9f); }
-    .login-card { width: 320px; padding: 24px; }
+    .login-card { width: 400px; padding: 32px; }
     .title { text-align: center; margin-bottom: 16px; }
     mat-form-field { width: 100%; margin-bottom: 16px; }
     .actions { display: flex; justify-content: space-between; }

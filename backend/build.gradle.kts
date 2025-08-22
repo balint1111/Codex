@@ -24,6 +24,8 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-starter-jooq")
 
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0")
+
     implementation("org.jooq:jooq:3.20.0")
 
     implementation("jakarta.persistence:jakarta.persistence-api:3.1.0")
@@ -35,6 +37,8 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("org.testcontainers:junit-jupiter")
+    testImplementation("org.testcontainers:postgresql")
 }
 
 tasks.withType<Test> {

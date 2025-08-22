@@ -15,7 +15,11 @@ import { User, Privilege } from './app.component';
           </mat-checkbox>
         </div>
       </mat-card-content>
-      <mat-card-actions>
+      <mat-card-actions class="actions">
+        <button mat-raised-button color="primary" (click)="save()">
+          <mat-icon>save</mat-icon>
+          {{ 'SAVE' | t }}
+        </button>
         <button mat-stroked-button color="primary" routerLink="/users">
           <mat-icon>arrow_back</mat-icon>
           {{ 'BACK' | t }}
@@ -27,6 +31,7 @@ import { User, Privilege } from './app.component';
     .priv { display: block; margin: 0.25rem 0; }
     .user-card { max-width: 400px; margin: 1rem auto; padding: 1rem; }
     mat-card-title { margin-bottom: 0.5rem; }
+    .actions { display: flex; justify-content: space-between; }
   `]
 })
 export class UserEditComponent implements OnInit {
@@ -57,6 +62,10 @@ export class UserEditComponent implements OnInit {
     } else {
       this.user.privileges = this.user.privileges.filter(pr => pr.id !== p.id);
     }
+  }
+
+  save() {
+    if (!this.user) return;
     fetch(`${this.auth.API_URL}/api/users/${this.user.id}/privileges`, {
       method: 'POST',
       headers: this.auth.authHeaders(),
