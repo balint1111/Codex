@@ -23,6 +23,14 @@ pipeline {
       }
     }
 
+    stage('Integration Tests') {
+      steps {
+        dir('backend') {
+          sh './gradlew integrationTest --no-daemon'
+        }
+      }
+    }
+
     stage('Build & Push Images') {
       steps {
         script {
