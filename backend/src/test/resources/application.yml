@@ -1,0 +1,11 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/codex
+    username: codex
+    password: codex
+  jooq:
+    sql-dialect: POSTGRES
+
+frontendUrl: localhost:8080
+
+logging.level.org.jooq.tools.LoggerListener: DEBUG
