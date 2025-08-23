@@ -11,7 +11,7 @@ import java.util.UUID
 import java.util.concurrent.atomic.AtomicInteger
 
 @SpringBootTest
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 abstract class AbstractIntegrationTest {
     companion object {
         private val useTestcontainers = System.getenv("DISABLE_TESTCONTAINERS") != "true"
