@@ -48,6 +48,14 @@ tasks.withType<Test> {
     useJUnitPlatform()
 }
 
+tasks.named<Test>("test") {
+    dependsOn("clean")
+}
+
+tasks.matching { it.name != "clean" }.configureEach {
+    mustRunAfter("clean")
+}
+
 jooq {
     version.set("3.20.0")
     edition.set(JooqEdition.OSS)
