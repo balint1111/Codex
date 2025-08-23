@@ -60,6 +60,7 @@ spotless {
 
 tasks.withType<Test> {
     useJUnitPlatform()
+    maxParallelForks = Runtime.getRuntime().availableProcessors()
 }
 
 tasks.named<Test>("test") {
