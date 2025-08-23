@@ -1,45 +1,41 @@
 package com.example.codex
 
-import org.junit.jupiter.api.BeforeAll
+import java.sql.DriverManager
+import java.util.UUID
+import org.junit.jupiter.api.TestInstance
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.DynamicPropertyRegistry
 import org.springframework.test.context.DynamicPropertySource
 import org.testcontainers.containers.PostgreSQLContainer
+import org.testcontainers.junit.jupiter.Container
+import org.testcontainers.junit.jupiter.Testcontainers
 
+@Testcontainers
 @SpringBootTest
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+@TestInstance(TestInstance.Lifecycle.PER_METHOD)
 abstract class AbstractIntegrationTest {
-    companion object {
-        private val useTestcontainers = System.getenv("DISABLE_TESTCONTAINERS") != "true"
-        private val postgres =
-            PostgreSQLContainer<Nothing>("postgres:16-alpine").apply {
-                withDatabaseName("codex")
-                withUsername("codex")
-                withPassword("codex")
-            }
 
-        @JvmStatic
-        @BeforeAll
-        fun startContainer() {
-            if (useTestcontainers && !postgres.isRunning) {
-                postgres.start()
-            }
-        }
+    companion object {
+        @Container
+        val postgres = PostgreSQLContainer<Nothing>("postgres:15")
 
         @JvmStatic
         @DynamicPropertySource
-        fun datasourceConfig(registry: DynamicPropertyRegistry) {
-            if (useTestcontainers) {
-                registry.add("spring.datasource.url", postgres::getJdbcUrl)
-                registry.add("spring.datasource.username", postgres::getUsername)
-                registry.add("spring.datasource.password", postgres::getPassword)
-            } else {
-                registry.add("spring.datasource.url") {
-                    System.getenv("SPRING_DATASOURCE_URL")
-                        ?: "jdbc:postgresql://localhost:5432/postgresTest"
+        fun registerDynamicProperties(registry: DynamicPropertyRegistry) {
+            val schema = "test_${UUID.randomUUID().toString().replace("-", "")}".also {
+                DriverManager.getConnection(postgres.jdbcUrl, postgres.username, postgres.password).use { conn ->
+                    conn.createStatement().use { stmt ->
+                        stmt.execute("CREATE SCHEMA \"$it\"")
+                    }
                 }
-                registry.add("spring.datasource.username") { System.getenv("SPRING_DATASOURCE_USERNAME") ?: "postgres" }
-                registry.add("spring.datasource.password") { System.getenv("SPRING_DATASOURCE_PASSWORD") ?: "postgres" }
             }
+
+            registry.add("spring.datasource.url") { "${postgres.jdbcUrl}?currentSchema=$schema" }
+            registry.add("spring.datasource.username") { postgres.username }
+            registry.add("spring.datasource.password") { postgres.password }
+            registry.add("spring.liquibase.default-schema") { schema }
         }
     }
 }
