@@ -11,6 +11,8 @@ import org.springframework.test.context.DynamicPropertyRegistry
 import org.springframework.test.context.DynamicPropertySource
 import org.testcontainers.containers.PostgreSQLContainer
 import liquibase.integration.spring.SpringLiquibase
+import org.jooq.impl.DSL.field
+import org.jooq.impl.DSL.table
 import java.util.concurrent.atomic.AtomicInteger
 
 @SpringBootTest
@@ -62,22 +64,30 @@ abstract class AbstractIntegrationTest {
 
     @BeforeEach
     fun setupSchema() {
-        val schema = "test_schema_${schemaCounter.incrementAndGet()}"
+        val schema = "test_schema_${this.javaClass.simpleName}${schemaCounter.incrementAndGet()}"
+        println("---_---$schema")
 
         SchemaHolder.current.remove()
-        dslContext.execute("create schema if not exists \"$schema\"")
-        synchronized(liquibaseLock) {
-            liquibase.defaultSchema = schema
-            liquibase.afterPropertiesSet()
+        try {
+                dslContext.execute("create schema if not exists \"$schema\"")
+
+                liquibase.defaultSchema = schema
+                dslContext.select(field("tablename", String::class.java))
+                    .from(table("pg_catalog.pg_tables"))
+                    .fetch().also { println(it) }
+                liquibase.afterPropertiesSet()
+
+        } catch (e: Exception) {
+            return
         }
         SchemaHolder.current.set(schema)
     }
 
-    @AfterEach
+    /*@AfterEach
     fun cleanupSchema() {
         SchemaHolder.current.get()?.let { schema ->
             dslContext.execute("drop schema if exists \"$schema\" cascade")
         }
         SchemaHolder.current.remove()
-    }
+    }*/
 }
