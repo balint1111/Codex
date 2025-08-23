@@ -8,10 +8,11 @@ import org.springframework.context.annotation.Configuration
 @Configuration
 class OpenApiConfig {
     @Bean
-    fun api(): OpenAPI = OpenAPI()
-        .info(
-            Info()
-                .title("Codex API")
-                .version("v1")
-        )
+    fun api(): OpenAPI =
+        OpenAPI()
+            .info(
+                Info()
+                    .title("Codex API")
+                    .version("v1"),
+            )
 }

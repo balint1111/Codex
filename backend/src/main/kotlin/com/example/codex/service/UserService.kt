@@ -9,11 +9,14 @@ import org.springframework.stereotype.Service
 @Service
 class UserService(
     private val userRepository: UserRepository,
-    private val passwordEncoder: PasswordEncoder
+    private val passwordEncoder: PasswordEncoder,
 ) {
     fun allUsers(): List<User> = userRepository.findAll()
 
-    fun register(username: String, encodedPassword: String) {
+    fun register(
+        username: String,
+        encodedPassword: String,
+    ) {
         userRepository.save(username, passwordEncoder.encode(encodedPassword))
     }
 
@@ -23,7 +26,10 @@ class UserService(
 
     fun findByUsername(username: String): User? = userRepository.findByUsername(username)
 
-    fun updatePrivileges(userId: Long, privilegeIds: List<Long>) {
+    fun updatePrivileges(
+        userId: Long,
+        privilegeIds: List<Long>,
+    ) {
         userRepository.updateUserPrivileges(userId, privilegeIds)
     }
 

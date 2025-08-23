@@ -2,6 +2,7 @@ package com.example.codex.config
 
 import com.example.codex.service.MyUserDetailsService
 import com.example.codex.service.UserService
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.authentication.AuthenticationManager
@@ -15,7 +16,6 @@ import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.web.cors.CorsConfiguration
-import org.springframework.beans.factory.annotation.Value
 
 @Configuration
 @EnableWebSecurity
@@ -23,42 +23,38 @@ import org.springframework.beans.factory.annotation.Value
 class SecurityConfig(
     private val userService: UserService,
     @Value("\${frontendUrl}")
-    private val frontendUrl: String
+    private val frontendUrl: String,
 ) {
-
-
     companion object {
-        private val AUTH_WHITELIST = arrayOf(
-            "/api/users/register",
-            "/v3/api-docs/**",
-            "/swagger-ui.html",
-            "/swagger-ui/**",
-        )
+        private val AUTH_WHITELIST =
+            arrayOf(
+                "/api/users/register",
+                "/v3/api-docs/**",
+                "/swagger-ui.html",
+                "/swagger-ui/**",
+            )
     }
-
 
     @Bean
     fun daoAuthenticationProvider(
         userDetailsService: UserDetailsService,
         passwordEncoder: PasswordEncoder,
-    ): DaoAuthenticationProvider {
-        return DaoAuthenticationProvider().apply {
+    ): DaoAuthenticationProvider =
+        DaoAuthenticationProvider().apply {
             setUserDetailsService(userDetailsService)
             setPasswordEncoder(passwordEncoder)
         }
-    }
 
     @Bean
     fun userDetailsService(): UserDetailsService = MyUserDetailsService(userService)
 
     @Bean
-    fun authenticationManager(authConfig: AuthenticationConfiguration): AuthenticationManager =
-        authConfig.authenticationManager
+    fun authenticationManager(authConfig: AuthenticationConfiguration): AuthenticationManager = authConfig.authenticationManager
 
     @Bean
     fun securityFilterChain(
         http: HttpSecurity,
-        authProvider: DaoAuthenticationProvider
+        authProvider: DaoAuthenticationProvider,
     ): SecurityFilterChain {
         http
             .csrf { it.disable() }
@@ -71,17 +67,16 @@ class SecurityConfig(
                         allowCredentials = true
                     }
                 }
-            }
-            .authenticationProvider(authProvider)
+            }.authenticationProvider(authProvider)
             .sessionManagement {
                 it.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             }.authorizeHttpRequests { authz ->
                 authz
-                    .requestMatchers(*AUTH_WHITELIST).permitAll()
-                    .anyRequest().authenticated()
+                    .requestMatchers(*AUTH_WHITELIST)
+                    .permitAll()
+                    .anyRequest()
+                    .authenticated()
             }.httpBasic { }
         return http.build()
     }
-
 }
-

@@ -5,5 +5,5 @@ data class User(
     val username: String,
     val password: String,
     val privileges: List<Privilege>,
-    val deleted: Boolean = false
+    val deleted: Boolean = false,
 )

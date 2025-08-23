@@ -13,12 +13,14 @@ interface CrudRepository<TABLE : Table<out Record>, POJO> {
     val type: Class<POJO>
 
     fun findAll(): List<POJO> =
-        dslContext.select(*table.fields())
+        dslContext
+            .select(*table.fields())
             .from(table)
             .fetchInto(type)
 
     fun findById(id: Long): POJO? =
-        dslContext.select(*table.fields())
+        dslContext
+            .select(*table.fields())
             .from(table)
             .where(table.field("id", Long::class.java)!!.eq(id))
             .fetchOneInto(type)
@@ -36,7 +38,8 @@ interface CrudRepository<TABLE : Table<out Record>, POJO> {
     }
 
     fun delete(id: Long) {
-        dslContext.deleteFrom(table)
+        dslContext
+            .deleteFrom(table)
             .where(table.field("id", Long::class.java)!!.eq(id))
             .execute()
     }

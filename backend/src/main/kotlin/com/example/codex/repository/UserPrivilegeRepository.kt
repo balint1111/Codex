@@ -8,7 +8,7 @@ import com.example.codex.jooq.tables.UserPrivilege as UserPrivilegeTable
 
 @Repository
 class UserPrivilegeRepository(
-    override val dslContext: DSLContext
+    override val dslContext: DSLContext,
 ) : CrudRepository<UserPrivilegeTable, UserPrivilege> {
     override val table = USER_PRIVILEGE
     override val type = UserPrivilege::class.java
