@@ -44,25 +44,7 @@ dependencies {
 
 tasks.withType<Test> {
     useJUnitPlatform()
-    // exclude integration tests from the standard unit test task
-    exclude("**/*IT.*")
 }
-
-// Dedicated task for running integration tests (classes named *IT)
-val integrationTest by tasks.registering(Test::class) {
-    description = "Runs the integration tests."
-    group = "verification"
-    useJUnitPlatform()
-    testClassesDirs = sourceSets["test"].output.classesDirs
-    classpath = sourceSets["test"].runtimeClasspath
-    shouldRunAfter("test")
-    // Remove the global IT exclusion and only run classes that end with IT
-    excludes.clear()
-    include("**/*IT.*")
-    filter { includeTestsMatching("*IT") }
-}
-
-tasks.check { dependsOn(integrationTest) }
 
 jooq {
     version.set("3.20.0")
