@@ -1,12 +1,16 @@
 package com.example.codex
 
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.TestInstance
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.boot.test.util.TestPropertyValues
 import org.springframework.context.ApplicationContextInitializer
 import org.springframework.context.ConfigurableApplicationContext
+import org.springframework.core.env.Environment
+import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.ContextConfiguration
-import org.springframework.boot.test.util.TestPropertyValues
 import org.testcontainers.containers.PostgreSQLContainer
 import java.sql.DriverManager
 import java.util.UUID
@@ -16,6 +20,18 @@ import java.util.UUID
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 abstract class AbstractIntegrationTest {
+    @Autowired
+    lateinit var jdbcTemplate: JdbcTemplate
+
+    @Autowired
+    lateinit var env: Environment
+
+    @BeforeEach
+    fun switchSchema() {
+        val schema = env.getRequiredProperty("test.schema")
+        jdbcTemplate.execute("SET search_path TO $schema")
+    }
+
     companion object {
         private val useTestcontainers = System.getenv("DISABLE_TESTCONTAINERS") != "true"
 
@@ -35,6 +51,7 @@ abstract class AbstractIntegrationTest {
                         "spring.datasource.url=${postgres.jdbcUrl}?currentSchema=$schema",
                         "spring.datasource.username=${postgres.username}",
                         "spring.datasource.password=${postgres.password}",
+                        "test.schema=$schema",
                     ).applyTo(context.environment)
                     context.beanFactory.registerSingleton("postgresContainer", postgres)
                 } else {
@@ -47,6 +64,7 @@ abstract class AbstractIntegrationTest {
                         "spring.datasource.url=$url${sep}currentSchema=$schema",
                         "spring.datasource.username=$username",
                         "spring.datasource.password=$password",
+                        "test.schema=$schema",
                     ).applyTo(context.environment)
                 }
             }
