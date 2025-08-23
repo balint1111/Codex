@@ -33,6 +33,16 @@ class UserService(
         userRepository.updateUserPrivileges(userId, privilegeIds)
     }
 
+    fun updateProfile(
+        currentUsername: String,
+        username: String,
+        password: String?,
+    ): User? {
+        val encoded = password?.let { passwordEncoder.encode(it) }
+        userRepository.updateProfile(currentUsername, username, encoded)
+        return userRepository.findByUsername(username)
+    }
+
     fun allPrivileges() = userRepository.findAllPrivileges()
 
     fun find(id: Long): User? = userRepository.findById(id)

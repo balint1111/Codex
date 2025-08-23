@@ -93,6 +93,23 @@ class UserRepository(
         }
     }
 
+    fun updateProfile(
+        currentUsername: String,
+        newUsername: String,
+        encodedPassword: String?,
+    ) {
+        val update =
+            dslContext
+                .update(USERS)
+                .set(USERS.USERNAME, newUsername)
+        if (encodedPassword != null) {
+            update.set(USERS.PASSWORD, encodedPassword)
+        }
+        update
+            .where(USERS.USERNAME.eq(currentUsername).and(USERS.DELETED.eq(false)))
+            .execute()
+    }
+
     fun findAllPrivileges(): List<Privilege> =
         dslContext
             .select(*PRIVILEGE.fields())

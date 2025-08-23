@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
@@ -44,6 +45,12 @@ class UserController(
     @GetMapping("/me")
     fun me(principal: java.security.Principal): User? = userService.findByUsername(principal.name)
 
+    @PutMapping("/me")
+    fun updateMe(
+        principal: java.security.Principal,
+        @RequestBody req: ProfileUpdateRequest,
+    ): User? = userService.updateProfile(principal.name, req.username, req.password)
+
     @PostMapping("/{id}/privileges")
     fun updatePrivileges(
         @PathVariable id: Long,
@@ -52,3 +59,8 @@ class UserController(
         userService.updatePrivileges(id, privilegeIds)
     }
 }
+
+data class ProfileUpdateRequest(
+    val username: String,
+    val password: String?,
+)
