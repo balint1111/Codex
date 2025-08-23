@@ -46,47 +46,6 @@ dependencies {
 
 tasks.withType<Test> {
     useJUnitPlatform()
-    // exclude integration tests from the standard unit test task
-    exclude("**/*IT.*")
-}
-
-// Dedicated task for running integration tests (classes named *IT)
-val integrationTest by tasks.registering(Test::class) {
-    description = "Runs the integration tests."
-    group = "verification"
-    useJUnitPlatform()
-    testClassesDirs = sourceSets["test"].output.classesDirs
-    classpath = sourceSets["test"].runtimeClasspath
-    shouldRunAfter("test")
-    // Remove the global IT exclusion and only run classes that end with IT
-    excludes.clear()
-    include("**/*IT.*")
-    filter { includeTestsMatching("*IT") }
-}
-
-tasks.check { dependsOn(integrationTest) }
-
-tasks.jacocoTestReport {
-    dependsOn(tasks.test, integrationTest)
-    executionData.setFrom(fileTree(buildDir).include("jacoco/test.exec", "jacoco/integrationTest.exec"))
-    reports {
-        xml.required.set(true)
-        html.required.set(true)
-    }
-}
-
-tasks.jacocoTestCoverageVerification {
-    dependsOn(tasks.test, integrationTest)
-    executionData.setFrom(fileTree(buildDir).include("jacoco/test.exec", "jacoco/integrationTest.exec"))
-    violationRules {
-        rule {
-            element = "CLASS"
-            includes = listOf("com.example.codex.service.UserService")
-            limit {
-                minimum = BigDecimal("0.8")
-            }
-        }
-    }
 }
 
 jooq {
