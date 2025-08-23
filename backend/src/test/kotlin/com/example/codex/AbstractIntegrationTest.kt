@@ -1,6 +1,5 @@
 package com.example.codex
 
-import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.DynamicPropertyRegistry
@@ -20,16 +19,8 @@ abstract class AbstractIntegrationTest {
         @JvmStatic
         @BeforeAll
         fun startContainer() {
-            if (useTestcontainers) {
+            if (useTestcontainers && !postgres.isRunning) {
                 postgres.start()
-            }
-        }
-
-        @JvmStatic
-        @AfterAll
-        fun stopContainer() {
-            if (useTestcontainers) {
-                postgres.stop()
             }
         }
 
