@@ -1,8 +1,8 @@
+import nu.studer.gradle.jooq.JooqEdition
+import org.gradle.api.tasks.testing.Test
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-import nu.studer.gradle.jooq.JooqEdition
 import org.jooq.meta.jaxb.Property
-import org.gradle.api.tasks.testing.Test
 import java.math.BigDecimal
 plugins {
     kotlin("jvm") version "2.0.0"
@@ -11,6 +11,7 @@ plugins {
     id("io.spring.dependency-management") version "1.1.0"
     id("org.liquibase.gradle") version "2.2.1"
     id("nu.studer.jooq") version "8.2"
+    id("com.diffplug.spotless") version "6.25.0"
     jacoco
 }
 
@@ -44,6 +45,18 @@ dependencies {
     testImplementation("org.testcontainers:postgresql")
 }
 
+spotless {
+    kotlin {
+        target("src/**/*.kt")
+        targetExclude("src/main/generated/**")
+        ktlint("1.7.1")
+    }
+    kotlinGradle {
+        target("*.kts")
+        ktlint("1.7.1")
+    }
+}
+
 tasks.withType<Test> {
     useJUnitPlatform()
 }
@@ -67,14 +80,18 @@ jooq {
                     name = "org.jooq.codegen.KotlinGenerator"
                     database.apply {
                         name = "org.jooq.meta.extensions.liquibase.LiquibaseDatabase"
-                        properties.add(Property().apply {
-                            key = "rootPath"
-                            value = "${projectDir}/src/main/resources"
-                        })
-						properties.add(Property().apply {
-                            key = "scripts"
-                            value = "db/changelog/db.changelog-master.yaml"
-                        })
+                        properties.add(
+                            Property().apply {
+                                key = "rootPath"
+                                value = "$projectDir/src/main/resources"
+                            },
+                        )
+                        properties.add(
+                            Property().apply {
+                                key = "scripts"
+                                value = "db/changelog/db.changelog-master.yaml"
+                            },
+                        )
                     }
                     target.apply {
                         packageName = "com.example.codex.jooq"
@@ -99,9 +116,6 @@ jooq {
         }
     }
 }
-
-
-
 
 tasks.withType<KotlinCompile> {
     compilerOptions {
