@@ -3,6 +3,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import nu.studer.gradle.jooq.JooqEdition
 import org.jooq.meta.jaxb.Property
 import org.gradle.api.tasks.testing.Test
+import java.math.BigDecimal
 plugins {
     kotlin("jvm") version "2.0.0"
     id("org.jetbrains.kotlin.plugin.spring") version "2.1.21"
@@ -10,6 +11,7 @@ plugins {
     id("io.spring.dependency-management") version "1.1.0"
     id("org.liquibase.gradle") version "2.2.1"
     id("nu.studer.jooq") version "8.2"
+    jacoco
 }
 
 group = "com.example"
@@ -63,6 +65,29 @@ val integrationTest by tasks.registering(Test::class) {
 }
 
 tasks.check { dependsOn(integrationTest) }
+
+tasks.jacocoTestReport {
+    dependsOn(tasks.test, integrationTest)
+    executionData.setFrom(fileTree(buildDir).include("jacoco/test.exec", "jacoco/integrationTest.exec"))
+    reports {
+        xml.required.set(true)
+        html.required.set(true)
+    }
+}
+
+tasks.jacocoTestCoverageVerification {
+    dependsOn(tasks.test, integrationTest)
+    executionData.setFrom(fileTree(buildDir).include("jacoco/test.exec", "jacoco/integrationTest.exec"))
+    violationRules {
+        rule {
+            element = "CLASS"
+            includes = listOf("com.example.codex.service.UserService")
+            limit {
+                minimum = BigDecimal("0.8")
+            }
+        }
+    }
+}
 
 jooq {
     version.set("3.20.0")
