@@ -1,7 +1,5 @@
 package com.example.codex
 
-import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.TestInstance
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.util.TestPropertyValues
@@ -17,20 +15,13 @@ import java.util.UUID
 
 @SpringBootTest
 @ContextConfiguration(initializers = [AbstractIntegrationTest.Companion.Initializer::class])
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_CLASS)
 abstract class AbstractIntegrationTest {
     @Autowired
     lateinit var jdbcTemplate: JdbcTemplate
 
     @Autowired
     lateinit var env: Environment
-
-    @BeforeEach
-    fun switchSchema() {
-        val schema = env.getRequiredProperty("test.schema")
-        jdbcTemplate.execute("SET search_path TO $schema")
-    }
 
     companion object {
         private val useTestcontainers = System.getenv("DISABLE_TESTCONTAINERS") != "true"
