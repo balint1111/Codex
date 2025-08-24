@@ -9,19 +9,28 @@ spec:
   instances: 1
 ---
 apiVersion: k8s.keycloak.org/v2alpha1
-kind: KeycloakRealm
+kind: KeycloakRealmImport
 metadata:
   name: codex
   namespace: dev
   labels:
     app: codex
 spec:
-  instanceSelector:
-    matchLabels:
-      app: keycloak
+  # point this to the Keycloak CR name in the same namespace
+  keycloakCRName: keycloak
   realm:
+    id: codex
     realm: codex
+    displayName: codex
+    enabled: true
+    # optional: you can embed clients/users/roles in this same object
+    # clients:
+    #   - clientId: codex-frontend
+    #     publicClient: true
+    #     redirectUris:
+    #       - "http://localhost:30080/*"
 ---
+# if KeycloakClient CR does not exist in your cluster, include the client inside the realm above instead
 apiVersion: k8s.keycloak.org/v2alpha1
 kind: KeycloakClient
 metadata:
