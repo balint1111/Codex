@@ -58,6 +58,7 @@ pipeline {
 			# Apply the Postgres DB
                         kubectl apply -f kubernetes/dev/db-secret.yaml
                         kubectl apply -f kubernetes/dev/db.yaml
+                        kubectl apply -f kubernetes/dev/keycloak-deployment.yaml
                   '''
                 }
       }
