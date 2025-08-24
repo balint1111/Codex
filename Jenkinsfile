@@ -47,17 +47,19 @@ pipeline {
                   sh '''
                         export IMAGE_BACKEND=${REGISTRY_URL}/codex-backend:${BUILD_NUMBER}
                         export IMAGE_FRONTEND=${REGISTRY_URL}/codex-frontend:${BUILD_NUMBER}
+                        KUBECTL="kubectl --insecure-skip-tls-verify=true"
 
-                        kubectl apply -f kubernetes/dev/namespace.yaml
-			# Render & apply backend YAML
-			envsubst < kubernetes/dev/backend-deployment.yaml | kubectl apply -f -
+                        $KUBECTL apply -f kubernetes/dev/namespace.yaml
+                        # Render & apply backend YAML
+                        envsubst < kubernetes/dev/backend-deployment.yaml | $KUBECTL apply -f -
 
-			# Render & apply frontend YAML
-			envsubst < kubernetes/dev/frontend-deployment.yaml | kubectl apply -f -
-			
-			# Apply the Postgres DB
-                        kubectl apply -f kubernetes/dev/db-secret.yaml
-                        kubectl apply -f kubernetes/dev/db.yaml
+                        # Render & apply frontend YAML
+                        envsubst < kubernetes/dev/frontend-deployment.yaml | $KUBECTL apply -f -
+
+                        # Apply the Postgres DB
+                        $KUBECTL apply -f kubernetes/dev/db-secret.yaml
+                        $KUBECTL apply -f kubernetes/dev/db.yaml
+                        $KUBECTL apply -f kubernetes/dev/keycloak-deployment.yaml
                   '''
                 }
       }
@@ -70,11 +72,12 @@ pipeline {
                   sh '''
                         export IMAGE_BACKEND=${REGISTRY_URL}/codex-backend:${BUILD_NUMBER}
                         export IMAGE_FRONTEND=${REGISTRY_URL}/codex-frontend:${BUILD_NUMBER}
+                        KUBECTL="kubectl --insecure-skip-tls-verify=true"
 
-                        kubectl apply -f kubernetes/dani/namespace.yaml
-                        envsubst < kubernetes/dani/backend-deployment.yaml | kubectl apply -f -
-                        envsubst < kubernetes/dani/frontend-deployment.yaml | kubectl apply -f -
-                        kubectl apply -f kubernetes/dani/db.yaml
+                        $KUBECTL apply -f kubernetes/dani/namespace.yaml
+                        envsubst < kubernetes/dani/backend-deployment.yaml | $KUBECTL apply -f -
+                        envsubst < kubernetes/dani/frontend-deployment.yaml | $KUBECTL apply -f -
+                        $KUBECTL apply -f kubernetes/dani/db.yaml
                   '''
                 }
       }
@@ -84,7 +87,7 @@ pipeline {
       when { branch 'main' }
       steps {
         input 'Deploy to staging?'
-        sh 'kubectl apply -f kubernetes/staging'
+        sh 'kubectl --insecure-skip-tls-verify=true apply -f kubernetes/staging'
       }
     }
 
@@ -92,7 +95,7 @@ pipeline {
       when { branch 'main' }
       steps {
         input 'Deploy to production?'
-        sh 'kubectl apply -f kubernetes/prod'
+        sh 'kubectl --insecure-skip-tls-verify=true apply -f kubernetes/prod'
       }
     }
   }
