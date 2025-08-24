@@ -16,32 +16,16 @@ metadata:
   labels:
     app: codex
 spec:
-  # point this to the Keycloak CR name in the same namespace
-  keycloakCRName: keycloak
+  keycloakCRName: keycloak            # points to the Keycloak CR above
   realm:
     id: codex
     realm: codex
     displayName: codex
     enabled: true
-    # optional: you can embed clients/users/roles in this same object
-    # clients:
-    #   - clientId: codex-frontend
-    #     publicClient: true
-    #     redirectUris:
-    #       - "http://localhost:30080/*"
----
-# if KeycloakClient CR does not exist in your cluster, include the client inside the realm above instead
-apiVersion: k8s.keycloak.org/v2alpha1
-kind: KeycloakClient
-metadata:
-  name: codex-frontend
-  namespace: dev
-spec:
-  realmSelector:
-    matchLabels:
-      app: codex
-  client:
-    clientId: codex-frontend
-    publicClient: true
-    redirectUris:
-      - http://localhost:30080/*
+    # embed clients here
+    clients:
+      - clientId: codex-frontend
+        publicClient: true
+        redirectUris:
+          - "http://localhost:30080/*"
+        # optional: other client config fields, e.g. protocol, directAccessGrantsEnabled, etc.
