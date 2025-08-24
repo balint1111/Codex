@@ -30,10 +30,7 @@ export class AppComponent {
   constructor(public auth: AuthService, private router: Router) {}
 
   logout() {
-    this.auth.user = undefined;
-    this.auth.credentials = '';
-    localStorage.removeItem('credentials');
-    localStorage.removeItem('user');
+    this.auth.logout();
     this.router.navigate(['/login']);
   }
 }

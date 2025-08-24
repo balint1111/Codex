@@ -25,6 +25,12 @@ spec:
           env:
             - name: API_URL
               value: "http://localhost:30081"
+            - name: KEYCLOAK_URL
+              value: "http://localhost:30001"
+            - name: KEYCLOAK_REALM
+              value: "codex"
+            - name: KEYCLOAK_CLIENT_ID
+              value: "codex-frontend"
 ---
 apiVersion: v1
 kind: Service
