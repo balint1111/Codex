@@ -69,3 +69,13 @@ These commands mirror the `dev` deployment performed in the Jenkins pipeline.
 start "" /min kubectl proxy --address=0.0.0.0 --port=8001
 kubectl -n kubernetes-dashboard create token dashboard-admin
 http://localhost:8001/api/v1/namespaces/kubernetes-dashboard/services/https:kubernetes-dashboard:/proxy/#/login
+
+## Keycloak Operator and OIDC Login
+
+The `dev` environment uses the [Keycloak Operator](https://www.keycloak.org/operator) to provide a Keycloak instance for
+OIDC authentication. The manifest at `kubernetes/dev/keycloak.yaml` creates the Keycloak server, a `codex` realm and a public
+client used by the frontend.
+
+The backend reads the issuer URL from the `SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI` environment variable
+configured in `kubernetes/dev/backend-deployment.yaml`. The frontend receives the Keycloak settings via environment
+variables defined in `kubernetes/dev/frontend-deployment.yaml`.

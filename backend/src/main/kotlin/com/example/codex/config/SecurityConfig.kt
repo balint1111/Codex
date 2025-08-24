@@ -24,6 +24,8 @@ class SecurityConfig(
     private val userService: UserService,
     @Value("\${frontendUrl}")
     private val frontendUrl: String,
+    @Value("\${spring.security.oauth2.resourceserver.jwt.issuer-uri:}")
+    private val issuerUri: String,
 ) {
     companion object {
         private val AUTH_WHITELIST =
@@ -77,6 +79,9 @@ class SecurityConfig(
                     .anyRequest()
                     .authenticated()
             }.httpBasic { }
+        if (issuerUri.isNotBlank()) {
+            http.oauth2ResourceServer { it.jwt() }
+        }
         return http.build()
     }
 }
