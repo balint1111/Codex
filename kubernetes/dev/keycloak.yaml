@@ -1,3 +1,4 @@
+---
 apiVersion: k8s.keycloak.org/v2alpha1
 kind: Keycloak
 metadata:
@@ -9,14 +10,16 @@ spec:
   instances: 1
 ---
 apiVersion: k8s.keycloak.org/v2alpha1
-kind: KeycloakRealmImport
+kind: KeycloakRealm
 metadata:
   name: codex
   namespace: dev
   labels:
     app: codex
 spec:
-  keycloakCRName: keycloak            # points to the Keycloak CR above
+  instanceSelector:
+    matchLabels:
+      app: keycloak
   realm:
     id: codex
     realm: codex
@@ -28,4 +31,3 @@ spec:
         publicClient: true
         redirectUris:
           - "http://localhost:30080/*"
-        # optional: other client config fields, e.g. protocol, directAccessGrantsEnabled, etc.
