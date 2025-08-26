@@ -2,7 +2,6 @@ package com.example.codex.service
 
 import com.example.codex.domain.User
 import com.example.codex.repository.UserRepository
-import org.springframework.context.annotation.Lazy
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 
@@ -16,8 +15,9 @@ class UserService(
     fun register(
         username: String,
         encodedPassword: String,
+        externalId: String,
     ) {
-        userRepository.save(username, passwordEncoder.encode(encodedPassword))
+        userRepository.save(username, passwordEncoder.encode(encodedPassword), externalId)
     }
 
     fun delete(id: Long) {
@@ -25,6 +25,8 @@ class UserService(
     }
 
     fun findByUsername(username: String): User? = userRepository.findByUsername(username)
+
+    fun findByExternalId(externalId: String): User? = userRepository.findByExternalId(externalId)
 
     fun updatePrivileges(
         userId: Long,

@@ -35,6 +35,8 @@ data class Users(
     val username: String,
     @get:Column(name = "password", length = 100)
     val password: String? = null,
+    @get:Column(name = "external_id", nullable = false, length = 100)
+    val externalId: String,
     @get:Column(name = "deleted")
     val deleted: Boolean? = null
 ): Serializable {
@@ -69,6 +71,7 @@ data class Users(
         sb.append(id)
         sb.append(", ").append(username)
         sb.append(", ").append(password)
+        sb.append(", ").append(externalId)
         sb.append(", ").append(deleted)
 
         sb.append(")")
