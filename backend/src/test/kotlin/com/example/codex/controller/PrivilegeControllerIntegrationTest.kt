@@ -9,7 +9,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
-import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic
+import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt
 
 @AutoConfigureMockMvc
 class PrivilegeControllerIntegrationTest : AbstractIntegrationTest() {
@@ -22,11 +22,12 @@ class PrivilegeControllerIntegrationTest : AbstractIntegrationTest() {
             .perform(
                 post("/api/users/register")
                     .param("username", "testuser")
-                    .param("password", "password"),
+                    .param("password", "password")
+                    .param("externalId", "ext-123"),
             ).andExpect(status().isOk)
 
         mockMvc
-            .perform(get("/api/privileges").with(httpBasic("testuser", "password")))
+            .perform(get("/api/privileges").with(jwt().jwt { it.subject("ext-123") }))
             .andExpect(status().isOk)
             .andExpect(jsonPath("$[?(@.name == 'dashboard')]").exists())
             .andExpect(jsonPath("$[?(@.name == 'users')]").exists())

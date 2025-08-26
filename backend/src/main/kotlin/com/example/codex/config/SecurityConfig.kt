@@ -1,19 +1,12 @@
 package com.example.codex.config
 
-import com.example.codex.service.MyUserDetailsService
-import com.example.codex.service.UserService
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import org.springframework.security.authentication.AuthenticationManager
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.http.SessionCreationPolicy
-import org.springframework.security.core.userdetails.UserDetailsService
-import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.web.cors.CorsConfiguration
 
@@ -21,16 +14,17 @@ import org.springframework.web.cors.CorsConfiguration
 @EnableWebSecurity
 @EnableMethodSecurity
 class SecurityConfig(
-    private val userService: UserService,
     @Value("\${frontendUrl}")
     private val frontendUrl: String,
     @Value("\${spring.security.oauth2.resourceserver.jwt.issuer-uri:}")
     private val issuerUri: String,
+    private val jwtAuthConverter: JwtAuthConverter,
 ) {
     companion object {
         private val AUTH_WHITELIST =
             arrayOf(
                 "/api/users/register",
+                "/api/auth/login",
                 "/v3/api-docs/**",
                 "/swagger-ui.html",
                 "/swagger-ui/**",
@@ -38,25 +32,8 @@ class SecurityConfig(
     }
 
     @Bean
-    fun daoAuthenticationProvider(
-        userDetailsService: UserDetailsService,
-        passwordEncoder: PasswordEncoder,
-    ): DaoAuthenticationProvider =
-        DaoAuthenticationProvider().apply {
-            setUserDetailsService(userDetailsService)
-            setPasswordEncoder(passwordEncoder)
-        }
-
-    @Bean
-    fun userDetailsService(): UserDetailsService = MyUserDetailsService(userService)
-
-    @Bean
-    fun authenticationManager(authConfig: AuthenticationConfiguration): AuthenticationManager = authConfig.authenticationManager
-
-    @Bean
     fun securityFilterChain(
         http: HttpSecurity,
-        authProvider: DaoAuthenticationProvider,
     ): SecurityFilterChain {
         http
             .csrf { it.disable() }
@@ -69,18 +46,18 @@ class SecurityConfig(
                         allowCredentials = true
                     }
                 }
-            }.authenticationProvider(authProvider)
+            }
             .sessionManagement {
-                it.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                it.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
             }.authorizeHttpRequests { authz ->
                 authz
                     .requestMatchers(*AUTH_WHITELIST)
                     .permitAll()
                     .anyRequest()
                     .authenticated()
-            }.httpBasic { }
+            }
         if (issuerUri.isNotBlank()) {
-            http.oauth2ResourceServer { it.jwt() }
+            http.oauth2ResourceServer { it.jwt { jwt -> jwt.jwtAuthenticationConverter(jwtAuthConverter) } }
         }
         return http.build()
     }

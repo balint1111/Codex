@@ -15,7 +15,7 @@ class UserServiceIT
     ) : AbstractIntegrationTest() {
         @Test
         fun `registers, updates privileges and deletes user`() {
-            userService.register("sarah", "secret")
+            userService.register("sarah", "secret", "ext-sarah")
             val user = userService.findByUsername("sarah")
             assertNotNull(user)
             val id = user!!.id

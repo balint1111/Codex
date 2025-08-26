@@ -41,11 +41,13 @@ class UserRepository(
     fun save(
         username: String,
         password: String,
+        externalId: String,
     ) {
         dslContext
             .insertInto(USERS)
             .set(USERS.USERNAME, username)
             .set(USERS.PASSWORD, password)
+            .set(USERS.EXTERNAL_ID, externalId)
             .execute()
     }
 
@@ -60,6 +62,11 @@ class UserRepository(
     fun findByUsername(username: String): User? =
         baseUserQuery()
             .where(USERS.USERNAME.eq(username).and(USERS.DELETED.eq(false)))
+            .fetchOneInto(User::class.java)
+
+    fun findByExternalId(externalId: String): User? =
+        baseUserQuery()
+            .where(USERS.EXTERNAL_ID.eq(externalId).and(USERS.DELETED.eq(false)))
             .fetchOneInto(User::class.java)
 
     fun addPrivilege(
