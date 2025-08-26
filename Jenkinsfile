@@ -103,7 +103,7 @@ pipeline {
   post {
     always {
       echo "Pruning dangling images…"
-      sh 'docker image prune -f'
+      sh 'docker image prune -f' || true
     }
   }
 }
