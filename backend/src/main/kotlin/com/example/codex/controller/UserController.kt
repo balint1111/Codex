@@ -30,8 +30,9 @@ class UserController(
     fun register(
         @RequestParam username: String,
         @RequestParam password: String,
+        @RequestParam externalId: String,
     ) {
-        userService.register(username, password)
+        userService.register(username, password, externalId)
     }
 
     @DeleteMapping("/{id}")
@@ -42,7 +43,7 @@ class UserController(
     }
 
     @GetMapping("/me")
-    fun me(principal: java.security.Principal): User? = userService.findByUsername(principal.name)
+    fun me(principal: java.security.Principal): User? = userService.findByExternalId(principal.name)
 
     @PostMapping("/{id}/privileges")
     fun updatePrivileges(

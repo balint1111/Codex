@@ -24,7 +24,7 @@ import org.jooq.PlainSQL
 import org.jooq.QueryPart
 import org.jooq.Record
 import org.jooq.Records
-import org.jooq.Row4
+import org.jooq.Row5
 import org.jooq.SQL
 import org.jooq.Schema
 import org.jooq.Select
@@ -90,6 +90,11 @@ open class Users(
      * The column <code>USERS.PASSWORD</code>.
      */
     val PASSWORD: TableField<UsersRecord, String?> = createField(DSL.name("password"), SQLDataType.VARCHAR(100), this, "")
+
+    /**
+     * The column <code>USERS.EXTERNAL_ID</code>.
+     */
+    val EXTERNAL_ID: TableField<UsersRecord, String?> = createField(DSL.name("external_id"), SQLDataType.VARCHAR(100).nullable(false), this, "")
 
     /**
      * The column <code>USERS.DELETED</code>.
@@ -188,18 +193,18 @@ open class Users(
     override fun whereNotExists(select: Select<*>): Users = where(DSL.notExists(select))
 
     // -------------------------------------------------------------------------
-    // Row4 type methods
+    // Row5 type methods
     // -------------------------------------------------------------------------
-    override fun fieldsRow(): Row4<Long?, String?, String?, Boolean?> = super.fieldsRow() as Row4<Long?, String?, String?, Boolean?>
+    override fun fieldsRow(): Row5<Long?, String?, String?, String?, Boolean?> = super.fieldsRow() as Row5<Long?, String?, String?, String?, Boolean?>
 
     /**
      * Convenience mapping calling {@link SelectField#convertFrom(Function)}.
      */
-    fun <U> mapping(from: (Long?, String?, String?, Boolean?) -> U): SelectField<U> = convertFrom(Records.mapping(from))
+    fun <U> mapping(from: (Long?, String?, String?, String?, Boolean?) -> U): SelectField<U> = convertFrom(Records.mapping(from))
 
     /**
      * Convenience mapping calling {@link SelectField#convertFrom(Class,
      * Function)}.
      */
-    fun <U> mapping(toType: Class<U>, from: (Long?, String?, String?, Boolean?) -> U): SelectField<U> = convertFrom(toType, Records.mapping(from))
+    fun <U> mapping(toType: Class<U>, from: (Long?, String?, String?, String?, Boolean?) -> U): SelectField<U> = convertFrom(toType, Records.mapping(from))
 }

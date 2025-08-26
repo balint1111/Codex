@@ -78,6 +78,20 @@ databaseChangeLog:
                   value: users
 
   - changeSet:
+      id: "5"
+      author: codex
+      changes:
+        - addColumn:
+            tableName: users
+            columns:
+              - column:
+                  name: external_id
+                  type: VARCHAR(100)
+                  constraints:
+                    nullable: false
+                    unique: true
+
+  - changeSet:
       id: "6"
       author: codex
       changes:

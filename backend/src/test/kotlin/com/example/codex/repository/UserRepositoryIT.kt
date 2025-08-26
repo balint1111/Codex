@@ -15,7 +15,7 @@ class UserRepositoryIT
     ) : AbstractIntegrationTest() {
         @Test
         fun `saves and retrieves user by username`() {
-            userRepository.save("jane", "secret")
+            userRepository.save("jane", "secret", "ext-jane")
             val user = userRepository.findByUsername("jane")
             assertNotNull(user)
             assertEquals("jane", user?.username)
@@ -23,7 +23,7 @@ class UserRepositoryIT
 
         @Test
         fun `soft deletes user`() {
-            userRepository.save("john", "secret")
+            userRepository.save("john", "secret", "ext-john")
             val id = userRepository.findByUsername("john")!!.id
             userRepository.softDelete(id)
             assertNull(userRepository.findById(id))
@@ -34,8 +34,8 @@ class UserRepositoryIT
         @Test
         fun `manages user privileges`() {
             // Ensure first user takes pre-seeded privileges
-            userRepository.save("seed", "pw")
-            userRepository.save("mike", "pw")
+            userRepository.save("seed", "pw", "ext-seed")
+            userRepository.save("mike", "pw", "ext-mike")
             val mikeId = userRepository.findByUsername("mike")!!.id
 
             val privilegeMap = userRepository.findAllPrivileges().associateBy { it.name }

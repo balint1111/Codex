@@ -16,8 +16,8 @@ import jakarta.persistence.UniqueConstraint
 
 import org.jooq.Field
 import org.jooq.Record1
-import org.jooq.Record4
-import org.jooq.Row4
+import org.jooq.Record5
+import org.jooq.Row5
 import org.jooq.impl.UpdatableRecordImpl
 
 
@@ -32,7 +32,7 @@ import org.jooq.impl.UpdatableRecordImpl
         UniqueConstraint(name = "CONSTRAINT_4D", columnNames = [ "USERNAME" ])
     ]
 )
-open class UsersRecord private constructor() : UpdatableRecordImpl<UsersRecord>(Users.USERS), Record4<Long?, String?, String?, Boolean?> {
+open class UsersRecord private constructor() : UpdatableRecordImpl<UsersRecord>(Users.USERS), Record5<Long?, String?, String?, String?, Boolean?> {
 
     @get:Id
     @get:GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -51,10 +51,15 @@ open class UsersRecord private constructor() : UpdatableRecordImpl<UsersRecord>(
         set(value): Unit = set(2, value)
         get(): String? = get(2) as String?
 
+    @get:Column(name = "external_id", nullable = false, length = 100)
+    open var externalId: String
+        set(value): Unit = set(3, value)
+        get(): String = get(3) as String
+
     @get:Column(name = "deleted")
     open var deleted: Boolean?
-        set(value): Unit = set(3, value)
-        get(): Boolean? = get(3) as Boolean?
+        set(value): Unit = set(4, value)
+        get(): Boolean? = get(4) as Boolean?
 
     // -------------------------------------------------------------------------
     // Primary key information
@@ -63,23 +68,26 @@ open class UsersRecord private constructor() : UpdatableRecordImpl<UsersRecord>(
     override fun key(): Record1<Long?> = super.key() as Record1<Long?>
 
     // -------------------------------------------------------------------------
-    // Record4 type implementation
+    // Record5 type implementation
     // -------------------------------------------------------------------------
 
-    override fun fieldsRow(): Row4<Long?, String?, String?, Boolean?> = super.fieldsRow() as Row4<Long?, String?, String?, Boolean?>
-    override fun valuesRow(): Row4<Long?, String?, String?, Boolean?> = super.valuesRow() as Row4<Long?, String?, String?, Boolean?>
+    override fun fieldsRow(): Row5<Long?, String?, String?, String?, Boolean?> = super.fieldsRow() as Row5<Long?, String?, String?, String?, Boolean?>
+    override fun valuesRow(): Row5<Long?, String?, String?, String?, Boolean?> = super.valuesRow() as Row5<Long?, String?, String?, String?, Boolean?>
     override fun field1(): Field<Long?> = Users.USERS.ID
     override fun field2(): Field<String?> = Users.USERS.USERNAME
     override fun field3(): Field<String?> = Users.USERS.PASSWORD
-    override fun field4(): Field<Boolean?> = Users.USERS.DELETED
+    override fun field4(): Field<String?> = Users.USERS.EXTERNAL_ID
+    override fun field5(): Field<Boolean?> = Users.USERS.DELETED
     override fun component1(): Long? = id
     override fun component2(): String = username
     override fun component3(): String? = password
-    override fun component4(): Boolean? = deleted
+    override fun component4(): String = externalId
+    override fun component5(): Boolean? = deleted
     override fun value1(): Long? = id
     override fun value2(): String = username
     override fun value3(): String? = password
-    override fun value4(): Boolean? = deleted
+    override fun value4(): String = externalId
+    override fun value5(): Boolean? = deleted
 
     override fun value1(value: Long?): UsersRecord {
         set(0, value)
@@ -96,26 +104,33 @@ open class UsersRecord private constructor() : UpdatableRecordImpl<UsersRecord>(
         return this
     }
 
-    override fun value4(value: Boolean?): UsersRecord {
+    override fun value4(value: String?): UsersRecord {
         set(3, value)
         return this
     }
 
-    override fun values(value1: Long?, value2: String?, value3: String?, value4: Boolean?): UsersRecord {
+    override fun value5(value: Boolean?): UsersRecord {
+        set(4, value)
+        return this
+    }
+
+    override fun values(value1: Long?, value2: String?, value3: String?, value4: String?, value5: Boolean?): UsersRecord {
         this.value1(value1)
         this.value2(value2)
         this.value3(value3)
         this.value4(value4)
+        this.value5(value5)
         return this
     }
 
     /**
      * Create a detached, initialised UsersRecord
      */
-    constructor(id: Long? = null, username: String, password: String? = null, deleted: Boolean? = null): this() {
+    constructor(id: Long? = null, username: String, password: String? = null, externalId: String, deleted: Boolean? = null): this() {
         this.id = id
         this.username = username
         this.password = password
+        this.externalId = externalId
         this.deleted = deleted
         resetTouchedOnNotNull()
     }
@@ -128,6 +143,7 @@ open class UsersRecord private constructor() : UpdatableRecordImpl<UsersRecord>(
             this.id = value.id
             this.username = value.username
             this.password = value.password
+            this.externalId = value.externalId
             this.deleted = value.deleted
             resetTouchedOnNotNull()
         }
