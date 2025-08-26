@@ -8,5 +8,8 @@ spring:
 
 frontendUrl: ${FRONTEND_URL}
 
-logging.level.org.jooq.tools.LoggerListener: DEBUG
+logging:
+  level:
+    org.jooq.tools.LoggerListener: DEBUG
+    com.example.codex.config.JwtAuthConverter: DEBUG
 
