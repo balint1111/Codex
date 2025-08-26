@@ -1,0 +1,25 @@
+apiVersion: k8s.keycloak.org/v2alpha1
+kind: Keycloak
+metadata:
+  name: my-keycloak
+  namespace: dev
+spec:
+  instances: 1
+  # External/remote Postgres settings go under `spec.db` in v2alpha1
+  db:
+    vendor: postgres
+    host: codex-db.dev.svc.cluster.local
+    port: 5432
+    usernameSecret:
+      name: keycloak-db-secret
+      key: username
+    passwordSecret:
+      name: keycloak-db-secret
+      key: password
+  additionalOptions:
+    - name: hostname-strict
+      value: "false"
+    - name: http-enabled
+      value: "true"
+  ingress:
+    enabled: true

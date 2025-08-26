@@ -66,9 +66,10 @@ skaffold run -f frontend/skaffold.yaml --default-repo host.docker.internal:5000
 These commands mirror the `dev` deployment performed in the Jenkins pipeline.
 
 ## start kubernetes frontend
-start "" /min kubectl proxy --address=0.0.0.0 --port=8001
-kubectl -n kubernetes-dashboard create token dashboard-admin
-http://localhost:8001/api/v1/namespaces/kubernetes-dashboard/services/https:kubernetes-dashboard:/proxy/#/login
+start "" /min kubectl -n kubernetes-dashboard port-forward svc/kubernetes-dashboard-kong-proxy 8001:443
+kubectl -n kubernetes-dashboard create token admin-user
+https://localhost:8001/#/login
+http://127.0.0.1:30010/api/v1/namespaces/kubernetes-dashboard/services/https:kubernetes-dashboard:/proxy/#/login
 
 ## Keycloak Operator and OIDC Login
 
