@@ -24,6 +24,7 @@ class SecurityConfig(
         private val AUTH_WHITELIST =
             arrayOf(
                 "/api/users/register",
+                "/api/auth/token",
                 "/v3/api-docs/**",
                 "/swagger-ui.html",
                 "/swagger-ui/**",
@@ -31,9 +32,7 @@ class SecurityConfig(
     }
 
     @Bean
-    fun securityFilterChain(
-        http: HttpSecurity,
-    ): SecurityFilterChain {
+    fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
         http
             .csrf { it.disable() }
             .cors {
@@ -45,9 +44,8 @@ class SecurityConfig(
                         allowCredentials = true
                     }
                 }
-            }
-            .sessionManagement {
-                it.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+            }.sessionManagement {
+                it.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
             }.authorizeHttpRequests { authz ->
                 authz
                     .requestMatchers(*AUTH_WHITELIST)
