@@ -80,3 +80,5 @@ client used by the frontend.
 The backend reads the issuer URL from the `SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI` environment variable
 configured in `kubernetes/dev/backend-deployment.yaml`. The frontend receives the Keycloak settings via environment
 variables defined in `kubernetes/dev/frontend-deployment.yaml`.
+temp-admin
+c2621b3b3bc745dabf40d343469ecbec
