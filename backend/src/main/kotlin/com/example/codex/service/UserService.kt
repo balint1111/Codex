@@ -14,10 +14,10 @@ class UserService(
 
     fun register(
         username: String,
-        encodedPassword: String,
+        password: String,
         externalId: String,
     ) {
-        userRepository.save(username, passwordEncoder.encode(encodedPassword), externalId)
+        userRepository.save(username, passwordEncoder.encode(password), externalId)
     }
 
     fun delete(id: Long) {
