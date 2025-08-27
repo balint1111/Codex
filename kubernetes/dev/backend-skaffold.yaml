@@ -33,6 +33,8 @@ spec:
               value: codex
             - name: SPRING_DATASOURCE_PASSWORD
               value: codex
+            - name: SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI
+              value: "http://my-keycloak-service.dev:8080/realms/codex"
 ---
 apiVersion: v1
 kind: Service

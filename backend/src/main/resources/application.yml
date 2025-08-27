@@ -5,8 +5,17 @@ spring:
     password: ${SPRING_DATASOURCE_PASSWORD}
   jooq:
     sql-dialect: POSTGRES
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI}
+          jwk-set-uri: "http://my-keycloak-service.dev:8080/realms/codex/protocol/openid-connect/certs"
 
 frontendUrl: ${FRONTEND_URL}
 
-logging.level.org.jooq.tools.LoggerListener: DEBUG
+logging:
+  level:
+    org.jooq.tools.LoggerListener: DEBUG
+    com.example.codex.config.JwtAuthConverter: DEBUG
 
