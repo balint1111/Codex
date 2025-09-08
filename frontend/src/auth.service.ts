@@ -36,13 +36,31 @@ export class AuthService {
   }
 
   async request(url: string, options: RequestInit = {}) {
-    options.headers = { ...(options.headers || {}), ...this.authHeaders() };
-    const res = await fetch(url, options);
-    if (res.status === 401) {
-      this.keycloak.clearToken();
-      this.user = undefined;
-      this.router.navigate(['/login']);
+    try {
+      await this.keycloak.updateToken(5);
+    } catch (_) {
+      this.handleUnauthorized();
+      throw _;
     }
+
+    options.headers = { ...(options.headers || {}), ...this.authHeaders() };
+    let res = await fetch(url, options);
+
+    if (res.status === 401) {
+      try {
+        await this.keycloak.updateToken(0);
+        options.headers = { ...(options.headers || {}), ...this.authHeaders() };
+        res = await fetch(url, options);
+      } catch (_) {
+        this.handleUnauthorized();
+        return res;
+      }
+
+      if (res.status === 401) {
+        this.handleUnauthorized();
+      }
+    }
+
     return res;
   }
 
@@ -51,5 +69,11 @@ export class AuthService {
     if (res.ok) {
       this.user = await res.json();
     }
+  }
+
+  private handleUnauthorized() {
+    this.keycloak.clearToken();
+    this.user = undefined;
+    this.router.navigate(['/login']);
   }
 }
