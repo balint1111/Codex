@@ -13,7 +13,10 @@ import { TranslationService, Lang } from './i18n/translation.service';
         <mat-option value="en">EN</mat-option>
         <mat-option value="hu">HU</mat-option>
       </mat-select>
-      <button mat-button *ngIf="user" (click)="logout.emit()">{{ 'LOGOUT' | t }}</button>
+      <button mat-button *ngIf="user; else loginBtn" (click)="logout.emit()">{{ 'LOGOUT' | t }}</button>
+      <ng-template #loginBtn>
+        <button mat-button (click)="login.emit()">{{ 'LOGIN' | t }}</button>
+      </ng-template>
     </mat-toolbar>
   `,
   styles: [`
@@ -25,6 +28,7 @@ import { TranslationService, Lang } from './i18n/translation.service';
 export class TopMenuComponent {
   @Input() user?: User;
   @Output() logout = new EventEmitter<void>();
+  @Output() login = new EventEmitter<void>();
   dark = localStorage.getItem('darkMode') === 'true';
   lang: Lang;
 
