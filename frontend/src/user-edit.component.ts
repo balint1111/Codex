@@ -42,10 +42,10 @@ export class UserEditComponent implements OnInit {
 
   ngOnInit() {
     const id = Number(this.route.snapshot.paramMap.get('id'));
-    fetch(`${this.auth.API_URL}/api/users/${id}`, { headers: this.auth.authHeaders() })
+    this.auth.request(`${this.auth.API_URL}/api/users/${id}`)
       .then(r => r.json())
       .then((u: User) => this.user = u);
-    fetch(`${this.auth.API_URL}/api/privileges`, { headers: this.auth.authHeaders() })
+    this.auth.request(`${this.auth.API_URL}/api/privileges`)
       .then(r => r.json())
       .then((p: Privilege[]) => this.allPrivileges = p);
   }
@@ -66,9 +66,8 @@ export class UserEditComponent implements OnInit {
 
   save() {
     if (!this.user) return;
-    fetch(`${this.auth.API_URL}/api/users/${this.user.id}/privileges`, {
+    this.auth.request(`${this.auth.API_URL}/api/users/${this.user.id}/privileges`, {
       method: 'POST',
-      headers: this.auth.authHeaders(),
       body: JSON.stringify(this.user.privileges.map(pr => pr.id))
     });
   }

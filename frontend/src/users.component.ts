@@ -53,12 +53,8 @@ export class UsersComponent implements OnInit, AfterViewInit {
     }
   }
 
-  private authHeaders() {
-    return this.auth.authHeaders();
-  }
-
   loadUsers() {
-    fetch(`${this.auth.API_URL}/api/users`, { headers: this.authHeaders() })
+    this.auth.request(`${this.auth.API_URL}/api/users`)
       .then(r => r.json())
       .then((d: User[]) => this.dataSource.data = d);
   }
@@ -68,9 +64,8 @@ export class UsersComponent implements OnInit, AfterViewInit {
   }
 
   deleteUser(id: number) {
-    fetch(`${this.auth.API_URL}/api/users/${id}`, {
-      method: 'DELETE',
-      headers: this.authHeaders()
+    this.auth.request(`${this.auth.API_URL}/api/users/${id}`, {
+      method: 'DELETE'
     }).then(() => this.loadUsers());
   }
 }
