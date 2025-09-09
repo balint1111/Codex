@@ -1,4 +1,4 @@
-FROM jenkins/jenkins:lts
+FROM ghcr.io/jenkinsci/jenkins:lts
 
 USER root
 RUN apt-get update \
