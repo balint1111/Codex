@@ -1,0 +1,14 @@
+backend:
+  service:
+    type: ClusterIP
+    nodePort: null
+  env: {}
+frontend:
+  service:
+    type: ClusterIP
+    nodePort: null
+  env: {}
+db:
+  service:
+    type: ClusterIP
+    nodePort: null
