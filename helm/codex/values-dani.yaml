@@ -1,0 +1,13 @@
+backend:
+  service:
+    nodePort: 31081
+  env:
+    FRONTEND_URL: "localhost:31080"
+frontend:
+  service:
+    nodePort: 31080
+  env:
+    API_URL: "http://localhost:31081"
+db:
+  service:
+    nodePort: 31082

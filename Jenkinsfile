@@ -40,46 +40,29 @@ pipeline {
     }
 
     stage('Deploy to dev') {
-	  when { branch 'dev' }
+      when { branch 'dev' }
       steps {
-        script {
-                  // Export both images with the current BUILD_NUMBER
-                  sh '''
-                        export IMAGE_BACKEND=${REGISTRY_URL}/codex-backend:${BUILD_NUMBER}
-                        export IMAGE_FRONTEND=${REGISTRY_URL}/codex-frontend:${BUILD_NUMBER}
-                        KUBECTL="kubectl --insecure-skip-tls-verify=true --validate=false"
-
-                        $KUBECTL apply -f kubernetes/dev/namespace.yaml
-                        # Render & apply backend YAML
-                        envsubst < kubernetes/dev/backend-deployment.yaml | $KUBECTL apply -f -
-
-                        # Render & apply frontend YAML
-                        envsubst < kubernetes/dev/frontend-deployment.yaml | $KUBECTL apply -f -
-
-                        # Apply the Postgres DB
-                        $KUBECTL apply -f kubernetes/dev/db-secret.yaml
-                        $KUBECTL apply -f kubernetes/dev/db.yaml
-                        $KUBECTL apply -f kubernetes/dev/keycloak.yaml
-                  '''
-                }
+        sh '''
+          helm upgrade --install codex helm/codex \
+            -n dev --create-namespace \
+            -f helm/codex/values.yaml \
+            --set image.backend=${IMAGE_BACKEND} \
+            --set image.frontend=${IMAGE_FRONTEND}
+        '''
       }
     }
 
     stage('Deploy to dani') {
       when { branch 'dani' }
       steps {
-        script {
-                  sh '''
-                        export IMAGE_BACKEND=${REGISTRY_URL}/codex-backend:${BUILD_NUMBER}
-                        export IMAGE_FRONTEND=${REGISTRY_URL}/codex-frontend:${BUILD_NUMBER}
-                        KUBECTL="kubectl --insecure-skip-tls-verify=true --validate=false"
-
-                        $KUBECTL apply -f kubernetes/dani/namespace.yaml
-                        envsubst < kubernetes/dani/backend-deployment.yaml | $KUBECTL apply -f -
-                        envsubst < kubernetes/dani/frontend-deployment.yaml | $KUBECTL apply -f -
-                        $KUBECTL apply -f kubernetes/dani/db.yaml
-                  '''
-                }
+        sh '''
+          helm upgrade --install codex helm/codex \
+            -n dani --create-namespace \
+            -f helm/codex/values.yaml \
+            -f helm/codex/values-dani.yaml \
+            --set image.backend=${IMAGE_BACKEND} \
+            --set image.frontend=${IMAGE_FRONTEND}
+        '''
       }
     }
 
@@ -87,7 +70,14 @@ pipeline {
       when { branch 'main' }
       steps {
         input 'Deploy to staging?'
-        sh 'kubectl --insecure-skip-tls-verify=true apply -f kubernetes/staging'
+        sh '''
+          helm upgrade --install codex helm/codex \
+            -n staging --create-namespace \
+            -f helm/codex/values.yaml \
+            -f helm/codex/values-staging.yaml \
+            --set image.backend=${IMAGE_BACKEND} \
+            --set image.frontend=${IMAGE_FRONTEND}
+        '''
       }
     }
 
@@ -95,7 +85,14 @@ pipeline {
       when { branch 'main' }
       steps {
         input 'Deploy to production?'
-        sh 'kubectl --insecure-skip-tls-verify=true apply -f kubernetes/prod'
+        sh '''
+          helm upgrade --install codex helm/codex \
+            -n prod --create-namespace \
+            -f helm/codex/values.yaml \
+            -f helm/codex/values-prod.yaml \
+            --set image.backend=${IMAGE_BACKEND} \
+            --set image.frontend=${IMAGE_FRONTEND}
+        '''
       }
     }
   }

@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: codex-backend
+  labels:
+    app: codex-backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: codex-backend
+  template:
+    metadata:
+      labels:
+        app: codex-backend
+    spec:
+      containers:
+        - name: backend
+          image: {{ .Values.image.backend }}
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+          env:
+{{- range $name, $value := .Values.backend.env }}
+            - name: {{ $name }}
+              value: "{{ $value }}"
+{{- end }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: codex-backend
+  labels:
+    app: codex-backend
+spec:
+  type: {{ .Values.backend.service.type }}
+  selector:
+    app: codex-backend
+  ports:
+    - port: 80
+      targetPort: 8080
+{{- if .Values.backend.service.nodePort }}
+      nodePort: {{ .Values.backend.service.nodePort }}
+{{- end }}
