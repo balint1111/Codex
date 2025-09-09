@@ -53,14 +53,14 @@ For a streamlined developer workflow, you can use [Skaffold](https://skaffold.de
 
 ```bash
 
-skaffold run -f backend/skaffold.yaml --default-repo host.docker.internal:5000
+skaffold run -f skaffold.yaml --default-repo localhost:5000
 ```
 
 ### Frontend
 
 ```bash
 
-skaffold run -f frontend/skaffold.yaml --default-repo host.docker.internal:5000
+skaffold run -f skaffold.yaml --default-repo localhost:5000
 ```
 
 These commands mirror the `dev` deployment performed in the Jenkins pipeline.
