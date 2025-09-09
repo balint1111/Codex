@@ -58,6 +58,9 @@ pipeline {
           kubectl get service codex-db -n dev >/dev/null 2>&1 && \
           kubectl label service codex-db -n dev app.kubernetes.io/managed-by=Helm --overwrite && \
           kubectl annotate service codex-db -n dev meta.helm.sh/release-name=codex meta.helm.sh/release-namespace=dev --overwrite || true
+          kubectl get deployment codex-backend -n dev >/dev/null 2>&1 && \
+          kubectl label deployment codex-backend -n dev app.kubernetes.io/managed-by=Helm --overwrite && \
+          kubectl annotate deployment codex-backend -n dev meta.helm.sh/release-name=codex meta.helm.sh/release-namespace=dev --overwrite || true
           helm upgrade --install codex helm/codex \
             -n dev --create-namespace \
             -f helm/codex/values.yaml \
@@ -86,6 +89,9 @@ pipeline {
           kubectl get service codex-db -n dani >/dev/null 2>&1 && \
           kubectl label service codex-db -n dani app.kubernetes.io/managed-by=Helm --overwrite && \
           kubectl annotate service codex-db -n dani meta.helm.sh/release-name=codex meta.helm.sh/release-namespace=dani --overwrite || true
+          kubectl get deployment codex-backend -n dani >/dev/null 2>&1 && \
+          kubectl label deployment codex-backend -n dani app.kubernetes.io/managed-by=Helm --overwrite && \
+          kubectl annotate deployment codex-backend -n dani meta.helm.sh/release-name=codex meta.helm.sh/release-namespace=dani --overwrite || true
           helm upgrade --install codex helm/codex \
             -n dani --create-namespace \
             -f helm/codex/values.yaml \
@@ -116,6 +122,9 @@ pipeline {
           kubectl get service codex-db -n staging >/dev/null 2>&1 && \
           kubectl label service codex-db -n staging app.kubernetes.io/managed-by=Helm --overwrite && \
           kubectl annotate service codex-db -n staging meta.helm.sh/release-name=codex meta.helm.sh/release-namespace=staging --overwrite || true
+          kubectl get deployment codex-backend -n staging >/dev/null 2>&1 && \
+          kubectl label deployment codex-backend -n staging app.kubernetes.io/managed-by=Helm --overwrite && \
+          kubectl annotate deployment codex-backend -n staging meta.helm.sh/release-name=codex meta.helm.sh/release-namespace=staging --overwrite || true
           helm upgrade --install codex helm/codex \
             -n staging --create-namespace \
             -f helm/codex/values.yaml \
@@ -146,6 +155,9 @@ pipeline {
           kubectl get service codex-db -n prod >/dev/null 2>&1 && \
           kubectl label service codex-db -n prod app.kubernetes.io/managed-by=Helm --overwrite && \
           kubectl annotate service codex-db -n prod meta.helm.sh/release-name=codex meta.helm.sh/release-namespace=prod --overwrite || true
+          kubectl get deployment codex-backend -n prod >/dev/null 2>&1 && \
+          kubectl label deployment codex-backend -n prod app.kubernetes.io/managed-by=Helm --overwrite && \
+          kubectl annotate deployment codex-backend -n prod meta.helm.sh/release-name=codex meta.helm.sh/release-namespace=prod --overwrite || true
           helm upgrade --install codex helm/codex \
             -n prod --create-namespace \
             -f helm/codex/values.yaml \
