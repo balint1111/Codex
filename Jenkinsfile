@@ -43,6 +43,9 @@ pipeline {
       when { branch 'dev' }
       steps {
         sh '''
+          kubectl get secret codex-db-credentials -n dev >/dev/null 2>&1 && \
+          kubectl label secret codex-db-credentials -n dev app.kubernetes.io/managed-by=Helm --overwrite && \
+          kubectl annotate secret codex-db-credentials -n dev meta.helm.sh/release-name=codex meta.helm.sh/release-namespace=dev --overwrite || true
           helm upgrade --install codex helm/codex \
             -n dev --create-namespace \
             -f helm/codex/values.yaml \
@@ -56,6 +59,9 @@ pipeline {
       when { branch 'dani' }
       steps {
         sh '''
+          kubectl get secret codex-db-credentials -n dani >/dev/null 2>&1 && \
+          kubectl label secret codex-db-credentials -n dani app.kubernetes.io/managed-by=Helm --overwrite && \
+          kubectl annotate secret codex-db-credentials -n dani meta.helm.sh/release-name=codex meta.helm.sh/release-namespace=dani --overwrite || true
           helm upgrade --install codex helm/codex \
             -n dani --create-namespace \
             -f helm/codex/values.yaml \
@@ -71,6 +77,9 @@ pipeline {
       steps {
         input 'Deploy to staging?'
         sh '''
+          kubectl get secret codex-db-credentials -n staging >/dev/null 2>&1 && \
+          kubectl label secret codex-db-credentials -n staging app.kubernetes.io/managed-by=Helm --overwrite && \
+          kubectl annotate secret codex-db-credentials -n staging meta.helm.sh/release-name=codex meta.helm.sh/release-namespace=staging --overwrite || true
           helm upgrade --install codex helm/codex \
             -n staging --create-namespace \
             -f helm/codex/values.yaml \
@@ -86,6 +95,9 @@ pipeline {
       steps {
         input 'Deploy to production?'
         sh '''
+          kubectl get secret codex-db-credentials -n prod >/dev/null 2>&1 && \
+          kubectl label secret codex-db-credentials -n prod app.kubernetes.io/managed-by=Helm --overwrite && \
+          kubectl annotate secret codex-db-credentials -n prod meta.helm.sh/release-name=codex meta.helm.sh/release-namespace=prod --overwrite || true
           helm upgrade --install codex helm/codex \
             -n prod --create-namespace \
             -f helm/codex/values.yaml \
