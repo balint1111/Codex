@@ -8,6 +8,7 @@ spec:
     vendor: postgres
     host: codex-db.{{ .Release.Namespace }}.svc.cluster.local
     port: 5432
+    database: {{ .Values.keycloak.db.name }}
     usernameSecret:
       name: keycloak-db-secret
       key: username

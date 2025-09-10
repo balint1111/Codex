@@ -35,6 +35,7 @@ db:
 keycloak:
   instances: 2
   db:
+    name: keycloak
     user: codex
     password: codex
   proxy:

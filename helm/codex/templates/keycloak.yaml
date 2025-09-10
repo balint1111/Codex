@@ -11,8 +11,12 @@ spec:
     realm: codex
     displayName: codex
     enabled: true
+    registrationAllowed: true
     clients:
       - clientId: codex-frontend
         publicClient: true
+        baseUrl: "http://localhost:{{ .Values.frontend.service.nodePort }}/login"
         redirectUris:
-          - "http://localhost:{{ .Values.keycloak.proxy.service.nodePort }}/*"
+          - "http://localhost:{{ .Values.frontend.service.nodePort }}/*"
+        webOrigins:
+          - "http://localhost:{{ .Values.frontend.service.nodePort }}"

@@ -11,6 +11,20 @@ stringData:
   POSTGRES_PASSWORD: {{ .Values.db.password }}
 ---
 apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: codex-db-init
+  labels:
+    app: codex-db
+data:
+  init-keycloak-db.sql: |
+    {{- if ne .Values.keycloak.db.user .Values.db.user }}
+    CREATE USER {{ .Values.keycloak.db.user }} WITH ENCRYPTED PASSWORD '{{ .Values.keycloak.db.password }}';
+    {{- end }}
+    CREATE DATABASE {{ .Values.keycloak.db.name }};
+    GRANT ALL PRIVILEGES ON DATABASE {{ .Values.keycloak.db.name }} TO {{ .Values.keycloak.db.user }};
+---
+apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: codex-db-pvc
@@ -64,10 +78,16 @@ spec:
           volumeMounts:
             - mountPath: /var/lib/postgresql/data
               name: data
+            - mountPath: /docker-entrypoint-initdb.d
+              name: init-script
+              readOnly: true
       volumes:
         - name: data
           persistentVolumeClaim:
             claimName: codex-db-pvc
+        - name: init-script
+          configMap:
+            name: codex-db-init
 ---
 apiVersion: v1
 kind: Service
