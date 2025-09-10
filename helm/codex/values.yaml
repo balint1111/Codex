@@ -31,3 +31,13 @@ db:
   service:
     type: NodePort
     nodePort: 30082
+
+keycloak:
+  instances: 2
+  db:
+    user: codex
+    password: codex
+  proxy:
+    service:
+      type: NodePort
+      nodePort: 30001

@@ -12,3 +12,8 @@ db:
   service:
     type: ClusterIP
     nodePort: null
+keycloak:
+  proxy:
+    service:
+      type: ClusterIP
+      nodePort: null

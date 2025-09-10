@@ -1,0 +1,87 @@
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: keycloak-proxy
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: keycloak-proxy
+rules:
+  - apiGroups: [""]
+    resources: ["pods", "pods/portforward", "services", "endpoints"]
+    verbs: ["get", "list", "watch", "create"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: keycloak-proxy
+subjects:
+  - kind: ServiceAccount
+    name: keycloak-proxy
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: keycloak-proxy
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: keycloak-proxy
+  labels:
+    app: keycloak-proxy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: keycloak-proxy
+  template:
+    metadata:
+      labels:
+        app: keycloak-proxy
+    spec:
+      serviceAccountName: keycloak-proxy
+      containers:
+        - name: kubectl
+          image: bitnami/kubectl:latest
+          command: ["kubectl"]
+          args:
+            - -n
+            - {{ .Release.Namespace }}
+            - port-forward
+            - svc/my-keycloak-service
+            - --address
+            - 0.0.0.0
+            - 8080:8080
+          ports:
+            - name: http
+              containerPort: 8080
+          readinessProbe:
+            tcpSocket:
+              port: 8080
+            initialDelaySeconds: 3
+            periodSeconds: 5
+          livenessProbe:
+            tcpSocket:
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: keycloak-proxy
+  labels:
+    app: keycloak-proxy
+spec:
+  type: {{ .Values.keycloak.proxy.service.type }}
+  selector:
+    app: keycloak-proxy
+  ports:
+    - name: http
+      port: 8080
+      targetPort: 8080
+      {{- if .Values.keycloak.proxy.service.nodePort }}
+      nodePort: {{ .Values.keycloak.proxy.service.nodePort }}
+      {{- end }}
