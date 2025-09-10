@@ -115,7 +115,7 @@ pipeline {
     }
 
     stage('Deploy to staging') {
-      when { branch 'main' }
+      when { branch 'staging' }
       steps {
         input 'Deploy to staging?'
         sh '''

@@ -1,19 +1,18 @@
 backend:
   service:
-    type: ClusterIP
-    nodePort: null
-  env: {}
+    nodePort: 32081
+  env:
+    FRONTEND_URL: "http://localhost:32080"
 frontend:
   service:
-    type: ClusterIP
-    nodePort: null
-  env: {}
+    nodePort: 32080
+  env:
+    API_URL: "http://localhost:32081"
+    KEYCLOAK_URL: "http://localhost:32001"
 db:
   service:
-    type: ClusterIP
-    nodePort: null
+    nodePort: 32082
 keycloak:
   proxy:
     service:
-      type: ClusterIP
-      nodePort: null
+      nodePort: 32001
