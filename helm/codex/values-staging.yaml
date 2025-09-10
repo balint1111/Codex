@@ -3,7 +3,7 @@ backend:
     nodePort: 32081
   env:
     FRONTEND_URL: "http://localhost:32080"
-    SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: "http://my-keycloak-service.staging:8080/realms/codex"
+    SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: "http://my-keycloak-service.staging:8080/realms/codex/protocol/openid-connect/certs"
 frontend:
   service:
     nodePort: 32080
