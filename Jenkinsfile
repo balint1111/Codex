@@ -48,7 +48,7 @@ pipeline {
         beforeAgent true
       }
       steps {
-        input 'Deploy to ${env.BRANCH_NAME}?'
+        input 'Deploy to $BRANCH_NAME?'
       }
     }
 	
@@ -58,7 +58,7 @@ pipeline {
 		  kubectl apply -f kubernetes/keycloak-realm-importer.yaml
 		  kubectl apply -f kubernetes/keycloak-crds.yaml
           helm upgrade --install codex helm/codex \
-            -n ${env.BRANCH_NAME} --create-namespace \
+            -n $BRANCH_NAME --create-namespace \
             -f helm/codex/values.yaml \
             --set image.backend=${IMAGE_BACKEND} \
             --set image.frontend=${IMAGE_FRONTEND}
