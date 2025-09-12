@@ -1,0 +1,22 @@
+apiVersion: k8s.keycloak.org/v2alpha1
+kind: KeycloakRealmImport
+metadata:
+  name: codex
+  labels:
+    app: codex
+spec:
+  keycloakCRName: my-keycloak
+  realm:
+    id: codex12
+    realm: codex
+    displayName: codex
+    enabled: true
+    registrationAllowed: true
+    clients:
+      - clientId: codex-frontend
+        publicClient: true
+        baseUrl: "http://localhost:{{ .Values.frontend.service.nodePort }}/login"
+        redirectUris:
+          - "http://localhost:{{ .Values.frontend.service.nodePort }}/*"
+        webOrigins:
+          - "http://localhost:{{ .Values.frontend.service.nodePort }}"

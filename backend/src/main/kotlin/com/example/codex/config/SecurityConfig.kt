@@ -46,7 +46,7 @@ class SecurityConfig(
 
     private fun jwtDecoder(): JwtDecoder {
         val jwtDecoder: NimbusJwtDecoder = NimbusJwtDecoder.withJwkSetUri(jwkSetUri).build()
-
+        println("jwkSetUri $jwkSetUri")
         val withIssuer: OAuth2TokenValidator<Jwt> = JwtValidators.createDefault()
         val withAudience: OAuth2TokenValidator<Jwt> = DelegatingOAuth2TokenValidator(withIssuer, userValidator)
 

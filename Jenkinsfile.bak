@@ -48,7 +48,7 @@ pipeline {
         beforeAgent true
       }
       steps {
-        input message: "Deploy to ${env.BRANCH_NAME}?"
+        input 'Deploy to $BRANCH_NAME?'
       }
     }
 	

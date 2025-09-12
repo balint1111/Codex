@@ -17,7 +17,7 @@ services:
       DOCKER_HOST: "tcp://host.docker.internal:2375"
       # handy to have for your pipeline scripts
       REGISTRY_URL: "host.docker.internal:5000"
-      KUBECONFIG: "/var/jenkins_home/.kube/config"
+      KUBECONFIG: "/var/jenkins_home/.kube/config/config"
     ports:
       - "8080:8080"
       - "50000:50000"

@@ -9,7 +9,7 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          jwk-set-uri: "http://my-keycloak-service.dev:8080/realms/codex/protocol/openid-connect/certs"
+          jwk-set-uri: ${SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI}
 
 frontendUrl: ${FRONTEND_URL}
 
