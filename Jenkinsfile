@@ -60,6 +60,7 @@ pipeline {
           helm upgrade --install codex helm/codex \
             -n $BRANCH_NAME --create-namespace \
             -f helm/codex/values.yaml \
+            -f helm/codex/values-$BRANCH_NAME.yaml \
             --set image.backend=${IMAGE_BACKEND} \
             --set image.frontend=${IMAGE_FRONTEND}
         '''
