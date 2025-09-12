@@ -38,159 +38,34 @@ pipeline {
         }
       }
     }
-
-    stage('Deploy to dev') {
-      when { branch 'dev' }
+	
+	stage('Approve') {
+      when {
+        anyOf {
+          branch 'staging'
+          branch 'prod'
+        }
+        beforeAgent true
+      }
+      steps {
+        input 'Deploy to ${env.BRANCH_NAME}?'
+      }
+    }
+	
+	stage('Deploy') {
       steps {
         sh '''
-          kubectl get secret codex-db-credentials -n dev >/dev/null 2>&1 && \
-          kubectl label secret codex-db-credentials -n dev app.kubernetes.io/managed-by=Helm --overwrite && \
-          kubectl annotate secret codex-db-credentials -n dev meta.helm.sh/release-name=codex meta.helm.sh/release-namespace=dev --overwrite || true
-          kubectl get pvc codex-db-pvc -n dev >/dev/null 2>&1 && \
-          kubectl label pvc codex-db-pvc -n dev app.kubernetes.io/managed-by=Helm --overwrite && \
-          kubectl annotate pvc codex-db-pvc -n dev meta.helm.sh/release-name=codex meta.helm.sh/release-namespace=dev --overwrite || true
-          kubectl get service codex-backend -n dev >/dev/null 2>&1 && \
-          kubectl label service codex-backend -n dev app.kubernetes.io/managed-by=Helm --overwrite && \
-          kubectl annotate service codex-backend -n dev meta.helm.sh/release-name=codex meta.helm.sh/release-namespace=dev --overwrite || true
-          kubectl get service codex-frontend -n dev >/dev/null 2>&1 && \
-          kubectl label service codex-frontend -n dev app.kubernetes.io/managed-by=Helm --overwrite && \
-          kubectl annotate service codex-frontend -n dev meta.helm.sh/release-name=codex meta.helm.sh/release-namespace=dev --overwrite || true
-          kubectl get service codex-db -n dev >/dev/null 2>&1 && \
-          kubectl label service codex-db -n dev app.kubernetes.io/managed-by=Helm --overwrite && \
-          kubectl annotate service codex-db -n dev meta.helm.sh/release-name=codex meta.helm.sh/release-namespace=dev --overwrite || true
-          kubectl get deployment codex-db -n dev >/dev/null 2>&1 && \
-          kubectl label deployment codex-db -n dev app.kubernetes.io/managed-by=Helm --overwrite && \
-          kubectl annotate deployment codex-db -n dev meta.helm.sh/release-name=codex meta.helm.sh/release-namespace=dev --overwrite || true
-          kubectl get deployment codex-backend -n dev >/dev/null 2>&1 && \
-          kubectl label deployment codex-backend -n dev app.kubernetes.io/managed-by=Helm --overwrite && \
-          kubectl annotate deployment codex-backend -n dev meta.helm.sh/release-name=codex meta.helm.sh/release-namespace=dev --overwrite || true
-          kubectl get deployment codex-frontend -n dev >/dev/null 2>&1 && \
-          kubectl label deployment codex-frontend -n dev app.kubernetes.io/managed-by=Helm --overwrite && \
-          kubectl annotate deployment codex-frontend -n dev meta.helm.sh/release-name=codex meta.helm.sh/release-namespace=dev --overwrite || true
+		  kubectl apply -f kubernetes/keycloak-realm-importer.yaml
+		  kubectl apply -f kubernetes/keycloak-crds.yaml
           helm upgrade --install codex helm/codex \
-            -n dev --create-namespace \
+            -n ${env.BRANCH_NAME} --create-namespace \
             -f helm/codex/values.yaml \
             --set image.backend=${IMAGE_BACKEND} \
             --set image.frontend=${IMAGE_FRONTEND}
         '''
       }
     }
-
-    stage('Deploy to dani') {
-      when { branch 'dani' }
-      steps {
-        sh '''
-          kubectl get secret codex-db-credentials -n dani >/dev/null 2>&1 && \
-          kubectl label secret codex-db-credentials -n dani app.kubernetes.io/managed-by=Helm --overwrite && \
-          kubectl annotate secret codex-db-credentials -n dani meta.helm.sh/release-name=codex meta.helm.sh/release-namespace=dani --overwrite || true
-          kubectl get pvc codex-db-pvc -n dani >/dev/null 2>&1 && \
-          kubectl label pvc codex-db-pvc -n dani app.kubernetes.io/managed-by=Helm --overwrite && \
-          kubectl annotate pvc codex-db-pvc -n dani meta.helm.sh/release-name=codex meta.helm.sh/release-namespace=dani --overwrite || true
-          kubectl get service codex-backend -n dani >/dev/null 2>&1 && \
-          kubectl label service codex-backend -n dani app.kubernetes.io/managed-by=Helm --overwrite && \
-          kubectl annotate service codex-backend -n dani meta.helm.sh/release-name=codex meta.helm.sh/release-namespace=dani --overwrite || true
-          kubectl get service codex-frontend -n dani >/dev/null 2>&1 && \
-          kubectl label service codex-frontend -n dani app.kubernetes.io/managed-by=Helm --overwrite && \
-          kubectl annotate service codex-frontend -n dani meta.helm.sh/release-name=codex meta.helm.sh/release-namespace=dani --overwrite || true
-          kubectl get service codex-db -n dani >/dev/null 2>&1 && \
-          kubectl label service codex-db -n dani app.kubernetes.io/managed-by=Helm --overwrite && \
-          kubectl annotate service codex-db -n dani meta.helm.sh/release-name=codex meta.helm.sh/release-namespace=dani --overwrite || true
-          kubectl get deployment codex-db -n dani >/dev/null 2>&1 && \
-          kubectl label deployment codex-db -n dani app.kubernetes.io/managed-by=Helm --overwrite && \
-          kubectl annotate deployment codex-db -n dani meta.helm.sh/release-name=codex meta.helm.sh/release-namespace=dani --overwrite || true
-          kubectl get deployment codex-backend -n dani >/dev/null 2>&1 && \
-          kubectl label deployment codex-backend -n dani app.kubernetes.io/managed-by=Helm --overwrite && \
-          kubectl annotate deployment codex-backend -n dani meta.helm.sh/release-name=codex meta.helm.sh/release-namespace=dani --overwrite || true
-          kubectl get deployment codex-frontend -n dani >/dev/null 2>&1 && \
-          kubectl label deployment codex-frontend -n dani app.kubernetes.io/managed-by=Helm --overwrite && \
-          kubectl annotate deployment codex-frontend -n dani meta.helm.sh/release-name=codex meta.helm.sh/release-namespace=dani --overwrite || true
-          helm upgrade --install codex helm/codex \
-            -n dani --create-namespace \
-            -f helm/codex/values.yaml \
-            -f helm/codex/values-dani.yaml \
-            --set image.backend=${IMAGE_BACKEND} \
-            --set image.frontend=${IMAGE_FRONTEND}
-        '''
-      }
-    }
-
-    stage('Deploy to staging') {
-      when { branch 'staging' }
-      steps {
-        input 'Deploy to staging?'
-        sh '''
-          kubectl get secret codex-db-credentials -n staging >/dev/null 2>&1 && \
-          kubectl label secret codex-db-credentials -n staging app.kubernetes.io/managed-by=Helm --overwrite && \
-          kubectl annotate secret codex-db-credentials -n staging meta.helm.sh/release-name=codex meta.helm.sh/release-namespace=staging --overwrite || true
-          kubectl get pvc codex-db-pvc -n staging >/dev/null 2>&1 && \
-          kubectl label pvc codex-db-pvc -n staging app.kubernetes.io/managed-by=Helm --overwrite && \
-          kubectl annotate pvc codex-db-pvc -n staging meta.helm.sh/release-name=codex meta.helm.sh/release-namespace=staging --overwrite || true
-          kubectl get service codex-backend -n staging >/dev/null 2>&1 && \
-          kubectl label service codex-backend -n staging app.kubernetes.io/managed-by=Helm --overwrite && \
-          kubectl annotate service codex-backend -n staging meta.helm.sh/release-name=codex meta.helm.sh/release-namespace=staging --overwrite || true
-          kubectl get service codex-frontend -n staging >/dev/null 2>&1 && \
-          kubectl label service codex-frontend -n staging app.kubernetes.io/managed-by=Helm --overwrite && \
-          kubectl annotate service codex-frontend -n staging meta.helm.sh/release-name=codex meta.helm.sh/release-namespace=staging --overwrite || true
-          kubectl get service codex-db -n staging >/dev/null 2>&1 && \
-          kubectl label service codex-db -n staging app.kubernetes.io/managed-by=Helm --overwrite && \
-          kubectl annotate service codex-db -n staging meta.helm.sh/release-name=codex meta.helm.sh/release-namespace=staging --overwrite || true
-          kubectl get deployment codex-db -n staging >/dev/null 2>&1 && \
-          kubectl label deployment codex-db -n staging app.kubernetes.io/managed-by=Helm --overwrite && \
-          kubectl annotate deployment codex-db -n staging meta.helm.sh/release-name=codex meta.helm.sh/release-namespace=staging --overwrite || true
-          kubectl get deployment codex-backend -n staging >/dev/null 2>&1 && \
-          kubectl label deployment codex-backend -n staging app.kubernetes.io/managed-by=Helm --overwrite && \
-          kubectl annotate deployment codex-backend -n staging meta.helm.sh/release-name=codex meta.helm.sh/release-namespace=staging --overwrite || true
-          kubectl get deployment codex-frontend -n staging >/dev/null 2>&1 && \
-          kubectl label deployment codex-frontend -n staging app.kubernetes.io/managed-by=Helm --overwrite && \
-          kubectl annotate deployment codex-frontend -n staging meta.helm.sh/release-name=codex meta.helm.sh/release-namespace=staging --overwrite || true
-          helm upgrade --install codex helm/codex \
-            -n staging --create-namespace \
-            -f helm/codex/values.yaml \
-            -f helm/codex/values-staging.yaml \
-            --set image.backend=${IMAGE_BACKEND} \
-            --set image.frontend=${IMAGE_FRONTEND}
-        '''
-      }
-    }
-
-    stage('Deploy to prod') {
-      when { branch 'main' }
-      steps {
-        input 'Deploy to production?'
-        sh '''
-          kubectl get secret codex-db-credentials -n prod >/dev/null 2>&1 && \
-          kubectl label secret codex-db-credentials -n prod app.kubernetes.io/managed-by=Helm --overwrite && \
-          kubectl annotate secret codex-db-credentials -n prod meta.helm.sh/release-name=codex meta.helm.sh/release-namespace=prod --overwrite || true
-          kubectl get pvc codex-db-pvc -n prod >/dev/null 2>&1 && \
-          kubectl label pvc codex-db-pvc -n prod app.kubernetes.io/managed-by=Helm --overwrite && \
-          kubectl annotate pvc codex-db-pvc -n prod meta.helm.sh/release-name=codex meta.helm.sh/release-namespace=prod --overwrite || true
-          kubectl get service codex-backend -n prod >/dev/null 2>&1 && \
-          kubectl label service codex-backend -n prod app.kubernetes.io/managed-by=Helm --overwrite && \
-          kubectl annotate service codex-backend -n prod meta.helm.sh/release-name=codex meta.helm.sh/release-namespace=prod --overwrite || true
-          kubectl get service codex-frontend -n prod >/dev/null 2>&1 && \
-          kubectl label service codex-frontend -n prod app.kubernetes.io/managed-by=Helm --overwrite && \
-          kubectl annotate service codex-frontend -n prod meta.helm.sh/release-name=codex meta.helm.sh/release-namespace=prod --overwrite || true
-          kubectl get service codex-db -n prod >/dev/null 2>&1 && \
-          kubectl label service codex-db -n prod app.kubernetes.io/managed-by=Helm --overwrite && \
-          kubectl annotate service codex-db -n prod meta.helm.sh/release-name=codex meta.helm.sh/release-namespace=prod --overwrite || true
-          kubectl get deployment codex-db -n prod >/dev/null 2>&1 && \
-          kubectl label deployment codex-db -n prod app.kubernetes.io/managed-by=Helm --overwrite && \
-          kubectl annotate deployment codex-db -n prod meta.helm.sh/release-name=codex meta.helm.sh/release-namespace=prod --overwrite || true
-          kubectl get deployment codex-backend -n prod >/dev/null 2>&1 && \
-          kubectl label deployment codex-backend -n prod app.kubernetes.io/managed-by=Helm --overwrite && \
-          kubectl annotate deployment codex-backend -n prod meta.helm.sh/release-name=codex meta.helm.sh/release-namespace=prod --overwrite || true
-          kubectl get deployment codex-frontend -n prod >/dev/null 2>&1 && \
-          kubectl label deployment codex-frontend -n prod app.kubernetes.io/managed-by=Helm --overwrite && \
-          kubectl annotate deployment codex-frontend -n prod meta.helm.sh/release-name=codex meta.helm.sh/release-namespace=prod --overwrite || true
-          helm upgrade --install codex helm/codex \
-            -n prod --create-namespace \
-            -f helm/codex/values.yaml \
-            -f helm/codex/values-prod.yaml \
-            --set image.backend=${IMAGE_BACKEND} \
-            --set image.frontend=${IMAGE_FRONTEND}
-        '''
-      }
-    }
+	
   }
 
   post {
