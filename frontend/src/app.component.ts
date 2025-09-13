@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 
 export interface Privilege { id: number; name: string; }
 export interface User { id: number; username: string; privileges: Privilege[]; }
@@ -11,7 +12,7 @@ import { Router } from '@angular/router';
   template: `
     <app-top-menu [user]="auth.user" (logout)="logout()" (login)="login()" (account)="account()"></app-top-menu>
     <mat-sidenav-container *ngIf="auth.user" class="layout">
-      <mat-sidenav mode="side" opened>
+      <mat-sidenav [mode]="isMobile ? 'over' : 'side'" [opened]="!isMobile">
         <app-navbar [user]="auth.user"></app-navbar>
       </mat-sidenav>
       <mat-sidenav-content class="content">
@@ -32,7 +33,17 @@ import { Router } from '@angular/router';
   `]
 })
 export class AppComponent {
-  constructor(public auth: AuthService, private router: Router) {}
+  isMobile = false;
+
+  constructor(
+    public auth: AuthService,
+    private router: Router,
+    private breakpointObserver: BreakpointObserver
+  ) {
+    this.breakpointObserver
+      .observe([Breakpoints.Handset])
+      .subscribe(result => (this.isMobile = result.matches));
+  }
 
   logout() {
     this.auth.logout();
