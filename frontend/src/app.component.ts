@@ -24,6 +24,11 @@ import { Router } from '@angular/router';
   `,
   styles: [`
     .layout { height: calc(100vh - 64px); }
+    :host-context(.light-theme) mat-sidenav {
+      background-color: var(--sidebar-bg);
+      color: white;
+      --mat-list-item-label-text-color: white;
+    }
   `]
 })
 export class AppComponent {
