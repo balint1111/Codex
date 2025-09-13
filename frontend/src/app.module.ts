@@ -17,6 +17,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSelectModule } from '@angular/material/select';
 import { MatMenuModule } from '@angular/material/menu';
+import { LayoutModule } from '@angular/cdk/layout';
 
 import { TranslatePipe } from './i18n/translate.pipe';
 
@@ -71,7 +72,8 @@ const routes: Routes = [
     MatCardModule,
     MatSlideToggleModule,
     MatSelectModule,
-    MatMenuModule
+    MatMenuModule,
+    LayoutModule
   ],
   bootstrap: [AppComponent]
 })
