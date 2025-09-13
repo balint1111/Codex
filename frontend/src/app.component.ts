@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 
 export interface Privilege { id: number; name: string; }
@@ -6,13 +6,21 @@ export interface User { id: number; username: string; privileges: Privilege[]; }
 
 import { AuthService } from './auth.service';
 import { Router } from '@angular/router';
+import { MatSidenav } from '@angular/material/sidenav';
 
 @Component({
   selector: 'app-root',
   template: `
-    <app-top-menu [user]="auth.user" (logout)="logout()" (login)="login()" (account)="account()"></app-top-menu>
+    <app-top-menu
+      [user]="auth.user"
+      (logout)="logout()"
+      (login)="login()"
+      (account)="account()"
+      (menu)="toggleSidenav()"
+      [menuOpened]="sidenav?.opened"
+    ></app-top-menu>
     <mat-sidenav-container *ngIf="auth.user" class="layout">
-      <mat-sidenav [mode]="isMobile ? 'over' : 'side'" [opened]="!isMobile">
+      <mat-sidenav #sidenav [mode]="isMobile ? 'over' : 'side'" [opened]="!isMobile">
         <app-navbar [user]="auth.user"></app-navbar>
       </mat-sidenav>
       <mat-sidenav-content class="content">
@@ -34,6 +42,7 @@ import { Router } from '@angular/router';
 })
 export class AppComponent {
   isMobile = false;
+  @ViewChild('sidenav') sidenav?: MatSidenav;
 
   constructor(
     public auth: AuthService,
@@ -56,5 +65,9 @@ export class AppComponent {
 
   account() {
     this.auth.account();
+  }
+
+  toggleSidenav() {
+    this.sidenav?.toggle();
   }
 }
