@@ -16,6 +16,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatCardModule } from '@angular/material/card';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSelectModule } from '@angular/material/select';
+import { MatMenuModule } from '@angular/material/menu';
 
 import { TranslatePipe } from './i18n/translate.pipe';
 
@@ -69,7 +70,8 @@ const routes: Routes = [
     MatCheckboxModule,
     MatCardModule,
     MatSlideToggleModule,
-    MatSelectModule
+    MatSelectModule,
+    MatMenuModule
   ],
   bootstrap: [AppComponent]
 })
