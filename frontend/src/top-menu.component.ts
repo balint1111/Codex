@@ -7,6 +7,7 @@ import { TranslationService, Lang } from './i18n/translation.service';
   template: `
     <mat-toolbar color="primary">
       <button
+        class="menu-btn"
         mat-icon-button
         *ngIf="user"
         (click)="menu.emit()"
@@ -40,6 +41,7 @@ import { TranslationService, Lang } from './i18n/translation.service';
     .spacer { flex: 1 1 auto; }
     .user { margin-right: 1rem; }
     .lang { width: 60px; margin-right: .5rem; }
+    .menu-btn { margin-left: -12px; }
   `]
 })
 export class TopMenuComponent {
