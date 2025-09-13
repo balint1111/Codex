@@ -55,6 +55,8 @@ export class TopMenuComponent {
       darkLink.disabled = !this.dark;
       lightLink.disabled = this.dark;
     }
+    document.body.classList.toggle('dark-theme', this.dark);
+    document.body.classList.toggle('light-theme', !this.dark);
   }
 
   changeLang(l: Lang) {
