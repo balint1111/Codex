@@ -15,7 +15,7 @@ metadata:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  name: keycloak-operator-clusterrole
+  name: keycloak-operator-clusterrole-{{ .Values.git.branch | quote }}
 rules:
   - apiGroups:
       - config.openshift.io
@@ -30,7 +30,7 @@ metadata:
   labels:
     app.kubernetes.io/name: keycloak-operator
     app.kubernetes.io/version: 26.3.3
-  name: keycloakrealmimportcontroller-cluster-role
+  name: keycloakrealmimportcontroller-cluster-role-{{ .Values.git.branch | quote }}
 rules:
   - apiGroups:
       - k8s.keycloak.org
@@ -76,7 +76,7 @@ metadata:
   labels:
     app.kubernetes.io/name: keycloak-operator
     app.kubernetes.io/version: 26.3.3
-  name: keycloakcontroller-cluster-role
+  name: keycloakcontroller-cluster-role-{{ .Values.git.branch | quote }}
 rules:
   - apiGroups:
       - k8s.keycloak.org
@@ -156,11 +156,11 @@ kind: ClusterRoleBinding
 metadata:
   labels:
     app.kubernetes.io/name: keycloak-operator
-  name: keycloak-operator-clusterrole-binding
+  name: keycloak-operator-clusterrole-binding--{{ .Values.git.branch | quote }}
 roleRef:
   kind: ClusterRole
   apiGroup: rbac.authorization.k8s.io
-  name: keycloak-operator-clusterrole
+  name: keycloak-operator-clusterrole-{{ .Values.git.branch | quote }}
 subjects:
   - kind: ServiceAccount
     name: keycloak-operator
@@ -169,7 +169,7 @@ subjects:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
-  name: keycloak-operator-role
+  name: keycloak-operator-role-{{ .Values.git.branch | quote }}
 rules:
   - apiGroups:
       - apps
@@ -240,11 +240,11 @@ kind: RoleBinding
 metadata:
   labels:
     app.kubernetes.io/name: keycloak-operator
-  name: keycloak-operator-role-binding
+  name: keycloak-operator-role-binding-{{ .Values.git.branch | quote }}
 roleRef:
   kind: Role
   apiGroup: rbac.authorization.k8s.io
-  name: keycloak-operator-role
+  name: keycloak-operator-role-{{ .Values.git.branch | quote }}
 subjects:
   - kind: ServiceAccount
     name: keycloak-operator
@@ -255,11 +255,11 @@ metadata:
   labels:
     app.kubernetes.io/name: keycloak-operator
     app.kubernetes.io/version: 26.3.3
-  name: keycloakrealmimportcontroller-role-binding
+  name: keycloakrealmimportcontroller-role-binding-{{ .Values.git.branch | quote }}
 roleRef:
   kind: ClusterRole
   apiGroup: rbac.authorization.k8s.io
-  name: keycloakrealmimportcontroller-cluster-role
+  name: keycloakrealmimportcontroller-cluster-role-{{ .Values.git.branch | quote }}
 subjects:
   - kind: ServiceAccount
     name: keycloak-operator
@@ -270,11 +270,11 @@ metadata:
   labels:
     app.kubernetes.io/name: keycloak-operator
     app.kubernetes.io/version: 26.3.3
-  name: keycloakcontroller-role-binding
+  name: keycloakcontroller-role-binding-{{ .Values.git.branch | quote }}
 roleRef:
   kind: ClusterRole
   apiGroup: rbac.authorization.k8s.io
-  name: keycloakcontroller-cluster-role
+  name: keycloakcontroller-cluster-role-{{ .Values.git.branch | quote }}
 subjects:
   - kind: ServiceAccount
     name: keycloak-operator
@@ -285,11 +285,11 @@ metadata:
   labels:
     app.kubernetes.io/name: keycloak-operator
     app.kubernetes.io/version: 26.3.3
-  name: keycloak-operator-view
+  name: keycloak-operator-view-{{ .Values.git.branch | quote }}
 roleRef:
   kind: ClusterRole
   apiGroup: rbac.authorization.k8s.io
-  name: view
+  name: view-{{ .Values.git.branch | quote }}
 subjects:
   - kind: ServiceAccount
     name: keycloak-operator

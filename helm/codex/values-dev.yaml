@@ -1,3 +1,6 @@
+git:
+  branch: "dev"
+
 backend:
   service:
     nodePort: 30081

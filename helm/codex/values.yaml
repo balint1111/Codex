@@ -2,6 +2,9 @@ image:
   backend: ""
   frontend: ""
 
+git:
+  branch: "dev"
+
 backend:
   service:
     type: NodePort
