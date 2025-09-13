@@ -6,6 +6,14 @@ import { TranslationService, Lang } from './i18n/translation.service';
   selector: 'app-top-menu',
   template: `
     <mat-toolbar color="primary">
+      <button
+        class="menu-btn"
+        mat-icon-button
+        *ngIf="user"
+        (click)="menu.emit()"
+      >
+        <mat-icon>{{ menuOpened ? 'close' : 'menu' }}</mat-icon>
+      </button>
       <span *ngIf="user" class="user">{{ 'WELCOME' | t:{username: user?.username} }}</span>
       <mat-slide-toggle [(ngModel)]="dark" (change)="toggleDark()">{{ 'DARK_MODE' | t }}</mat-slide-toggle>
       <span class="spacer"></span>
@@ -33,13 +41,16 @@ import { TranslationService, Lang } from './i18n/translation.service';
     .spacer { flex: 1 1 auto; }
     .user { margin-right: 1rem; }
     .lang { width: 60px; margin-right: .5rem; }
+    .menu-btn { margin-left: -12px; }
   `]
 })
 export class TopMenuComponent {
   @Input() user?: User;
+  @Input() menuOpened = false;
   @Output() logout = new EventEmitter<void>();
   @Output() login = new EventEmitter<void>();
   @Output() account = new EventEmitter<void>();
+  @Output() menu = new EventEmitter<void>();
   dark = localStorage.getItem('darkMode') === 'true';
   lang: Lang;
 
