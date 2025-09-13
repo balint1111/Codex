@@ -9,7 +9,7 @@ import { Router } from '@angular/router';
 @Component({
   selector: 'app-root',
   template: `
-    <app-top-menu [user]="auth.user" (logout)="logout()" (login)="login()"></app-top-menu>
+    <app-top-menu [user]="auth.user" (logout)="logout()" (login)="login()" (account)="account()"></app-top-menu>
     <mat-sidenav-container *ngIf="auth.user" class="layout">
       <mat-sidenav mode="side" opened>
         <app-navbar [user]="auth.user"></app-navbar>
@@ -36,5 +36,9 @@ export class AppComponent {
 
   login() {
     this.auth.login();
+  }
+
+  account() {
+    this.auth.account();
   }
 }

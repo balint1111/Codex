@@ -31,6 +31,10 @@ export class AuthService {
     this.keycloak.logout();
   }
 
+  account() {
+    this.keycloak.accountManagement();
+  }
+
   private authHeaders() {
     return { 'Authorization': 'Bearer ' + this.keycloak.token, 'Content-Type': 'application/json' };
   }

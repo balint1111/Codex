@@ -13,7 +13,17 @@ import { TranslationService, Lang } from './i18n/translation.service';
         <mat-option value="en">EN</mat-option>
         <mat-option value="hu">HU</mat-option>
       </mat-select>
-      <button mat-button *ngIf="user; else loginBtn" (click)="logout.emit()">{{ 'LOGOUT' | t }}</button>
+      <button
+        mat-icon-button
+        *ngIf="user; else loginBtn"
+        [matMenuTriggerFor]="userMenu"
+      >
+        <mat-icon>account_circle</mat-icon>
+      </button>
+      <mat-menu #userMenu="matMenu">
+        <button mat-menu-item (click)="account.emit()">{{ 'MY_ACCOUNT' | t }}</button>
+        <button mat-menu-item (click)="logout.emit()">{{ 'LOGOUT' | t }}</button>
+      </mat-menu>
       <ng-template #loginBtn>
         <button mat-button (click)="login.emit()">{{ 'LOGIN' | t }}</button>
       </ng-template>
@@ -29,6 +39,7 @@ export class TopMenuComponent {
   @Input() user?: User;
   @Output() logout = new EventEmitter<void>();
   @Output() login = new EventEmitter<void>();
+  @Output() account = new EventEmitter<void>();
   dark = localStorage.getItem('darkMode') === 'true';
   lang: Lang;
 
