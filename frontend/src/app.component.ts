@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
+import { BreakpointObserver } from '@angular/cdk/layout';
 
 export interface Privilege { id: number; name: string; }
 export interface User { id: number; username: string; privileges: Privilege[]; }
@@ -41,7 +41,7 @@ export class AppComponent {
     private breakpointObserver: BreakpointObserver
   ) {
     this.breakpointObserver
-      .observe([Breakpoints.Handset])
+      .observe(['(max-width: 768px)'])
       .subscribe(result => (this.isMobile = result.matches));
   }
 
