@@ -1,5 +1,6 @@
 package com.example.codex.config
 
+import com.example.codex.domain.User
 import com.example.codex.service.UserService
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
@@ -9,6 +10,7 @@ import org.springframework.security.authentication.AbstractAuthenticationToken
 import org.springframework.security.config.annotation.method.configuration.EnableReactiveMethodSecurity
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity
 import org.springframework.security.config.web.server.ServerHttpSecurity
+import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException
 import org.springframework.security.oauth2.core.OAuth2Error
 import org.springframework.security.oauth2.jwt.Jwt
@@ -55,10 +57,15 @@ class SecurityConfig(
     @Bean
     fun jwtAuthenticationConverter(): Converter<Jwt, Mono<out AbstractAuthenticationToken>> {
         val delegate = ReactiveJwtAuthenticationConverterAdapter(JwtAuthenticationConverter())
-        return Converter { jwt ->
-            userValidator.validate(jwt).then(delegate.convert(jwt) ?: Mono.empty())
+
+        return object : Converter<Jwt, Mono<out AbstractAuthenticationToken>> {
+            override fun convert(jwt: Jwt): Mono<out AbstractAuthenticationToken> {
+                return userValidator.ensureUser(jwt)
+                    .then(delegate.convert(jwt) ?: Mono.empty())
+            }
         }
     }
+
 
     @Bean
     fun securityFilterChain(
@@ -98,21 +105,22 @@ class SecurityConfig(
     @Component
     class UserValidator(private val userService: UserService) {
 
-        private fun error(cause: Throwable? = null) =
-            OAuth2AuthenticationException(OAuth2Error("ERR-SAVE", "Error while saving user id", null), cause)
+        fun ensureUser(jwt: Jwt): Mono<User> {
+            val externalId = jwt.subject
+            val username = jwt.getClaimAsString("preferred_username")
 
-        fun validate(jwt: Jwt): Mono<Void> =
-            userService.findByExternalId(jwt.subject)
+            return userService.findByExternalId(externalId)
                 .switchIfEmpty(
-                    userService.register(jwt.getClaim("preferred_username"), "12345678", jwt.subject)
-                        .flatMap { created ->
-                            if (created) {
-                                Mono.empty()
+                    userService.register(username, "12345678", externalId)
+                        .flatMap { registered ->
+                            if (registered) {
+                                userService.findByExternalId(externalId)
                             } else {
-                                Mono.error(error())
+                                Mono.empty()
                             }
                         },
-                ).then()
-                .onErrorMap { error(it) }
+                )
+                .switchIfEmpty(Mono.error(UsernameNotFoundException("No user: $externalId")))
+        }
     }
 }
