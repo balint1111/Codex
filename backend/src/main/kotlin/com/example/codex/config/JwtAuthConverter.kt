@@ -22,7 +22,7 @@ class JwtAuthConverter(
         val externalId = jwt.subject
         logger.debug("Authenticating JWT for subject {}", externalId)
 
-        val user = userService.findByExternalId(externalId)
+        val user = userService.findByExternalId(externalId).block()
         if (user == null) {
             logger.warn("User not found for subject {}", externalId)
             throw UsernameNotFoundException("No user: $externalId")

@@ -27,11 +27,16 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
-    implementation("org.springframework.boot:spring-boot-starter-jooq")
+//    implementation("org.springframework.boot:spring-boot-starter-jooq")
+
+    implementation("org.springframework.boot:spring-boot-starter-data-r2dbc")
+    implementation("org.postgresql:r2dbc-postgresql:1.1.1.RELEASE")
+    implementation("io.projectreactor:reactor-core:3.8.0")
 
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0")
 
     implementation("org.jooq:jooq:3.20.0")
+    implementation("org.jooq:jooq-jpa-extensions:3.20.0")
 
     implementation("jakarta.persistence:jakarta.persistence-api:3.1.0")
     runtimeOnly("org.postgresql:postgresql")
@@ -43,6 +48,9 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.security:spring-security-test")
+    testImplementation("org.testcontainers:r2dbc")
+    testImplementation("io.projectreactor:reactor-test:3.8.0")
+    testImplementation("org.springframework.boot:spring-boot-starter-webflux")
     testImplementation("org.testcontainers:junit-jupiter")
     testImplementation("org.testcontainers:postgresql")
 }

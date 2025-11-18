@@ -6,7 +6,11 @@ package com.example.codex.jooq.tables
 
 import com.example.codex.jooq.DefaultSchema
 import com.example.codex.jooq.keys.CONSTRAINT_4D
+import com.example.codex.jooq.keys.CONSTRAINT_4D4
+import com.example.codex.jooq.keys.FK_USER_PRIVILEGE_USER
 import com.example.codex.jooq.keys.PK_USERS
+import com.example.codex.jooq.tables.Privilege.PrivilegePath
+import com.example.codex.jooq.tables.UserPrivilege.UserPrivilegePath
 import com.example.codex.jooq.tables.records.UsersRecord
 
 import java.util.function.Function
@@ -20,6 +24,7 @@ import org.jooq.ForeignKey
 import org.jooq.Identity
 import org.jooq.InverseForeignKey
 import org.jooq.Name
+import org.jooq.Path
 import org.jooq.PlainSQL
 import org.jooq.QueryPart
 import org.jooq.Record
@@ -35,6 +40,7 @@ import org.jooq.TableField
 import org.jooq.TableOptions
 import org.jooq.UniqueKey
 import org.jooq.impl.DSL
+import org.jooq.impl.Internal
 import org.jooq.impl.SQLDataType
 import org.jooq.impl.TableImpl
 
@@ -92,14 +98,14 @@ open class Users(
     val PASSWORD: TableField<UsersRecord, String?> = createField(DSL.name("password"), SQLDataType.VARCHAR(100), this, "")
 
     /**
-     * The column <code>USERS.EXTERNAL_ID</code>.
-     */
-    val EXTERNAL_ID: TableField<UsersRecord, String?> = createField(DSL.name("external_id"), SQLDataType.VARCHAR(100).nullable(false), this, "")
-
-    /**
      * The column <code>USERS.DELETED</code>.
      */
     val DELETED: TableField<UsersRecord, Boolean?> = createField(DSL.name("deleted"), SQLDataType.BOOLEAN.defaultValue(DSL.field(DSL.raw("FALSE"), SQLDataType.BOOLEAN)), this, "")
+
+    /**
+     * The column <code>USERS.EXTERNAL_ID</code>.
+     */
+    val EXTERNAL_ID: TableField<UsersRecord, String?> = createField(DSL.name("external_id"), SQLDataType.VARCHAR(100), this, "")
 
     private constructor(alias: Name, aliased: Table<UsersRecord>?): this(alias, null, null, null, aliased, null, null)
     private constructor(alias: Name, aliased: Table<UsersRecord>?, parameters: Array<Field<*>?>?): this(alias, null, null, null, aliased, parameters, null)
@@ -119,10 +125,46 @@ open class Users(
      * Create a <code>USERS</code> table reference
      */
     constructor(): this(DSL.name("users"), null)
+
+    constructor(path: Table<out Record>, childPath: ForeignKey<out Record, UsersRecord>?, parentPath: InverseForeignKey<out Record, UsersRecord>?): this(Internal.createPathAlias(path, childPath, parentPath), path, childPath, parentPath, USERS, null, null)
+
+    /**
+     * A subtype implementing {@link Path} for simplified path-based joins.
+     */
+    open class UsersPath : Users, Path<UsersRecord> {
+        constructor(path: Table<out Record>, childPath: ForeignKey<out Record, UsersRecord>?, parentPath: InverseForeignKey<out Record, UsersRecord>?): super(path, childPath, parentPath)
+        private constructor(alias: Name, aliased: Table<UsersRecord>): super(alias, aliased)
+        override fun `as`(alias: String): UsersPath = UsersPath(DSL.name(alias), this)
+        override fun `as`(alias: Name): UsersPath = UsersPath(alias, this)
+        override fun `as`(alias: Table<*>): UsersPath = UsersPath(alias.qualifiedName, this)
+    }
     override fun getSchema(): Schema? = if (aliased()) null else DefaultSchema.DEFAULT_SCHEMA
     override fun getIdentity(): Identity<UsersRecord, Long?> = super.getIdentity() as Identity<UsersRecord, Long?>
     override fun getPrimaryKey(): UniqueKey<UsersRecord> = PK_USERS
-    override fun getUniqueKeys(): List<UniqueKey<UsersRecord>> = listOf(CONSTRAINT_4D)
+    override fun getUniqueKeys(): List<UniqueKey<UsersRecord>> = listOf(CONSTRAINT_4D, CONSTRAINT_4D4)
+
+    private lateinit var _userPrivilege: UserPrivilegePath
+
+    /**
+     * Get the implicit to-many join path to the <code>USER_PRIVILEGE</code>
+     * table
+     */
+    fun userPrivilege(): UserPrivilegePath {
+        if (!this::_userPrivilege.isInitialized)
+            _userPrivilege = UserPrivilegePath(this, null, FK_USER_PRIVILEGE_USER.inverseKey)
+
+        return _userPrivilege;
+    }
+
+    val userPrivilege: UserPrivilegePath
+        get(): UserPrivilegePath = userPrivilege()
+
+    /**
+     * Get the implicit many-to-many join path to the <code>PRIVILEGE</code>
+     * table
+     */
+    val privilege: PrivilegePath
+        get(): PrivilegePath = userPrivilege().privilege()
     override fun `as`(alias: String): Users = Users(DSL.name(alias), this)
     override fun `as`(alias: Name): Users = Users(alias, this)
     override fun `as`(alias: Table<*>): Users = Users(alias.qualifiedName, this)
@@ -195,16 +237,16 @@ open class Users(
     // -------------------------------------------------------------------------
     // Row5 type methods
     // -------------------------------------------------------------------------
-    override fun fieldsRow(): Row5<Long?, String?, String?, String?, Boolean?> = super.fieldsRow() as Row5<Long?, String?, String?, String?, Boolean?>
+    override fun fieldsRow(): Row5<Long?, String?, String?, Boolean?, String?> = super.fieldsRow() as Row5<Long?, String?, String?, Boolean?, String?>
 
     /**
      * Convenience mapping calling {@link SelectField#convertFrom(Function)}.
      */
-    fun <U> mapping(from: (Long?, String?, String?, String?, Boolean?) -> U): SelectField<U> = convertFrom(Records.mapping(from))
+    fun <U> mapping(from: (Long?, String?, String?, Boolean?, String?) -> U): SelectField<U> = convertFrom(Records.mapping(from))
 
     /**
      * Convenience mapping calling {@link SelectField#convertFrom(Class,
      * Function)}.
      */
-    fun <U> mapping(toType: Class<U>, from: (Long?, String?, String?, String?, Boolean?) -> U): SelectField<U> = convertFrom(toType, Records.mapping(from))
+    fun <U> mapping(toType: Class<U>, from: (Long?, String?, String?, Boolean?, String?) -> U): SelectField<U> = convertFrom(toType, Records.mapping(from))
 }

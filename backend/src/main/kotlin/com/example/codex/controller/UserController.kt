@@ -1,6 +1,7 @@
 package com.example.codex.controller
 
 import com.example.codex.domain.User
+import com.example.codex.jooq.tables.pojos.UserPrivilege
 import com.example.codex.service.UserService
 import org.springframework.web.bind.annotation.CrossOrigin
 import org.springframework.web.bind.annotation.DeleteMapping
@@ -11,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
+import reactor.core.publisher.Flux
+import reactor.core.publisher.Mono
 
 @RestController
 @RequestMapping("/api/users")
@@ -19,37 +22,40 @@ class UserController(
     private val userService: UserService,
 ) {
     @GetMapping
-    fun list(): List<User> = userService.allUsers()
+    fun list(): Flux<User> = userService.allUsers()
 
     @GetMapping("/{id}")
     fun find(
         @PathVariable id: Long,
-    ): User? = userService.find(id)
+    ): Mono<User> = userService.find(id)
 
     @PostMapping("/register")
     fun register(
         @RequestParam username: String,
         @RequestParam password: String,
         @RequestParam externalId: String,
-    ) {
-        userService.register(username, password, externalId)
+    ): Mono<Boolean> {
+        return userService.register(username, password, externalId)
     }
 
     @DeleteMapping("/{id}")
     fun delete(
         @PathVariable id: Long,
-    ) {
-        userService.delete(id)
+    ): Mono<Int> {
+        return userService.delete(id)
     }
 
     @GetMapping("/me")
-    fun me(principal: java.security.Principal): User? = userService.findByExternalId(principal.name)
+    fun me(principal: java.security.Principal): Mono<User> {
+        println("principal: ${principal.name}")
+        return userService.findByExternalId(principal.name).log()
+    }
 
     @PostMapping("/{id}/privileges")
     fun updatePrivileges(
         @PathVariable id: Long,
         @RequestBody privilegeIds: List<Long>,
-    ) {
-        userService.updatePrivileges(id, privilegeIds)
+    ): Mono<Void> {
+        return userService.updatePrivileges(id, privilegeIds)
     }
 }

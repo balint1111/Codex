@@ -16,11 +16,10 @@ import org.springframework.security.oauth2.jwt.Jwt
 import org.springframework.security.oauth2.jwt.JwtDecoder
 import org.springframework.security.oauth2.jwt.JwtValidators
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder
-import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter
-import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.stereotype.Component
 import org.springframework.web.cors.CorsConfiguration
+import reactor.core.publisher.Mono
 
 
 @Configuration
@@ -61,9 +60,15 @@ class SecurityConfig(
         private fun error() = OAuth2Error("ERR-SAVE", "Error while saving user id", null)
 
         override fun validate(jwt: Jwt): OAuth2TokenValidatorResult = try {
-            if (userService.findByExternalId(jwt.subject) == null) {
-                userService.register(jwt.getClaim("preferred_username"), "12345678", jwt.subject)
-            }
+            println("validate")
+            userService.findByExternalId(jwt.subject).flatMap {
+                println("value: $it")
+                if (it == null) {
+                    userService.register(jwt.getClaim("preferred_username"), "12345678", jwt.subject)
+                } else {
+                    Mono.empty()
+                }
+            }.onErrorMap { error(it) }.block()
             OAuth2TokenValidatorResult.success()
         } catch (e: Exception) {
             OAuth2TokenValidatorResult.failure(error())

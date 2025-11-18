@@ -18,26 +18,26 @@ class PrivilegeRepositoryIT
         fun `performs CRUD operations`() {
             // insert
             val privilege = Privilege(999L, "reports")
-            privilegeRepository.insert(privilege)
+            privilegeRepository.insert(privilege).block()
 
             // find all
-            val all = privilegeRepository.findAll()
+            val all = privilegeRepository.findAll().collectList().block()!!
             assertTrue(all.any { it.id == 999L && it.name == "reports" })
 
             // find by id
-            val found = privilegeRepository.findById(999L)
+            val found = privilegeRepository.findById(999L).block()
             assertNotNull(found)
             assertEquals("reports", found?.name)
 
             // update
             val updatedPrivilege = Privilege(999L, "reports-updated")
-            privilegeRepository.update(updatedPrivilege)
-            val updated = privilegeRepository.findById(999L)
+            privilegeRepository.update(updatedPrivilege).block()
+            val updated = privilegeRepository.findById(999L).block()
             assertEquals("reports-updated", updated?.name)
 
             // delete
-            privilegeRepository.delete(999L)
-            val deleted = privilegeRepository.findById(999L)
+            privilegeRepository.delete(999L).block()
+            val deleted = privilegeRepository.findById(999L).block()
             assertNull(deleted)
         }
     }

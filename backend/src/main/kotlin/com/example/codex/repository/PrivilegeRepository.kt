@@ -3,13 +3,16 @@ package com.example.codex.repository
 import com.example.codex.domain.Privilege
 import com.example.codex.jooq.tables.references.PRIVILEGE
 import org.jooq.DSLContext
+import org.jooq.Field
 import org.springframework.stereotype.Repository
 import com.example.codex.jooq.tables.Privilege as PrivilegeTable
 
 @Repository
 class PrivilegeRepository(
     override val dslContext: DSLContext,
-) : CrudRepository<PrivilegeTable, Privilege> {
+) : CrudRepository<PrivilegeTable, Privilege, Long> {
     override val table = PRIVILEGE
     override val type = Privilege::class.java
+    override val keyType = Long::class.java
+    override val keyField: Field<Long> = table.field("id", keyType)!!
 }
