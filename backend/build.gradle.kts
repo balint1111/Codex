@@ -24,7 +24,7 @@ repositories {
 }
 
 dependencies {
-    implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("org.springframework.boot:spring-boot-starter-webflux")
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
 //    implementation("org.springframework.boot:spring-boot-starter-jooq")
@@ -33,7 +33,7 @@ dependencies {
     implementation("org.postgresql:r2dbc-postgresql:1.1.1.RELEASE")
     implementation("io.projectreactor:reactor-core:3.8.0")
 
-    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0")
+    implementation("org.springdoc:springdoc-openapi-starter-webflux-ui:2.3.0")
 
     implementation("org.jooq:jooq:3.20.0")
     implementation("org.jooq:jooq-jpa-extensions:3.20.0")
