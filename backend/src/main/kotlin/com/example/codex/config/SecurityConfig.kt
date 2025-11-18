@@ -43,7 +43,8 @@ class SecurityConfig(
     }
 
 
-    private fun jwtDecoder(): JwtDecoder {
+    @Bean
+    fun jwtDecoder(): JwtDecoder {
         val jwtDecoder: NimbusJwtDecoder = NimbusJwtDecoder.withJwkSetUri(jwkSetUri).build()
         println("jwkSetUri $jwkSetUri")
         val withIssuer: OAuth2TokenValidator<Jwt> = JwtValidators.createDefault()
@@ -78,6 +79,7 @@ class SecurityConfig(
     @Bean
     fun securityFilterChain(
         http: HttpSecurity,
+        jwtDecoder: JwtDecoder,
     ): SecurityFilterChain {
         http
             .csrf { it.disable() }
@@ -99,10 +101,10 @@ class SecurityConfig(
                     .permitAll()
                     .anyRequest()
                     .authenticated()
-            }
+        }
         http.oauth2ResourceServer { oauth2 ->
             oauth2.jwt {
-                it.decoder(jwtDecoder())
+                it.decoder(jwtDecoder)
             }
         }
         println("security end")
