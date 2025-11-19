@@ -13,9 +13,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.transaction.ReactiveTransactionManager
 
-
 @Configuration
-class Beans() {
+class Beans {
     @Bean
     fun passwordEncoder(): PasswordEncoder = BCryptPasswordEncoder()
 
@@ -30,7 +29,6 @@ class Beans() {
     }
 
     @Bean
-    fun reactiveTransactionManager(connectionFactory: ConnectionFactory): ReactiveTransactionManager {
-        return R2dbcTransactionManager(connectionFactory)
-    }
+    fun reactiveTransactionManager(connectionFactory: ConnectionFactory): ReactiveTransactionManager =
+        R2dbcTransactionManager(connectionFactory)
 }

@@ -1,5 +1,6 @@
 package com.example.codex.controller
 
+import com.example.codex.AbstractControllerITTest
 import com.example.codex.AbstractIntegrationTest
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -21,51 +22,36 @@ import java.util.UUID
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureWebTestClient
-@ExtendWith(value = [MockitoExtension::class])
-class PrivilegeControllerIntegrationTest @Autowired constructor(
+class PrivilegeControllerIntegrationTest(
+    @Autowired
     private val webTestClient: WebTestClient,
-) : AbstractIntegrationTest() {
-
-    @MockBean
-    private lateinit var jwtDecoder: ReactiveJwtDecoder
-
+) : AbstractControllerITTest() {
     @Test
     fun `should list privileges`() {
-        val username = "user-" + UUID.randomUUID()
-        val externalId = UUID.randomUUID().toString()
+        webTestClient
+            .post()
+            .uri { uriBuilder ->
+                uriBuilder
+                    .path("/api/users/register")
+                    .queryParam("username", USERNAME)
+                    .queryParam("password", "secret")
+                    .queryParam("externalId", EXTERNAL_ID)
+                    .build()
+            }.exchange()
+            .expectStatus()
+            .isOk
 
-        // Register the user through the public API (whitelisted endpoint)
-        webTestClient.post()
-            .uri("/api/users/register")
-            .body(
-                BodyInserters.fromFormData("username", username)
-                    .with("password", "password")
-                    .with("externalId", externalId),
-            )
-            .exchange()
-            .expectStatus().isOk
-
-        val tokenValue = "dummy-token"
-        val now = Instant.now()
-        val jwt: Jwt =
-            Jwt.withTokenValue(tokenValue)
-                .header("alg", "none")
-                .subject(externalId)
-                .claim("preferred_username", username)
-                .issuedAt(now)
-                .expiresAt(now.plus(1, ChronoUnit.HOURS))
-                .build()
-
-        given(jwtDecoder.decode(anyString())).willReturn(Mono.just(jwt))
-
-        // Call the secured endpoint with a mocked JWT user
-        webTestClient.get()
+        webTestClient
+            .get()
             .uri("/api/privileges")
-            .headers { it.setBearerAuth(tokenValue) }
+            .headers { it.setBearerAuth("dummy-token") }
             .exchange()
-            .expectStatus().isOk
+            .expectStatus()
+            .isOk
             .expectBody()
-            .jsonPath("$[?(@.name == 'dashboard')]").exists()
-            .jsonPath("$[?(@.name == 'users')]").exists()
+            .jsonPath("$[?(@.name == 'dashboard')]")
+            .exists()
+            .jsonPath("$[?(@.name == 'users')]")
+            .exists()
     }
 }

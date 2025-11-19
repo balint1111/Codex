@@ -1,6 +1,5 @@
 package com.example.codex.repository
 
-
 import com.example.codex.jooq.tables.pojos.UserPrivilege
 import com.example.codex.jooq.tables.references.USER_PRIVILEGE
 import org.jooq.DSLContext
@@ -21,8 +20,6 @@ class UserPrivilegeRepository(
 
     fun saveAll(
         pojos: Flux<UserPrivilege>,
-        batchSize: Int = 500
-    ): Flux<UserPrivilege> {
-        return super.saveAll(pojos, batchSize, listOf(USER_PRIVILEGE.USER_ID, USER_PRIVILEGE.PRIVILEGE_ID))
-    }
+        batchSize: Int = 500,
+    ): Flux<UserPrivilege> = super.saveAll(pojos, batchSize, listOf(USER_PRIVILEGE.USER_ID, USER_PRIVILEGE.PRIVILEGE_ID))
 }
