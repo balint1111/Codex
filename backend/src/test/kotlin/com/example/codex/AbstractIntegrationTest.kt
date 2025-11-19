@@ -1,14 +1,21 @@
 package com.example.codex
 
 import io.github.oshai.kotlinlogging.KotlinLogging
+import org.reactivestreams.Publisher
+import org.springframework.beans.factory.annotation.Autowired
 import org.junit.jupiter.api.BeforeAll
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.DynamicPropertyRegistry
 import org.springframework.test.context.DynamicPropertySource
+import org.springframework.transaction.reactive.TransactionalOperator
 import org.testcontainers.containers.PostgreSQLContainer
+import reactor.core.publisher.Flux
 
 @SpringBootTest
 abstract class AbstractIntegrationTest {
+    @Autowired
+    private lateinit var transactionalOperator: TransactionalOperator
+
     companion object {
         private val useTestcontainers = System.getenv("DISABLE_TESTCONTAINERS") != "true"
         private val postgres =
@@ -56,4 +63,10 @@ abstract class AbstractIntegrationTest {
     }
 
     protected val log = KotlinLogging.logger {}
+
+    protected fun <T : Any> rollback(publisher: Publisher<T>): Flux<T> =
+        transactionalOperator.execute<T> { status ->
+            status.setRollbackOnly()
+            Flux.from(publisher)
+        }
 }

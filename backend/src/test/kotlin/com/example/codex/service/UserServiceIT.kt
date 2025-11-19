@@ -33,7 +33,7 @@ class UserServiceIT(
                 }
 
         StepVerifier
-            .create(testMono)
+            .create(rollback(testMono))
             .expectNext(true)
             .verifyComplete()
     }
@@ -70,7 +70,7 @@ class UserServiceIT(
                 }
 
         StepVerifier
-            .create(testMono)
+            .create(rollback(testMono))
             .expectNextCount(1)
             .verifyComplete()
     }
@@ -93,7 +93,7 @@ class UserServiceIT(
                 }
 
         StepVerifier
-            .create(testMono)
+            .create(rollback(testMono))
             .verifyComplete()
     }
 }

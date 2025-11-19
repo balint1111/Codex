@@ -12,6 +12,7 @@ import org.springframework.r2dbc.connection.R2dbcTransactionManager
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.transaction.ReactiveTransactionManager
+import org.springframework.transaction.reactive.TransactionalOperator
 
 @Configuration
 class Beans {
@@ -31,4 +32,8 @@ class Beans {
     @Bean
     fun reactiveTransactionManager(connectionFactory: ConnectionFactory): ReactiveTransactionManager =
         R2dbcTransactionManager(connectionFactory)
+
+    @Bean
+    fun transactionalOperator(reactiveTransactionManager: ReactiveTransactionManager): TransactionalOperator =
+        TransactionalOperator.create(reactiveTransactionManager)
 }
