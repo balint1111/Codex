@@ -11,9 +11,13 @@ build:
   local:
     push: true
 deploy:
-  kubectl:
-    manifests:
-      - ../kubernetes/dev/namespace.yaml
-      - ../kubernetes/dev/db.yaml
-      - ../kubernetes/dev/db-secret.yaml
-      - ../kubernetes/dev/backend-skaffold.yaml
+  helm:
+    releases:
+      - name: codex
+        chartPath: ../helm/codex
+        namespace: dev
+        createNamespace: true
+        valuesFiles:
+          - ../helm/codex/values-dev.yaml
+        setValueTemplates:
+          image.backend: "{{.IMAGE_FULLY_QUALIFIED}}"
