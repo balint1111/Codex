@@ -37,12 +37,20 @@ db:
     nodePort: 30082
 
 keycloak:
-  instances: 2
+  image: quay.io/keycloak/keycloak:26.3.3
+  instances: 1
+  admin:
+    user: admin
+    password: admin
   db:
     name: keycloak
     user: codex
     password: codex
-  proxy:
-    service:
-      type: NodePort
-      nodePort: 30001
+  realm:
+    id: codex12
+    name: codex
+    displayName: codex
+    clientId: codex-frontend
+  service:
+    type: NodePort
+    nodePort: 30001

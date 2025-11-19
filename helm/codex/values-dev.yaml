@@ -17,6 +17,5 @@ db:
   service:
     nodePort: 30082
 keycloak:
-  proxy:
-    service:
-      nodePort: 30001
+  service:
+    nodePort: 30001
