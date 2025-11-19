@@ -61,6 +61,7 @@ spec:
             - --import-realm
             - --hostname-strict=false
             - --http-enabled=true
+            - --health-enabled=true
           env:
             - name: KEYCLOAK_ADMIN
               valueFrom:
@@ -93,16 +94,18 @@ spec:
           ports:
             - name: http
               containerPort: 8080
+            - name: http-management
+              containerPort: 9000
           livenessProbe:
             httpGet:
               path: /health/live
-              port: 8080
+              port: 9000
             initialDelaySeconds: 30
             periodSeconds: 10
           readinessProbe:
             httpGet:
               path: /health/ready
-              port: 8080
+              port: 9000
             initialDelaySeconds: 30
             periodSeconds: 10
           volumeMounts:
