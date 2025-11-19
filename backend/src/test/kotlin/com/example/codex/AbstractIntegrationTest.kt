@@ -45,6 +45,12 @@ abstract class AbstractIntegrationTest {
                 }
                 registry.add("spring.datasource.username") { System.getenv("SPRING_DATASOURCE_USERNAME") ?: "postgres" }
                 registry.add("spring.datasource.password") { System.getenv("SPRING_DATASOURCE_PASSWORD") ?: "postgres" }
+                registry.add("spring.r2dbc.url") {
+                    System.getenv("SPRING_DATASOURCE_URL")
+                        ?: "r2dbc:postgresql://localhost:5432/postgresTest"
+                }
+                registry.add("spring.r2dbc.username") { System.getenv("SPRING_DATASOURCE_USERNAME") ?: "postgres" }
+                registry.add("spring.r2dbc.password") { System.getenv("SPRING_DATASOURCE_PASSWORD") ?: "postgres" }
             }
         }
     }
