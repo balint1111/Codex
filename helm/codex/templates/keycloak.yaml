@@ -1,22 +1,132 @@
-apiVersion: k8s.keycloak.org/v2alpha1
-kind: KeycloakRealmImport
+apiVersion: v1
+kind: Secret
 metadata:
-  name: codex
+  name: keycloak-admin-credentials
   labels:
-    app: codex
+    app: keycloak
+stringData:
+  KEYCLOAK_ADMIN: {{ .Values.keycloak.admin.user | quote }}
+  KEYCLOAK_ADMIN_PASSWORD: {{ .Values.keycloak.admin.password | quote }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: keycloak-realm
+  labels:
+    app: keycloak
+data:
+  codex-realm.json: |
+    {
+      "id": "{{ .Values.keycloak.realm.id }}",
+      "realm": "{{ .Values.keycloak.realm.name }}",
+      "displayName": "{{ .Values.keycloak.realm.displayName }}",
+      "enabled": true,
+      "registrationAllowed": true,
+      "clients": [
+        {
+          "clientId": "{{ .Values.keycloak.realm.clientId }}",
+          "publicClient": true,
+          "baseUrl": "http://localhost:{{ .Values.frontend.service.nodePort }}/login",
+          "redirectUris": [
+            "http://localhost:{{ .Values.frontend.service.nodePort }}/*"
+          ],
+          "webOrigins": [
+            "http://localhost:{{ .Values.frontend.service.nodePort }}"
+          ]
+        }
+      ]
+    }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-keycloak
+  labels:
+    app: keycloak
 spec:
-  keycloakCRName: my-keycloak
-  realm:
-    id: codex12
-    realm: codex
-    displayName: codex
-    enabled: true
-    registrationAllowed: true
-    clients:
-      - clientId: codex-frontend
-        publicClient: true
-        baseUrl: "http://localhost:{{ .Values.frontend.service.nodePort }}/login"
-        redirectUris:
-          - "http://localhost:{{ .Values.frontend.service.nodePort }}/*"
-        webOrigins:
-          - "http://localhost:{{ .Values.frontend.service.nodePort }}"
+  replicas: {{ .Values.keycloak.instances }}
+  selector:
+    matchLabels:
+      app: keycloak
+  template:
+    metadata:
+      labels:
+        app: keycloak
+    spec:
+      containers:
+        - name: keycloak
+          image: {{ .Values.keycloak.image | quote }}
+          args:
+            - start
+            - --import-realm
+            - --hostname-strict=false
+            - --http-enabled=true
+          env:
+            - name: KEYCLOAK_ADMIN
+              valueFrom:
+                secretKeyRef:
+                  name: keycloak-admin-credentials
+                  key: KEYCLOAK_ADMIN
+            - name: KEYCLOAK_ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: keycloak-admin-credentials
+                  key: KEYCLOAK_ADMIN_PASSWORD
+            - name: KC_DB
+              value: postgres
+            - name: KC_DB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: keycloak-db-secret
+                  key: username
+            - name: KC_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: keycloak-db-secret
+                  key: password
+            - name: KC_DB_URL_HOST
+              value: codex-db.{{ .Release.Namespace }}.svc.cluster.local
+            - name: KC_DB_URL_DATABASE
+              value: {{ .Values.keycloak.db.name | quote }}
+            - name: KC_DB_URL_PORT
+              value: "5432"
+          ports:
+            - name: http
+              containerPort: 8080
+          livenessProbe:
+            httpGet:
+              path: /health/live
+              port: 8080
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /health/ready
+              port: 8080
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          volumeMounts:
+            - name: realm-import
+              mountPath: /opt/keycloak/data/import
+      volumes:
+        - name: realm-import
+          configMap:
+            name: keycloak-realm
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: my-keycloak-service
+  labels:
+    app: keycloak
+spec:
+  type: {{ .Values.keycloak.service.type }}
+  selector:
+    app: keycloak
+  ports:
+    - name: http
+      port: 8080
+      targetPort: 8080
+      {{- if .Values.keycloak.service.nodePort }}
+      nodePort: {{ .Values.keycloak.service.nodePort }}
+      {{- end }}

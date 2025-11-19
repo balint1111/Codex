@@ -13,6 +13,5 @@ db:
   service:
     nodePort: 31082
 keycloak:
-  proxy:
-    service:
-      nodePort: 31001
+  service:
+    nodePort: 31001
