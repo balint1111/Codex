@@ -1,6 +1,10 @@
 spring:
-  datasource:
+  liquibase:
     url: jdbc:postgresql://${DB_HOST}:${DB_PORT}/codex
+    user: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
+  r2dbc:
+    url: r2dbc:postgresql://${DB_HOST}:${DB_PORT}/codex
     username: ${SPRING_DATASOURCE_USERNAME}
     password: ${SPRING_DATASOURCE_PASSWORD}
   jooq:
