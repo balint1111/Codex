@@ -5,22 +5,31 @@ package com.example.codex.jooq.tables
 
 
 import com.example.codex.jooq.DefaultSchema
+import com.example.codex.jooq.keys.FK_USER_PRIVILEGE_PRIVILEGE
+import com.example.codex.jooq.keys.FK_USER_PRIVILEGE_USER
+import com.example.codex.jooq.keys.PK_USER_PRIVILEGE
+import com.example.codex.jooq.keys.UQ_USER_PRIVILEGE_USER_ID_PRIVILEGE_ID
+import com.example.codex.jooq.tables.Privilege.PrivilegePath
+import com.example.codex.jooq.tables.Users.UsersPath
 import com.example.codex.jooq.tables.records.UserPrivilegeRecord
 
 import java.util.function.Function
 
 import kotlin.collections.Collection
+import kotlin.collections.List
 
 import org.jooq.Condition
 import org.jooq.Field
 import org.jooq.ForeignKey
+import org.jooq.Identity
 import org.jooq.InverseForeignKey
 import org.jooq.Name
+import org.jooq.Path
 import org.jooq.PlainSQL
 import org.jooq.QueryPart
 import org.jooq.Record
 import org.jooq.Records
-import org.jooq.Row2
+import org.jooq.Row3
 import org.jooq.SQL
 import org.jooq.Schema
 import org.jooq.Select
@@ -29,7 +38,9 @@ import org.jooq.Stringly
 import org.jooq.Table
 import org.jooq.TableField
 import org.jooq.TableOptions
+import org.jooq.UniqueKey
 import org.jooq.impl.DSL
+import org.jooq.impl.Internal
 import org.jooq.impl.SQLDataType
 import org.jooq.impl.TableImpl
 
@@ -72,14 +83,19 @@ open class UserPrivilege(
     override fun getRecordType(): Class<UserPrivilegeRecord> = UserPrivilegeRecord::class.java
 
     /**
+     * The column <code>USER_PRIVILEGE.ID</code>.
+     */
+    val ID: TableField<UserPrivilegeRecord, Long?> = createField(DSL.name("id"), SQLDataType.BIGINT.nullable(false).identity(true), this, "")
+
+    /**
      * The column <code>USER_PRIVILEGE.USER_ID</code>.
      */
-    val USER_ID: TableField<UserPrivilegeRecord, Long?> = createField(DSL.name("user_id"), SQLDataType.BIGINT, this, "")
+    val USER_ID: TableField<UserPrivilegeRecord, Long?> = createField(DSL.name("user_id"), SQLDataType.BIGINT.nullable(false), this, "")
 
     /**
      * The column <code>USER_PRIVILEGE.PRIVILEGE_ID</code>.
      */
-    val PRIVILEGE_ID: TableField<UserPrivilegeRecord, Long?> = createField(DSL.name("privilege_id"), SQLDataType.BIGINT, this, "")
+    val PRIVILEGE_ID: TableField<UserPrivilegeRecord, Long?> = createField(DSL.name("privilege_id"), SQLDataType.BIGINT.nullable(false), this, "")
 
     private constructor(alias: Name, aliased: Table<UserPrivilegeRecord>?): this(alias, null, null, null, aliased, null, null)
     private constructor(alias: Name, aliased: Table<UserPrivilegeRecord>?, parameters: Array<Field<*>?>?): this(alias, null, null, null, aliased, parameters, null)
@@ -99,7 +115,36 @@ open class UserPrivilege(
      * Create a <code>USER_PRIVILEGE</code> table reference
      */
     constructor(): this(DSL.name("user_privilege"), null)
+
+    constructor(path: Table<out Record>, childPath: ForeignKey<out Record, UserPrivilegeRecord>?, parentPath: InverseForeignKey<out Record, UserPrivilegeRecord>?): this(Internal.createPathAlias(path, childPath, parentPath), path, childPath, parentPath, USER_PRIVILEGE, null, null)
+
+    /**
+     * A subtype implementing {@link Path} for simplified path-based joins.
+     */
+    open class UserPrivilegePath : UserPrivilege, Path<UserPrivilegeRecord> {
+        constructor(path: Table<out Record>, childPath: ForeignKey<out Record, UserPrivilegeRecord>?, parentPath: InverseForeignKey<out Record, UserPrivilegeRecord>?): super(path, childPath, parentPath)
+        private constructor(alias: Name, aliased: Table<UserPrivilegeRecord>): super(alias, aliased)
+        override fun `as`(alias: String): UserPrivilegePath = UserPrivilegePath(DSL.name(alias), this)
+        override fun `as`(alias: Name): UserPrivilegePath = UserPrivilegePath(alias, this)
+        override fun `as`(alias: Table<*>): UserPrivilegePath = UserPrivilegePath(alias.qualifiedName, this)
+    }
     override fun getSchema(): Schema? = if (aliased()) null else DefaultSchema.DEFAULT_SCHEMA
+    override fun getIdentity(): Identity<UserPrivilegeRecord, Long?> = super.getIdentity() as Identity<UserPrivilegeRecord, Long?>
+    override fun getPrimaryKey(): UniqueKey<UserPrivilegeRecord> = PK_USER_PRIVILEGE
+    override fun getUniqueKeys(): List<UniqueKey<UserPrivilegeRecord>> = listOf(UQ_USER_PRIVILEGE_USER_ID_PRIVILEGE_ID)
+    override fun getReferences(): List<ForeignKey<UserPrivilegeRecord, *>> = listOf(FK_USER_PRIVILEGE_PRIVILEGE, FK_USER_PRIVILEGE_USER)
+
+    /**
+     * Get the implicit join path to the <code>PRIVILEGE</code> table.
+     */
+    fun privilege(): PrivilegePath = privilege
+    val privilege: PrivilegePath by lazy { PrivilegePath(this, FK_USER_PRIVILEGE_PRIVILEGE, null) }
+
+    /**
+     * Get the implicit join path to the <code>USERS</code> table.
+     */
+    fun users(): UsersPath = users
+    val users: UsersPath by lazy { UsersPath(this, FK_USER_PRIVILEGE_USER, null) }
     override fun `as`(alias: String): UserPrivilege = UserPrivilege(DSL.name(alias), this)
     override fun `as`(alias: Name): UserPrivilege = UserPrivilege(alias, this)
     override fun `as`(alias: Table<*>): UserPrivilege = UserPrivilege(alias.qualifiedName, this)
@@ -170,18 +215,18 @@ open class UserPrivilege(
     override fun whereNotExists(select: Select<*>): UserPrivilege = where(DSL.notExists(select))
 
     // -------------------------------------------------------------------------
-    // Row2 type methods
+    // Row3 type methods
     // -------------------------------------------------------------------------
-    override fun fieldsRow(): Row2<Long?, Long?> = super.fieldsRow() as Row2<Long?, Long?>
+    override fun fieldsRow(): Row3<Long?, Long?, Long?> = super.fieldsRow() as Row3<Long?, Long?, Long?>
 
     /**
      * Convenience mapping calling {@link SelectField#convertFrom(Function)}.
      */
-    fun <U> mapping(from: (Long?, Long?) -> U): SelectField<U> = convertFrom(Records.mapping(from))
+    fun <U> mapping(from: (Long?, Long?, Long?) -> U): SelectField<U> = convertFrom(Records.mapping(from))
 
     /**
      * Convenience mapping calling {@link SelectField#convertFrom(Class,
      * Function)}.
      */
-    fun <U> mapping(toType: Class<U>, from: (Long?, Long?) -> U): SelectField<U> = convertFrom(toType, Records.mapping(from))
+    fun <U> mapping(toType: Class<U>, from: (Long?, Long?, Long?) -> U): SelectField<U> = convertFrom(toType, Records.mapping(from))
 }

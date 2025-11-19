@@ -54,11 +54,29 @@ databaseChangeLog:
             tableName: user_privilege
             columns:
               - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+              - column:
                   name: user_id
                   type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_user_privilege_user
+                    references: users(id)
               - column:
                   name: privilege_id
                   type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_user_privilege_privilege
+                    references: privilege(id)
+        - addUniqueConstraint:
+            tableName: user_privilege
+            columnNames: user_id, privilege_id
+            constraintName: uq_user_privilege_user_id_privilege_id
 
   - changeSet:
       id: "4"
@@ -68,11 +86,17 @@ databaseChangeLog:
             tableName: privilege
             columns:
               - column:
+                  name: id
+                  valueNumeric: 1
+              - column:
                   name: name
                   value: dashboard
         - insert:
             tableName: privilege
             columns:
+              - column:
+                  name: id
+                  valueNumeric: 2
               - column:
                   name: name
                   value: users
@@ -95,6 +119,21 @@ databaseChangeLog:
       id: "6"
       author: codex
       changes:
+        - insert:
+            tableName: users
+            columns:
+              - column:
+                  name: external_id
+                  value: ext-admin
+              - column:
+                  name: username
+                  value: admin
+              - column:
+                  name: password
+                  value: '$2a$10$WoXrXURx4zRIp7Sct7Sd3e31kc5zD7Ng.awIPpK/9PNKHazR3.JRK'
+              - column:
+                  name: deleted
+                  valueBoolean: false
         - insert:
             tableName: user_privilege
             columns:

@@ -8,12 +8,17 @@ import com.example.codex.jooq.tables.UserPrivilege
 
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
+import jakarta.persistence.GeneratedValue
+import jakarta.persistence.GenerationType
+import jakarta.persistence.Id
 import jakarta.persistence.Table
+import jakarta.persistence.UniqueConstraint
 
 import org.jooq.Field
-import org.jooq.Record2
-import org.jooq.Row2
-import org.jooq.impl.TableRecordImpl
+import org.jooq.Record1
+import org.jooq.Record3
+import org.jooq.Row3
+import org.jooq.impl.UpdatableRecordImpl
 
 
 /**
@@ -22,32 +27,51 @@ import org.jooq.impl.TableRecordImpl
 @Suppress("warnings")
 @Entity
 @Table(
-    name = "user_privilege"
+    name = "user_privilege",
+    uniqueConstraints = [
+        UniqueConstraint(name = "uq_user_privilege_user_id_privilege_id", columnNames = [ "USER_ID", "PRIVILEGE_ID" ])
+    ]
 )
-open class UserPrivilegeRecord private constructor() : TableRecordImpl<UserPrivilegeRecord>(UserPrivilege.USER_PRIVILEGE), Record2<Long?, Long?> {
+open class UserPrivilegeRecord private constructor() : UpdatableRecordImpl<UserPrivilegeRecord>(UserPrivilege.USER_PRIVILEGE), Record3<Long?, Long?, Long?> {
 
-    @get:Column(name = "user_id")
-    open var userId: Long?
+    @get:Id
+    @get:GeneratedValue(strategy = GenerationType.IDENTITY)
+    @get:Column(name = "id", nullable = false)
+    open var id: Long?
         set(value): Unit = set(0, value)
         get(): Long? = get(0) as Long?
 
-    @get:Column(name = "privilege_id")
-    open var privilegeId: Long?
+    @get:Column(name = "user_id", nullable = false)
+    open var userId: Long
         set(value): Unit = set(1, value)
-        get(): Long? = get(1) as Long?
+        get(): Long = get(1) as Long
+
+    @get:Column(name = "privilege_id", nullable = false)
+    open var privilegeId: Long
+        set(value): Unit = set(2, value)
+        get(): Long = get(2) as Long
 
     // -------------------------------------------------------------------------
-    // Record2 type implementation
+    // Primary key information
     // -------------------------------------------------------------------------
 
-    override fun fieldsRow(): Row2<Long?, Long?> = super.fieldsRow() as Row2<Long?, Long?>
-    override fun valuesRow(): Row2<Long?, Long?> = super.valuesRow() as Row2<Long?, Long?>
-    override fun field1(): Field<Long?> = UserPrivilege.USER_PRIVILEGE.USER_ID
-    override fun field2(): Field<Long?> = UserPrivilege.USER_PRIVILEGE.PRIVILEGE_ID
-    override fun component1(): Long? = userId
-    override fun component2(): Long? = privilegeId
-    override fun value1(): Long? = userId
-    override fun value2(): Long? = privilegeId
+    override fun key(): Record1<Long?> = super.key() as Record1<Long?>
+
+    // -------------------------------------------------------------------------
+    // Record3 type implementation
+    // -------------------------------------------------------------------------
+
+    override fun fieldsRow(): Row3<Long?, Long?, Long?> = super.fieldsRow() as Row3<Long?, Long?, Long?>
+    override fun valuesRow(): Row3<Long?, Long?, Long?> = super.valuesRow() as Row3<Long?, Long?, Long?>
+    override fun field1(): Field<Long?> = UserPrivilege.USER_PRIVILEGE.ID
+    override fun field2(): Field<Long?> = UserPrivilege.USER_PRIVILEGE.USER_ID
+    override fun field3(): Field<Long?> = UserPrivilege.USER_PRIVILEGE.PRIVILEGE_ID
+    override fun component1(): Long? = id
+    override fun component2(): Long = userId
+    override fun component3(): Long = privilegeId
+    override fun value1(): Long? = id
+    override fun value2(): Long = userId
+    override fun value3(): Long = privilegeId
 
     override fun value1(value: Long?): UserPrivilegeRecord {
         set(0, value)
@@ -59,16 +83,23 @@ open class UserPrivilegeRecord private constructor() : TableRecordImpl<UserPrivi
         return this
     }
 
-    override fun values(value1: Long?, value2: Long?): UserPrivilegeRecord {
+    override fun value3(value: Long?): UserPrivilegeRecord {
+        set(2, value)
+        return this
+    }
+
+    override fun values(value1: Long?, value2: Long?, value3: Long?): UserPrivilegeRecord {
         this.value1(value1)
         this.value2(value2)
+        this.value3(value3)
         return this
     }
 
     /**
      * Create a detached, initialised UserPrivilegeRecord
      */
-    constructor(userId: Long? = null, privilegeId: Long? = null): this() {
+    constructor(id: Long? = null, userId: Long, privilegeId: Long): this() {
+        this.id = id
         this.userId = userId
         this.privilegeId = privilegeId
         resetTouchedOnNotNull()
@@ -79,6 +110,7 @@ open class UserPrivilegeRecord private constructor() : TableRecordImpl<UserPrivi
      */
     constructor(value: com.example.codex.jooq.tables.pojos.UserPrivilege?): this() {
         if (value != null) {
+            this.id = value.id
             this.userId = value.userId
             this.privilegeId = value.privilegeId
             resetTouchedOnNotNull()

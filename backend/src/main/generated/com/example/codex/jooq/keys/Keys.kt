@@ -6,13 +6,17 @@ package com.example.codex.jooq.keys
 
 
 import com.example.codex.jooq.tables.Privilege
+import com.example.codex.jooq.tables.UserPrivilege
 import com.example.codex.jooq.tables.Users
 import com.example.codex.jooq.tables.records.PrivilegeRecord
+import com.example.codex.jooq.tables.records.UserPrivilegeRecord
 import com.example.codex.jooq.tables.records.UsersRecord
 
+import org.jooq.ForeignKey
 import org.jooq.UniqueKey
 import org.jooq.impl.DSL
 import org.jooq.impl.Internal
+import org.jooq.impl.QOM.ForeignKeyRule
 
 
 
@@ -22,5 +26,15 @@ import org.jooq.impl.Internal
 
 val CONSTRAINT_4: UniqueKey<PrivilegeRecord> = Internal.createUniqueKey(Privilege.PRIVILEGE, DSL.name("CONSTRAINT_4"), arrayOf(Privilege.PRIVILEGE.NAME), true)
 val PK_PRIVILEGE: UniqueKey<PrivilegeRecord> = Internal.createUniqueKey(Privilege.PRIVILEGE, DSL.name("pk_privilege"), arrayOf(Privilege.PRIVILEGE.ID), true)
+val PK_USER_PRIVILEGE: UniqueKey<UserPrivilegeRecord> = Internal.createUniqueKey(UserPrivilege.USER_PRIVILEGE, DSL.name("pk_user_privilege"), arrayOf(UserPrivilege.USER_PRIVILEGE.ID), true)
+val UQ_USER_PRIVILEGE_USER_ID_PRIVILEGE_ID: UniqueKey<UserPrivilegeRecord> = Internal.createUniqueKey(UserPrivilege.USER_PRIVILEGE, DSL.name("uq_user_privilege_user_id_privilege_id"), arrayOf(UserPrivilege.USER_PRIVILEGE.USER_ID, UserPrivilege.USER_PRIVILEGE.PRIVILEGE_ID), true)
 val CONSTRAINT_4D: UniqueKey<UsersRecord> = Internal.createUniqueKey(Users.USERS, DSL.name("CONSTRAINT_4D"), arrayOf(Users.USERS.USERNAME), true)
+val CONSTRAINT_4D4: UniqueKey<UsersRecord> = Internal.createUniqueKey(Users.USERS, DSL.name("CONSTRAINT_4D4"), arrayOf(Users.USERS.EXTERNAL_ID), true)
 val PK_USERS: UniqueKey<UsersRecord> = Internal.createUniqueKey(Users.USERS, DSL.name("pk_users"), arrayOf(Users.USERS.ID), true)
+
+// -------------------------------------------------------------------------
+// FOREIGN KEY definitions
+// -------------------------------------------------------------------------
+
+val FK_USER_PRIVILEGE_PRIVILEGE: ForeignKey<UserPrivilegeRecord, PrivilegeRecord> = Internal.createForeignKey(UserPrivilege.USER_PRIVILEGE, DSL.name("fk_user_privilege_privilege"), arrayOf(UserPrivilege.USER_PRIVILEGE.PRIVILEGE_ID), com.example.codex.jooq.keys.PK_PRIVILEGE, arrayOf(Privilege.PRIVILEGE.ID), true, ForeignKeyRule.RESTRICT, ForeignKeyRule.RESTRICT)
+val FK_USER_PRIVILEGE_USER: ForeignKey<UserPrivilegeRecord, UsersRecord> = Internal.createForeignKey(UserPrivilege.USER_PRIVILEGE, DSL.name("fk_user_privilege_user"), arrayOf(UserPrivilege.USER_PRIVILEGE.USER_ID), com.example.codex.jooq.keys.PK_USERS, arrayOf(Users.USERS.ID), true, ForeignKeyRule.RESTRICT, ForeignKeyRule.RESTRICT)

@@ -17,21 +17,25 @@ plugins {
 
 group = "com.example"
 version = "0.0.1-SNAPSHOT"
-java.sourceCompatibility = JavaVersion.VERSION_17
+java.sourceCompatibility = JavaVersion.VERSION_21
 
 repositories {
     mavenCentral()
 }
 
 dependencies {
-    implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("org.springframework.boot:spring-boot-starter-webflux")
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
-    implementation("org.springframework.boot:spring-boot-starter-jooq")
 
-    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0")
+    implementation("org.springframework.boot:spring-boot-starter-data-r2dbc")
+    implementation("org.postgresql:r2dbc-postgresql:1.1.1.RELEASE")
+    implementation("io.projectreactor:reactor-core:3.8.0")
+
+    implementation("org.springdoc:springdoc-openapi-starter-webflux-ui:2.3.0")
 
     implementation("org.jooq:jooq:3.20.0")
+    implementation("org.jooq:jooq-jpa-extensions:3.20.0")
 
     implementation("jakarta.persistence:jakarta.persistence-api:3.1.0")
     runtimeOnly("org.postgresql:postgresql")
@@ -41,8 +45,14 @@ dependencies {
     implementation("org.liquibase:liquibase-core")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
+    implementation("io.github.oshai:kotlin-logging-jvm:5.1.0")
+    testImplementation("io.mockk:mockk:1.14.6")
+    testImplementation("com.ninja-squad:springmockk:4.0.2")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.security:spring-security-test")
+    testImplementation("org.testcontainers:r2dbc")
+    testImplementation("io.projectreactor:reactor-test:3.8.0")
+    testImplementation("org.springframework.boot:spring-boot-starter-webflux")
     testImplementation("org.testcontainers:junit-jupiter")
     testImplementation("org.testcontainers:postgresql")
 }
@@ -122,7 +132,7 @@ jooq {
 
 tasks.withType<KotlinCompile> {
     compilerOptions {
-        jvmTarget.set(JvmTarget.JVM_17)
+        jvmTarget.set(JvmTarget.JVM_21)
     }
 }
 

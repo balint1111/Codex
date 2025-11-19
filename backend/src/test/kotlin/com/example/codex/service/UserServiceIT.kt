@@ -1,35 +1,99 @@
 package com.example.codex.service
 
 import com.example.codex.AbstractIntegrationTest
+import com.example.codex.repository.UserPrivilegeRepository
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
+import reactor.test.StepVerifier
+import java.lang.Thread.sleep
+import java.util.UUID
 
-class UserServiceIT
+class UserServiceIT(
     @Autowired
-    constructor(
-        private val userService: UserService,
-    ) : AbstractIntegrationTest() {
-        @Test
-        fun `registers, updates privileges and deletes user`() {
-            userService.register("sarah", "secret", "ext-sarah")
-            val user = userService.findByUsername("sarah")
-            assertNotNull(user)
-            val id = user!!.id
-            assertTrue(userService.allUsers().any { it.id == id })
+    private val userService: UserService,
+) : AbstractIntegrationTest() {
+    @Test
+    fun `registers user and appears in all users`() {
+        val username = "sarah-${UUID.randomUUID()}"
+        val externalId = "ext-$username"
 
-            val privileges = userService.allPrivileges().associateBy { it.name }
-            val dashboard = privileges["dashboard"]!!
-            val users = privileges["users"]!!
+        val testMono =
+            userService
+                .register(username, "secret", externalId)
+                .then(userService.findByUsername(username))
+                .flatMap { user ->
+                    assertNotNull(user, "User should be found after registration")
+                    userService
+                        .allUsers()
+                        .any { it.id == user.id }
+                }
 
-            userService.updatePrivileges(id, listOf(dashboard.id, users.id))
-            val updated = userService.find(id)
-            assertEquals(setOf(dashboard, users), updated?.privileges?.toSet())
-
-            userService.delete(id)
-            assertNull(userService.find(id))
-        }
+        StepVerifier
+            .create(testMono)
+            .expectNext(true)
+            .verifyComplete()
     }
+
+    @Test
+    fun `updates user privileges`() {
+        val username = "sarah-${UUID.randomUUID()}"
+        val externalId = "ext-$username"
+
+        val testMono =
+            userService
+                .register(username, "secret", externalId)
+                .then(userService.findByUsername(username))
+                .flatMap { user ->
+                    val id = requireNotNull(user.id)
+
+                    userService
+                        .allPrivileges()
+                        .collectList()
+                        .flatMap { privilegeList ->
+                            val byName = privilegeList.associateBy { it.name }
+                            val dashboard = requireNotNull(byName["dashboard"])
+                            val users = requireNotNull(byName["users"])
+
+                            userService
+                                .updatePrivileges(id, listOf(dashboard.id, users.id))
+                                .then(userService.find(id))
+                                .doOnNext { updated ->
+                                    val actual = updated.privileges.toSet()
+                                    val expected = setOf(dashboard, users)
+                                    assertEquals(expected, actual)
+                                }
+                        }
+                }
+
+        StepVerifier
+            .create(testMono)
+            .expectNextCount(1)
+            .verifyComplete()
+    }
+
+    @Test
+    fun `deletes user`() {
+        val username = "sarah-${UUID.randomUUID()}"
+        val externalId = "ext-$username"
+
+        val testMono =
+            userService
+                .register(username, "secret", externalId)
+                .then(userService.findByUsername(username))
+                .flatMap { user ->
+                    val id = requireNotNull(user.id)
+
+                    userService
+                        .delete(id)
+                        .then(userService.find(id)) // should be empty after delete
+                }
+
+        StepVerifier
+            .create(testMono)
+            .verifyComplete()
+    }
+}

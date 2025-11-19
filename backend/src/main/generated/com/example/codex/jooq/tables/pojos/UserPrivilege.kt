@@ -6,7 +6,11 @@ package com.example.codex.jooq.tables.pojos
 
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
+import jakarta.persistence.GeneratedValue
+import jakarta.persistence.GenerationType
+import jakarta.persistence.Id
 import jakarta.persistence.Table
+import jakarta.persistence.UniqueConstraint
 
 import java.io.Serializable
 
@@ -17,13 +21,20 @@ import java.io.Serializable
 @Suppress("warnings")
 @Entity
 @Table(
-    name = "user_privilege"
+    name = "user_privilege",
+    uniqueConstraints = [
+        UniqueConstraint(name = "uq_user_privilege_user_id_privilege_id", columnNames = [ "USER_ID", "PRIVILEGE_ID" ])
+    ]
 )
 data class UserPrivilege(
-    @get:Column(name = "user_id")
-    val userId: Long? = null,
-    @get:Column(name = "privilege_id")
-    val privilegeId: Long? = null
+    @get:Id
+    @get:GeneratedValue(strategy = GenerationType.IDENTITY)
+    @get:Column(name = "id", nullable = false)
+    val id: Long? = null,
+    @get:Column(name = "user_id", nullable = false)
+    val userId: Long,
+    @get:Column(name = "privilege_id", nullable = false)
+    val privilegeId: Long
 ): Serializable {
 
     override fun equals(other: Any?): Boolean {
@@ -34,17 +45,11 @@ data class UserPrivilege(
         if (this::class != other::class)
             return false
         val o: UserPrivilege = other as UserPrivilege
-        if (this.userId == null) {
-            if (o.userId != null)
+        if (this.id == null) {
+            if (o.id != null)
                 return false
         }
-        else if (this.userId != o.userId)
-            return false
-        if (this.privilegeId == null) {
-            if (o.privilegeId != null)
-                return false
-        }
-        else if (this.privilegeId != o.privilegeId)
+        else if (this.id != o.id)
             return false
         return true
     }
@@ -52,15 +57,15 @@ data class UserPrivilege(
     override fun hashCode(): Int {
         val prime = 31
         var result = 1
-        result = prime * result + (if (this.userId == null) 0 else this.userId.hashCode())
-        result = prime * result + (if (this.privilegeId == null) 0 else this.privilegeId.hashCode())
+        result = prime * result + (if (this.id == null) 0 else this.id.hashCode())
         return result
     }
 
     override fun toString(): String {
         val sb = StringBuilder("UserPrivilege (")
 
-        sb.append(userId)
+        sb.append(id)
+        sb.append(", ").append(userId)
         sb.append(", ").append(privilegeId)
 
         sb.append(")")

@@ -1,36 +1,57 @@
 package com.example.codex.controller
 
+import com.example.codex.AbstractControllerITTest
 import com.example.codex.AbstractIntegrationTest
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.extension.ExtendWith
+import org.mockito.ArgumentMatchers.anyString
+import org.mockito.BDDMockito.given
+import org.mockito.junit.jupiter.MockitoExtension
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
-import org.springframework.test.web.servlet.MockMvc
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
-import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt
+import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient
+import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.boot.test.mock.mockito.MockBean
+import org.springframework.security.oauth2.jwt.Jwt
+import org.springframework.security.oauth2.jwt.ReactiveJwtDecoder
+import org.springframework.test.web.reactive.server.WebTestClient
+import org.springframework.web.reactive.function.BodyInserters
+import reactor.core.publisher.Mono
+import java.time.Instant
+import java.time.temporal.ChronoUnit
+import java.util.UUID
 
-@AutoConfigureMockMvc
-class PrivilegeControllerIntegrationTest : AbstractIntegrationTest() {
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@AutoConfigureWebTestClient
+class PrivilegeControllerIntegrationTest(
     @Autowired
-    lateinit var mockMvc: MockMvc
-
+    private val webTestClient: WebTestClient,
+) : AbstractControllerITTest() {
     @Test
     fun `should list privileges`() {
-        mockMvc
-            .perform(
-                post("/api/users/register")
-                    .param("username", "testuser")
-                    .param("password", "password")
-                    .param("externalId", "ext-123"),
-            ).andExpect(status().isOk)
+        webTestClient
+            .post()
+            .uri { uriBuilder ->
+                uriBuilder
+                    .path("/api/users/register")
+                    .queryParam("username", USERNAME)
+                    .queryParam("password", "secret")
+                    .queryParam("externalId", EXTERNAL_ID)
+                    .build()
+            }.exchange()
+            .expectStatus()
+            .isOk
 
-        mockMvc
-            .perform(get("/api/privileges").with(jwt().jwt { it.subject("ext-123") }))
-            .andExpect(status().isOk)
-            .andExpect(jsonPath("$[?(@.name == 'dashboard')]").exists())
-            .andExpect(jsonPath("$[?(@.name == 'users')]").exists())
+        webTestClient
+            .get()
+            .uri("/api/privileges")
+            .headers { it.setBearerAuth("dummy-token") }
+            .exchange()
+            .expectStatus()
+            .isOk
+            .expectBody()
+            .jsonPath("$[?(@.name == 'dashboard')]")
+            .exists()
+            .jsonPath("$[?(@.name == 'users')]")
+            .exists()
     }
 }
-

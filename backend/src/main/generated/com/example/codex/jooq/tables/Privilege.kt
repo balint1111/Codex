@@ -6,7 +6,10 @@ package com.example.codex.jooq.tables
 
 import com.example.codex.jooq.DefaultSchema
 import com.example.codex.jooq.keys.CONSTRAINT_4
+import com.example.codex.jooq.keys.FK_USER_PRIVILEGE_PRIVILEGE
 import com.example.codex.jooq.keys.PK_PRIVILEGE
+import com.example.codex.jooq.tables.UserPrivilege.UserPrivilegePath
+import com.example.codex.jooq.tables.Users.UsersPath
 import com.example.codex.jooq.tables.records.PrivilegeRecord
 
 import java.util.function.Function
@@ -20,6 +23,7 @@ import org.jooq.ForeignKey
 import org.jooq.Identity
 import org.jooq.InverseForeignKey
 import org.jooq.Name
+import org.jooq.Path
 import org.jooq.PlainSQL
 import org.jooq.QueryPart
 import org.jooq.Record
@@ -35,6 +39,7 @@ import org.jooq.TableField
 import org.jooq.TableOptions
 import org.jooq.UniqueKey
 import org.jooq.impl.DSL
+import org.jooq.impl.Internal
 import org.jooq.impl.SQLDataType
 import org.jooq.impl.TableImpl
 
@@ -104,10 +109,45 @@ open class Privilege(
      * Create a <code>PRIVILEGE</code> table reference
      */
     constructor(): this(DSL.name("privilege"), null)
+
+    constructor(path: Table<out Record>, childPath: ForeignKey<out Record, PrivilegeRecord>?, parentPath: InverseForeignKey<out Record, PrivilegeRecord>?): this(Internal.createPathAlias(path, childPath, parentPath), path, childPath, parentPath, PRIVILEGE, null, null)
+
+    /**
+     * A subtype implementing {@link Path} for simplified path-based joins.
+     */
+    open class PrivilegePath : Privilege, Path<PrivilegeRecord> {
+        constructor(path: Table<out Record>, childPath: ForeignKey<out Record, PrivilegeRecord>?, parentPath: InverseForeignKey<out Record, PrivilegeRecord>?): super(path, childPath, parentPath)
+        private constructor(alias: Name, aliased: Table<PrivilegeRecord>): super(alias, aliased)
+        override fun `as`(alias: String): PrivilegePath = PrivilegePath(DSL.name(alias), this)
+        override fun `as`(alias: Name): PrivilegePath = PrivilegePath(alias, this)
+        override fun `as`(alias: Table<*>): PrivilegePath = PrivilegePath(alias.qualifiedName, this)
+    }
     override fun getSchema(): Schema? = if (aliased()) null else DefaultSchema.DEFAULT_SCHEMA
     override fun getIdentity(): Identity<PrivilegeRecord, Long?> = super.getIdentity() as Identity<PrivilegeRecord, Long?>
     override fun getPrimaryKey(): UniqueKey<PrivilegeRecord> = PK_PRIVILEGE
     override fun getUniqueKeys(): List<UniqueKey<PrivilegeRecord>> = listOf(CONSTRAINT_4)
+
+    private lateinit var _userPrivilege: UserPrivilegePath
+
+    /**
+     * Get the implicit to-many join path to the <code>USER_PRIVILEGE</code>
+     * table
+     */
+    fun userPrivilege(): UserPrivilegePath {
+        if (!this::_userPrivilege.isInitialized)
+            _userPrivilege = UserPrivilegePath(this, null, FK_USER_PRIVILEGE_PRIVILEGE.inverseKey)
+
+        return _userPrivilege;
+    }
+
+    val userPrivilege: UserPrivilegePath
+        get(): UserPrivilegePath = userPrivilege()
+
+    /**
+     * Get the implicit many-to-many join path to the <code>USERS</code> table
+     */
+    val users: UsersPath
+        get(): UsersPath = userPrivilege().users()
     override fun `as`(alias: String): Privilege = Privilege(DSL.name(alias), this)
     override fun `as`(alias: Name): Privilege = Privilege(alias, this)
     override fun `as`(alias: Table<*>): Privilege = Privilege(alias.qualifiedName, this)

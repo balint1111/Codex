@@ -23,7 +23,8 @@ import java.io.Serializable
 @Table(
     name = "users",
     uniqueConstraints = [
-        UniqueConstraint(name = "CONSTRAINT_4D", columnNames = [ "USERNAME" ])
+        UniqueConstraint(name = "CONSTRAINT_4D", columnNames = [ "USERNAME" ]),
+        UniqueConstraint(name = "CONSTRAINT_4D4", columnNames = [ "EXTERNAL_ID" ])
     ]
 )
 data class Users(
@@ -35,10 +36,10 @@ data class Users(
     val username: String,
     @get:Column(name = "password", length = 100)
     val password: String? = null,
-    @get:Column(name = "external_id", nullable = false, length = 100)
-    val externalId: String,
     @get:Column(name = "deleted")
-    val deleted: Boolean? = null
+    val deleted: Boolean? = null,
+    @get:Column(name = "external_id", length = 100)
+    val externalId: String? = null
 ): Serializable {
 
     override fun equals(other: Any?): Boolean {
@@ -71,8 +72,8 @@ data class Users(
         sb.append(id)
         sb.append(", ").append(username)
         sb.append(", ").append(password)
-        sb.append(", ").append(externalId)
         sb.append(", ").append(deleted)
+        sb.append(", ").append(externalId)
 
         sb.append(")")
         return sb.toString()
