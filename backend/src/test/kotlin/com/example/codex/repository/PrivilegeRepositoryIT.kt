@@ -8,36 +8,37 @@ import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
+import reactor.test.StepVerifier
 
-class PrivilegeRepositoryIT
+class PrivilegeRepositoryIT(
     @Autowired
-    constructor(
-        private val privilegeRepository: PrivilegeRepository,
-    ) : AbstractIntegrationTest() {
-        @Test
-        fun `performs CRUD operations`() {
-            // insert
-            val privilege = Privilege(999L, "reports")
-            privilegeRepository.insert(privilege).block()
+    private val privilegeRepository: PrivilegeRepository,
+) : AbstractIntegrationTest() {
+    @Test
+    fun `performs CRUD operations`() {
+        val privilege = Privilege(999L, "reports")
+        val updatedPrivilege = Privilege(999L, "reports-updated")
 
-            // find all
-            val all = privilegeRepository.findAll().collectList().block()!!
-            assertTrue(all.any { it.id == 999L && it.name == "reports" })
+        val test =
+            privilegeRepository
+                .insert(privilege)
+                .then(privilegeRepository.findAll().collectList())
+                .doOnNext { all ->
+                    assertTrue(all.any { it.id == 999L && it.name == "reports" })
+                }.then(privilegeRepository.findById(999L))
+                .doOnNext { found ->
+                    assertNotNull(found)
+                    assertEquals("reports", found.name)
+                }.then(privilegeRepository.update(updatedPrivilege))
+                .then(privilegeRepository.findById(999L))
+                .doOnNext { updated ->
+                    assertEquals("reports-updated", updated.name)
+                }.then(privilegeRepository.delete(999L))
+                .then(privilegeRepository.findById(999L))
 
-            // find by id
-            val found = privilegeRepository.findById(999L).block()
-            assertNotNull(found)
-            assertEquals("reports", found?.name)
-
-            // update
-            val updatedPrivilege = Privilege(999L, "reports-updated")
-            privilegeRepository.update(updatedPrivilege).block()
-            val updated = privilegeRepository.findById(999L).block()
-            assertEquals("reports-updated", updated?.name)
-
-            // delete
-            privilegeRepository.delete(999L).block()
-            val deleted = privilegeRepository.findById(999L).block()
-            assertNull(deleted)
-        }
+        StepVerifier
+            .create(test)
+            .expectNextCount(0)
+            .verifyComplete()
     }
+}

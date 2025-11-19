@@ -34,28 +34,19 @@ class UserController(
         @RequestParam username: String,
         @RequestParam password: String,
         @RequestParam externalId: String,
-    ): Mono<Boolean> {
-        return userService.register(username, password, externalId)
-    }
+    ): Mono<Boolean> = userService.register(username, password, externalId)
 
     @DeleteMapping("/{id}")
     fun delete(
         @PathVariable id: Long,
-    ): Mono<Int> {
-        return userService.delete(id)
-    }
+    ): Mono<Int> = userService.delete(id)
 
     @GetMapping("/me")
-    fun me(principal: java.security.Principal): Mono<User> {
-        println("principal: ${principal.name}")
-        return userService.findByExternalId(principal.name).log()
-    }
+    fun me(principal: java.security.Principal): Mono<User> = userService.findByExternalId(principal.name).log()
 
     @PostMapping("/{id}/privileges")
     fun updatePrivileges(
         @PathVariable id: Long,
         @RequestBody privilegeIds: List<Long>,
-    ): Mono<Void> {
-        return userService.updatePrivileges(id, privilegeIds)
-    }
+    ): Mono<Void> = userService.updatePrivileges(id, privilegeIds)
 }

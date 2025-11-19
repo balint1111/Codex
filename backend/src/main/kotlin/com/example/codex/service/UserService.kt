@@ -23,33 +23,31 @@ class UserService(
         username: String,
         password: String,
         externalId: String,
-    ): Mono<Boolean> = userRepository.save(username, passwordEncoder.encode(password), externalId).log()
-        .doOnNext { user ->
-            println("register user: $user")
-            userPrivilegeRepository.saveAll(
-                Flux.fromIterable(listOf(1L, 2L))
-                    .map { UserPrivilege(userId = user.id!!, privilegeId = it) },
-            ).doOnNext { value -> System.out.println("Saw: " + value) }
-        }.map { it != null }.log()
+    ): Mono<Boolean> =
+        userRepository
+            .save(username, passwordEncoder.encode(password), externalId)
+            .doOnNext { user ->
+                userPrivilegeRepository
+                    .saveAll(
+                        Flux
+                            .fromIterable(listOf(1L, 2L))
+                            .map { UserPrivilege(userId = user.id!!, privilegeId = it) },
+                    )
+            }.map { it != null }
 
-    fun delete(id: Long): Mono<Int> {
-        return userRepository.softDelete(id)
-    }
+    fun delete(id: Long): Mono<Int> = userRepository.softDelete(id)
 
     fun realDelete(id: Long) = userRepository.delete(id)
 
-
     fun findByUsername(username: String) = userRepository.findByUsername(username)
 
-    fun findByExternalId(externalId: String): Mono<User> = userRepository.findByExternalId(externalId).doOnNext { println("found user: $it") }
+    fun findByExternalId(externalId: String): Mono<User> = userRepository.findByExternalId(externalId)
 
     @Transactional
     fun updatePrivileges(
         userId: Long,
         privilegeIds: List<Long>,
-    ): Mono<Void> {
-        return userRepository.updateUserPrivileges(userId, privilegeIds)
-    }
+    ): Mono<Void> = userRepository.updateUserPrivileges(userId, privilegeIds)
 
     fun allPrivileges() = userRepository.findAllPrivileges()
 

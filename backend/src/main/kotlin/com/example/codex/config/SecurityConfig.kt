@@ -2,9 +2,11 @@ package com.example.codex.config
 
 import com.example.codex.domain.User
 import com.example.codex.service.UserService
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.context.annotation.Primary
 import org.springframework.core.convert.converter.Converter
 import org.springframework.security.authentication.AbstractAuthenticationToken
 import org.springframework.security.config.annotation.method.configuration.EnableReactiveMethodSecurity
@@ -25,7 +27,6 @@ import org.springframework.stereotype.Component
 import org.springframework.web.cors.CorsConfiguration
 import reactor.core.publisher.Mono
 
-
 @Configuration
 @EnableWebFluxSecurity
 @EnableReactiveMethodSecurity
@@ -34,18 +35,17 @@ class SecurityConfig(
     @Value("\${frontendUrl}")
     private val frontendUrl: String,
     @Value("\${spring.security.oauth2.resourceserver.jwt.jwk-set-uri}")
-    private val jwkSetUri: String
+    private val jwkSetUri: String,
 ) {
     companion object {
         private val AUTH_WHITELIST =
             arrayOf(
-                "/api/users/register",
+                "/api/users/register/**",
                 "/v3/api-docs/**",
                 "/swagger-ui.html",
                 "/swagger-ui/**",
             )
     }
-
 
     @Bean
     fun jwtDecoder(): ReactiveJwtDecoder {
@@ -59,21 +59,20 @@ class SecurityConfig(
         val delegate = ReactiveJwtAuthenticationConverterAdapter(JwtAuthenticationConverter())
 
         return object : Converter<Jwt, Mono<out AbstractAuthenticationToken>> {
-            override fun convert(jwt: Jwt): Mono<out AbstractAuthenticationToken> {
-                return userValidator.ensureUser(jwt)
+            override fun convert(jwt: Jwt): Mono<out AbstractAuthenticationToken> =
+                userValidator
+                    .ensureUser(jwt)
                     .then(delegate.convert(jwt) ?: Mono.empty())
-            }
         }
     }
-
 
     @Bean
     fun securityFilterChain(
         http: ServerHttpSecurity,
         jwtDecoder: ReactiveJwtDecoder,
         jwtAuthenticationConverter: Converter<Jwt, Mono<out AbstractAuthenticationToken>>,
-    ): SecurityWebFilterChain {
-        return http
+    ): SecurityWebFilterChain =
+        http
             .csrf { it.disable() }
             .cors {
                 it.configurationSource { _ ->
@@ -84,34 +83,33 @@ class SecurityConfig(
                         allowCredentials = true
                     }
                 }
-            }
-            .securityContextRepository(NoOpServerSecurityContextRepository.getInstance())
+            }.securityContextRepository(NoOpServerSecurityContextRepository.getInstance())
             .authorizeExchange { authz ->
                 authz
                     .pathMatchers(*AUTH_WHITELIST)
                     .permitAll()
                     .anyExchange()
                     .authenticated()
-            }
-            .oauth2ResourceServer { oauth2 ->
+            }.oauth2ResourceServer { oauth2 ->
                 oauth2.jwt { jwt ->
                     jwt.jwtDecoder(jwtDecoder)
                     jwt.jwtAuthenticationConverter(jwtAuthenticationConverter)
                 }
-            }
-            .build()
-    }
+            }.build()
 
     @Component
-    class UserValidator(private val userService: UserService) {
-
+    class UserValidator(
+        private val userService: UserService,
+    ) {
         fun ensureUser(jwt: Jwt): Mono<User> {
             val externalId = jwt.subject
             val username = jwt.getClaimAsString("preferred_username")
 
-            return userService.findByExternalId(externalId)
+            return userService
+                .findByExternalId(externalId)
                 .switchIfEmpty(
-                    userService.register(username, "12345678", externalId)
+                    userService
+                        .register(username, "12345678", externalId)
                         .flatMap { registered ->
                             if (registered) {
                                 userService.findByExternalId(externalId)
@@ -119,8 +117,7 @@ class SecurityConfig(
                                 Mono.empty()
                             }
                         },
-                )
-                .switchIfEmpty(Mono.error(UsernameNotFoundException("No user: $externalId")))
+                ).switchIfEmpty(Mono.error(UsernameNotFoundException("No user: $externalId")))
         }
     }
 }

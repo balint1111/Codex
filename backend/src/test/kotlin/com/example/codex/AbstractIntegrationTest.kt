@@ -1,5 +1,6 @@
 package com.example.codex
 
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.junit.jupiter.api.BeforeAll
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.DynamicPropertyRegistry
@@ -47,4 +48,6 @@ abstract class AbstractIntegrationTest {
             }
         }
     }
+
+    protected val log = KotlinLogging.logger {}
 }
