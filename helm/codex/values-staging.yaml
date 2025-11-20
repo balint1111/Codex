@@ -1,21 +1,24 @@
-git:
-  branch: "staging"
-
 backend:
   service:
     nodePort: 32081
   env:
     FRONTEND_URL: "http://localhost:32080"
     SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: "http://my-keycloak-service.staging:8080/realms/codex/protocol/openid-connect/certs"
+
 frontend:
   service:
     nodePort: 32080
   env:
     API_URL: "http://localhost:32081"
     KEYCLOAK_URL: "http://localhost:32001"
-db:
-  service:
-    nodePort: 32082
+
+database:
+  database:
+    service:
+      nodePort: 32082
+
 keycloak:
   service:
     nodePort: 32001
+  frontend:
+    port: 32080

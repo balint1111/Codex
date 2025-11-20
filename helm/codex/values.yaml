@@ -1,11 +1,5 @@
-image:
-  backend: ""
-  frontend: ""
-
-git:
-  branch: "dev"
-
 backend:
+  image: ""
   service:
     type: NodePort
     nodePort: 30081
@@ -18,6 +12,7 @@ backend:
     SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: "http://my-keycloak-service.dev:8080/realms/codex/protocol/openid-connect/certs"
 
 frontend:
+  image: ""
   service:
     type: NodePort
     nodePort: 30080
@@ -27,14 +22,19 @@ frontend:
     KEYCLOAK_REALM: codex
     KEYCLOAK_CLIENT_ID: codex-frontend
 
-db:
-  name: codex
-  user: codex
-  password: codex
-  storage: 1Gi
-  service:
-    type: NodePort
-    nodePort: 30082
+database:
+  database:
+    name: codex
+    user: codex
+    password: codex
+    storage: 1Gi
+    service:
+      type: NodePort
+      nodePort: 30082
+  keycloakDatabase:
+    name: keycloak
+    user: codex
+    password: codex
 
 keycloak:
   image: quay.io/keycloak/keycloak:26.3.3
@@ -43,14 +43,19 @@ keycloak:
     user: admin
     password: admin
   db:
+    host: codex-db
     name: keycloak
     user: codex
     password: codex
+    port: 5432
   realm:
     id: codex12
     name: codex
     displayName: codex
     clientId: codex-frontend
+  frontend:
+    host: localhost
+    port: 30080
   service:
     type: NodePort
     nodePort: 30001

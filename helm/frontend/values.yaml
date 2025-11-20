@@ -1,0 +1,11 @@
+image: ""
+
+service:
+  type: NodePort
+  nodePort: 30080
+
+env:
+  API_URL: "http://localhost:30081"
+  KEYCLOAK_URL: "http://localhost:30001"
+  KEYCLOAK_REALM: codex
+  KEYCLOAK_CLIENT_ID: codex-frontend

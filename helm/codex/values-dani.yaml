@@ -3,15 +3,21 @@ backend:
     nodePort: 31081
   env:
     FRONTEND_URL: "localhost:31080"
+
 frontend:
   service:
     nodePort: 31080
   env:
     API_URL: "http://localhost:31081"
     KEYCLOAK_URL: "http://localhost:31001"
-db:
-  service:
-    nodePort: 31082
+
+database:
+  database:
+    service:
+      nodePort: 31082
+
 keycloak:
   service:
     nodePort: 31001
+  frontend:
+    port: 31080

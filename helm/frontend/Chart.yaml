@@ -1,0 +1,6 @@
+apiVersion: v2
+name: codex-frontend
+description: Helm chart for deploying the Codex frontend application
+type: application
+version: 0.1.0
+appVersion: "1.0"

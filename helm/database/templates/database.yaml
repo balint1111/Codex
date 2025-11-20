@@ -1,3 +1,4 @@
+{{- $values := .Values.database | default .Values }}
 apiVersion: v1
 kind: Secret
 metadata:
@@ -6,9 +7,9 @@ metadata:
     app: codex-db
 type: Opaque
 stringData:
-  POSTGRES_DB: {{ .Values.db.name }}
-  POSTGRES_USER: {{ .Values.db.user }}
-  POSTGRES_PASSWORD: {{ .Values.db.password }}
+  POSTGRES_DB: {{ $values.database.name }}
+  POSTGRES_USER: {{ $values.database.user }}
+  POSTGRES_PASSWORD: {{ $values.database.password }}
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -18,11 +19,11 @@ metadata:
     app: codex-db
 data:
   init-keycloak-db.sql: |
-    {{- if ne .Values.keycloak.db.user .Values.db.user }}
-    CREATE USER {{ .Values.keycloak.db.user }} WITH ENCRYPTED PASSWORD '{{ .Values.keycloak.db.password }}';
+    {{- if ne $values.keycloakDatabase.user $values.database.user }}
+    CREATE USER {{ $values.keycloakDatabase.user }} WITH ENCRYPTED PASSWORD '{{ $values.keycloakDatabase.password }}';
     {{- end }}
-    CREATE DATABASE {{ .Values.keycloak.db.name }};
-    GRANT ALL PRIVILEGES ON DATABASE {{ .Values.keycloak.db.name }} TO {{ .Values.keycloak.db.user }};
+    CREATE DATABASE {{ $values.keycloakDatabase.name }};
+    GRANT ALL PRIVILEGES ON DATABASE {{ $values.keycloakDatabase.name }} TO {{ $values.keycloakDatabase.user }};
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -35,7 +36,7 @@ spec:
     - ReadWriteOnce
   resources:
     requests:
-      storage: {{ .Values.db.storage }}
+      storage: {{ $values.database.storage }}
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -96,12 +97,12 @@ metadata:
   labels:
     app: codex-db
 spec:
-  type: {{ .Values.db.service.type }}
+  type: {{ $values.database.service.type }}
   selector:
     app: codex-db
   ports:
     - port: 5432
       targetPort: 5432
-{{- if .Values.db.service.nodePort }}
-      nodePort: {{ .Values.db.service.nodePort }}
-{{- end }}
+      {{- if $values.database.service.nodePort }}
+      nodePort: {{ $values.database.service.nodePort }}
+      {{- end }}

@@ -1,0 +1,27 @@
+image: quay.io/keycloak/keycloak:26.3.3
+instances: 1
+
+admin:
+  user: admin
+  password: admin
+
+db:
+  host: codex-db
+  name: keycloak
+  user: codex
+  password: codex
+  port: 5432
+
+realm:
+  id: codex12
+  name: codex
+  displayName: codex
+  clientId: codex-frontend
+
+frontend:
+  host: localhost
+  port: 30080
+
+service:
+  type: NodePort
+  nodePort: 30001
