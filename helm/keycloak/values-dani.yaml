@@ -1,5 +1,0 @@
-service:
-  nodePort: 31001
-
-frontend:
-  port: 31080

@@ -1,5 +1,0 @@
-service:
-  nodePort: 32001
-
-frontend:
-  port: 32080

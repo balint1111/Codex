@@ -1,5 +1,0 @@
-service:
-  type: ClusterIP
-  nodePort: null
-
-env: {}

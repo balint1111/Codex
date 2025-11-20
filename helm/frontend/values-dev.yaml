@@ -1,6 +1,0 @@
-service:
-  nodePort: 30080
-
-env:
-  API_URL: "http://localhost:30081"
-  KEYCLOAK_URL: "http://localhost:30001"

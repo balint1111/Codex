@@ -1,0 +1,22 @@
+backend:
+  service:
+    type: ClusterIP
+    nodePort: null
+  env: {}
+
+frontend:
+  service:
+    type: ClusterIP
+    nodePort: null
+  env: {}
+
+database:
+  database:
+    service:
+      type: ClusterIP
+      nodePort: null
+
+keycloak:
+  service:
+    type: ClusterIP
+    nodePort: null
