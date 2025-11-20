@@ -1,0 +1,13 @@
+database:
+  name: codex
+  user: codex
+  password: codex
+  storage: 1Gi
+  service:
+    type: NodePort
+    nodePort: 30082
+
+keycloakDatabase:
+  name: keycloak
+  user: codex
+  password: codex

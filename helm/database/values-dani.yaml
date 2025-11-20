@@ -1,0 +1,3 @@
+database:
+  service:
+    nodePort: 31082

@@ -1,0 +1,5 @@
+service:
+  nodePort: 31081
+
+env:
+  FRONTEND_URL: "localhost:31080"

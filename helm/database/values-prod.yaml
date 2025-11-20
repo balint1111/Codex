@@ -1,0 +1,4 @@
+database:
+  service:
+    type: ClusterIP
+    nodePort: null
