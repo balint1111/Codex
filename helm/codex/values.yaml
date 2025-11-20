@@ -15,7 +15,7 @@ backend:
     FRONTEND_URL: "http://localhost:30080"
     SPRING_DATASOURCE_USERNAME: codex
     SPRING_DATASOURCE_PASSWORD: codex
-    SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: "http://my-keycloak-service.dev:8080/realms/codex"
+    SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: "http://my-keycloak-service.dev:8080/realms/codex/protocol/openid-connect/certs"
 
 frontend:
   service:
