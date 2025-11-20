@@ -31,9 +31,11 @@ pipeline {
             // build & push backend
             def back = docker.build(IMAGE_BACKEND, "backend")
             back.push()
+            back.push("latest")
             // build & push frontend
             def front = docker.build(IMAGE_FRONTEND, "frontend")
             front.push()
+            front.push("latest")
           }
         }
       }
