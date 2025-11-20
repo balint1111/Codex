@@ -1,3 +1,4 @@
+{{- $values := .Values.backend | default .Values }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -16,12 +17,12 @@ spec:
     spec:
       containers:
         - name: backend
-          image: {{ .Values.image }}
+          image: {{ $values.image }}
           imagePullPolicy: Always
           ports:
             - containerPort: 8080
           env:
-            {{- range $name, $value := .Values.env }}
+            {{- range $name, $value := $values.env }}
             - name: {{ $name }}
               value: "{{ $value }}"
             {{- end }}
@@ -33,12 +34,12 @@ metadata:
   labels:
     app: codex-backend
 spec:
-  type: {{ .Values.service.type }}
+  type: {{ $values.service.type }}
   selector:
     app: codex-backend
   ports:
     - port: 80
       targetPort: 8080
-      {{- if .Values.service.nodePort }}
-      nodePort: {{ .Values.service.nodePort }}
+      {{- if $values.service.nodePort }}
+      nodePort: {{ $values.service.nodePort }}
       {{- end }}

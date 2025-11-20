@@ -1,3 +1,4 @@
+{{- $values := .Values.keycloak | default .Values }}
 apiVersion: v1
 kind: Secret
 metadata:
@@ -5,8 +6,8 @@ metadata:
   labels:
     app: keycloak
 stringData:
-  KEYCLOAK_ADMIN: {{ .Values.admin.user | quote }}
-  KEYCLOAK_ADMIN_PASSWORD: {{ .Values.admin.password | quote }}
+  KEYCLOAK_ADMIN: {{ $values.admin.user | quote }}
+  KEYCLOAK_ADMIN_PASSWORD: {{ $values.admin.password | quote }}
 ---
 apiVersion: v1
 kind: Secret
@@ -16,8 +17,8 @@ metadata:
     app: keycloak
 type: Opaque
 stringData:
-  username: {{ .Values.db.user | quote }}
-  password: {{ .Values.db.password | quote }}
+  username: {{ $values.db.user | quote }}
+  password: {{ $values.db.password | quote }}
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -28,21 +29,21 @@ metadata:
 data:
   codex-realm.json: |
     {
-      "id": "{{ .Values.realm.id }}",
-      "realm": "{{ .Values.realm.name }}",
-      "displayName": "{{ .Values.realm.displayName }}",
+      "id": "{{ $values.realm.id }}",
+      "realm": "{{ $values.realm.name }}",
+      "displayName": "{{ $values.realm.displayName }}",
       "enabled": true,
       "registrationAllowed": true,
       "clients": [
         {
-          "clientId": "{{ .Values.realm.clientId }}",
+          "clientId": "{{ $values.realm.clientId }}",
           "publicClient": true,
-          "baseUrl": "http://{{ .Values.frontend.host }}:{{ .Values.frontend.port }}/login",
+          "baseUrl": "http://{{ $values.frontend.host }}:{{ $values.frontend.port }}/login",
           "redirectUris": [
-            "http://{{ .Values.frontend.host }}:{{ .Values.frontend.port }}/*"
+            "http://{{ $values.frontend.host }}:{{ $values.frontend.port }}/*"
           ],
           "webOrigins": [
-            "http://{{ .Values.frontend.host }}:{{ .Values.frontend.port }}"
+            "http://{{ $values.frontend.host }}:{{ $values.frontend.port }}"
           ]
         }
       ]
@@ -55,7 +56,7 @@ metadata:
   labels:
     app: keycloak
 spec:
-  replicas: {{ .Values.instances }}
+  replicas: {{ $values.instances }}
   selector:
     matchLabels:
       app: keycloak
@@ -66,7 +67,7 @@ spec:
     spec:
       containers:
         - name: keycloak
-          image: {{ .Values.image | quote }}
+          image: {{ $values.image | quote }}
           args:
             - start
             - --import-realm
@@ -97,11 +98,11 @@ spec:
                   name: keycloak-db-secret
                   key: password
             - name: KC_DB_URL_HOST
-              value: {{ .Values.db.host | quote }}
+              value: {{ $values.db.host | quote }}
             - name: KC_DB_URL_DATABASE
-              value: {{ .Values.db.name | quote }}
+              value: {{ $values.db.name | quote }}
             - name: KC_DB_URL_PORT
-              value: {{ .Values.db.port | quote }}
+              value: {{ $values.db.port | quote }}
           ports:
             - name: http
               containerPort: 8080
@@ -134,13 +135,13 @@ metadata:
   labels:
     app: keycloak
 spec:
-  type: {{ .Values.service.type }}
+  type: {{ $values.service.type }}
   selector:
     app: keycloak
   ports:
     - name: http
       port: 8080
       targetPort: 8080
-      {{- if .Values.service.nodePort }}
-      nodePort: {{ .Values.service.nodePort }}
+      {{- if $values.service.nodePort }}
+      nodePort: {{ $values.service.nodePort }}
       {{- end }}

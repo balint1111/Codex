@@ -54,17 +54,31 @@ pipeline {
       }
     }
 	
-	stage('Deploy') {
+        stage('Deploy') {
       steps {
         sh '''
           kubectl apply -f kubernetes/keycloak-realm-importer.yaml
           kubectl apply -f kubernetes/keycloak-crds.yaml
-          helm dependency update helm/codex
-          helm upgrade --install codex helm/codex \
+          helm upgrade --install codex-database helm/database \
+            -n $BRANCH_NAME --create-namespace \
+            -f helm/codex/values.yaml \
+            -f helm/codex/values-$BRANCH_NAME.yaml
+
+          helm upgrade --install codex-keycloak helm/keycloak \
+            -n $BRANCH_NAME --create-namespace \
+            -f helm/codex/values.yaml \
+            -f helm/codex/values-$BRANCH_NAME.yaml
+
+          helm upgrade --install codex-backend helm/backend \
             -n $BRANCH_NAME --create-namespace \
             -f helm/codex/values.yaml \
             -f helm/codex/values-$BRANCH_NAME.yaml \
-            --set backend.image=${IMAGE_BACKEND} \
+            --set backend.image=${IMAGE_BACKEND}
+
+          helm upgrade --install codex-frontend helm/frontend \
+            -n $BRANCH_NAME --create-namespace \
+            -f helm/codex/values.yaml \
+            -f helm/codex/values-$BRANCH_NAME.yaml \
             --set frontend.image=${IMAGE_FRONTEND}
         '''
       }
