@@ -8,8 +8,8 @@ import org.springframework.test.context.DynamicPropertySource
 @SpringBootTest
 abstract class AbstractIntegrationTest {
     companion object {
-        private const val defaultJdbcUrl = "jdbc:postgresql://localhost:5432/postgresTest"
-        private const val defaultR2dbcUrl = "r2dbc:postgresql://localhost:5432/postgresTest"
+        private const val DEFAULT_JDBC_URL = "jdbc:postgresql://localhost:5432/postgresTest"
+        private const val DEFAULT_R2DBC_URL = "r2dbc:postgresql://localhost:5432/postgresTest"
 
         @JvmStatic
         @DynamicPropertySource
@@ -17,7 +17,7 @@ abstract class AbstractIntegrationTest {
             val jdbcUrl =
                 System.getProperty("spring.liquibase.url")
                     ?: System.getenv("SPRING_DATASOURCE_URL")
-                    ?: defaultJdbcUrl
+                    ?: DEFAULT_JDBC_URL
 
             val username =
                 System.getProperty("spring.liquibase.user")
@@ -32,7 +32,7 @@ abstract class AbstractIntegrationTest {
             val r2dbcUrl =
                 System.getProperty("spring.r2dbc.url")
                     ?: System.getenv("SPRING_DATASOURCE_URL")?.replace("jdbc", "r2dbc")
-                    ?: defaultR2dbcUrl
+                    ?: DEFAULT_R2DBC_URL
 
             registry.add("spring.liquibase.url") { jdbcUrl }
             registry.add("spring.liquibase.user") { username }
