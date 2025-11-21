@@ -1,10 +1,10 @@
-apiVersion: skaffold/v2alpha3
+apiVersion: skaffold/v2beta9
 kind: Config
 metadata:
   name: codex-backend
 build:
   artifacts:
-    - image: codex-backend
+    - image: localhost:5000/codex-backend
       context: .
       docker:
         dockerfile: Dockerfile
@@ -13,11 +13,11 @@ build:
 deploy:
   helm:
     releases:
-      - name: codex
-        chartPath: ../helm/codex
+      - name: codex-backend
+        chartPath: ../helm/backend
         namespace: dev
         createNamespace: true
         valuesFiles:
-          - ../helm/codex/values-dev.yaml
+          - ../helm/backend/values.yaml
         setValueTemplates:
-          image.backend: "{{.IMAGE_FULLY_QUALIFIED}}"
+          image: "{{.IMAGE_FULLY_QUALIFIED}}"

@@ -54,7 +54,7 @@ pipeline {
       }
     }
 	
-        stage('Deploy') {
+    stage('Deploy') {
       steps {
         sh '''
           kubectl apply -f kubernetes/keycloak-realm-importer.yaml

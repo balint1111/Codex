@@ -12,6 +12,7 @@ plugins {
     id("org.liquibase.gradle") version "2.2.1"
     id("nu.studer.jooq") version "8.2"
     id("com.diffplug.spotless") version "6.25.0"
+    id("com.example.codex.testcontainers")
     jacoco
 }
 
