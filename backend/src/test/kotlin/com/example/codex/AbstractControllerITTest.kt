@@ -17,7 +17,7 @@ abstract class AbstractControllerITTest : AbstractIntegrationTest() {
     private lateinit var myJwtDecoder: ReactiveJwtDecoder
 
     companion object {
-        val USERNAME = "user-" + UUID.randomUUID()
+        val USERNAME = "user-"
         val EXTERNAL_ID = UUID.randomUUID().toString()
     }
 

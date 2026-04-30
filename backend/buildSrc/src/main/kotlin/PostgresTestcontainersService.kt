@@ -1,3 +1,4 @@
+import java.sql.DriverManager
 import org.gradle.api.services.BuildService
 import org.gradle.api.services.BuildServiceParameters
 import org.testcontainers.containers.GenericContainer
@@ -28,6 +29,24 @@ abstract class PostgresTestcontainersService :
         }
 
         return container
+    }
+
+    fun ensureDatabase(host: String, port: Int, username: String, password: String, database: String) {
+        val adminJdbcUrl = "jdbc:postgresql://$host:$port/postgres"
+        DriverManager.getConnection(adminJdbcUrl, username, password).use { connection ->
+            connection.prepareStatement("select 1 from pg_database where datname = ?").use { select ->
+                select.setString(1, database)
+                select.executeQuery().use { rs ->
+                    if (rs.next()) {
+                        return
+                    }
+                }
+            }
+
+            connection.createStatement().use { statement ->
+                statement.execute("create database \"$database\"")
+            }
+        }
     }
 
     override fun close() {

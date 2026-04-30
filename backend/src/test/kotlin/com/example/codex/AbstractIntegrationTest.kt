@@ -1,50 +1,45 @@
 package com.example.codex
 
+import com.example.codex.testsupport.DatabaseResetter
 import io.github.oshai.kotlinlogging.KotlinLogging
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.BeforeEach
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.test.context.DynamicPropertyRegistry
-import org.springframework.test.context.DynamicPropertySource
+import org.springframework.core.env.Environment
+import java.util.concurrent.locks.ReentrantLock
 
 @SpringBootTest
 abstract class AbstractIntegrationTest {
-    companion object {
-        private const val DEFAULT_JDBC_URL = "jdbc:postgresql://localhost:5432/postgresTest"
-        private const val DEFAULT_R2DBC_URL = "r2dbc:postgresql://localhost:5432/postgresTest"
+    protected val log = KotlinLogging.logger {}
 
-        @JvmStatic
-        @DynamicPropertySource
-        fun datasourceConfig(registry: DynamicPropertyRegistry) {
-            val jdbcUrl =
-                System.getProperty("spring.liquibase.url")
-                    ?: System.getenv("SPRING_DATASOURCE_URL")
-                    ?: DEFAULT_JDBC_URL
+    @Autowired
+    private lateinit var environment: Environment
 
-            val username =
-                System.getProperty("spring.liquibase.user")
-                    ?: System.getenv("SPRING_DATASOURCE_USERNAME")
-                    ?: "postgres"
+    @BeforeEach
+    fun lockDatabase() {
+        databaseLock.lock()
+    }
 
-            val password =
-                System.getProperty("spring.liquibase.password")
-                    ?: System.getenv("SPRING_DATASOURCE_PASSWORD")
-                    ?: "postgres"
-
-            val r2dbcUrl =
-                System.getProperty("spring.r2dbc.url")
-                    ?: System.getenv("SPRING_DATASOURCE_URL")?.replace("jdbc", "r2dbc")
-                    ?: DEFAULT_R2DBC_URL
-
-            registry.add("spring.liquibase.url") { jdbcUrl }
-            registry.add("spring.liquibase.user") { username }
-            registry.add("spring.liquibase.password") { password }
-            registry.add("spring.datasource.url") { jdbcUrl }
-            registry.add("spring.datasource.username") { username }
-            registry.add("spring.datasource.password") { password }
-            registry.add("spring.r2dbc.url") { r2dbcUrl }
-            registry.add("spring.r2dbc.username") { username }
-            registry.add("spring.r2dbc.password") { password }
+    @AfterEach
+    fun resetDatabase() {
+        try {
+            DatabaseResetter(
+                jdbcUrl = resolveProperty("spring.liquibase.url", "spring.datasource.url"),
+                username = resolveProperty("spring.liquibase.user", "spring.datasource.username"),
+                password = resolveProperty("spring.liquibase.password", "spring.datasource.password"),
+            ).resetSeedData("db/changelog/db.changelog-master.yaml", "seed")
+        } finally {
+            databaseLock.unlock()
         }
     }
 
-    protected val log = KotlinLogging.logger {}
+    private fun resolveProperty(vararg keys: String): String {
+        return keys.firstNotNullOfOrNull { environment.getProperty(it) }
+            ?: error("Missing database property. Checked: ${keys.joinToString()}")
+    }
+
+    companion object {
+        private val databaseLock = ReentrantLock()
+    }
 }
