@@ -7,5 +7,5 @@ repositories {
 }
 
 dependencies {
-    implementation("org.testcontainers:postgresql:1.19.7")
+    implementation("org.testcontainers:testcontainers:2.0.5")
 }

@@ -18,7 +18,7 @@ class UserServiceIT(
 ) : AbstractIntegrationTest() {
     @Test
     fun `registers user and appears in all users`() {
-        val username = "sarah-${UUID.randomUUID()}"
+        val username = "sarah"
         val externalId = "ext-$username"
 
         val testMono =
@@ -40,7 +40,7 @@ class UserServiceIT(
 
     @Test
     fun `updates user privileges`() {
-        val username = "sarah-${UUID.randomUUID()}"
+        val username = "sarah"
         val externalId = "ext-$username"
 
         val testMono =
