@@ -42,7 +42,7 @@ class UserController(
     ): Mono<Int> = userService.delete(id)
 
     @GetMapping("/me")
-    fun me(principal: java.security.Principal): Mono<User> = userService.findByExternalId(principal.name).log()
+    fun me(principal: java.security.Principal): Mono<User> = userService.findByExternalId(principal.name)
 
     @PostMapping("/{id}/privileges")
     fun updatePrivileges(

@@ -25,7 +25,7 @@ class UserService(
         externalId: String,
     ): Mono<Boolean> =
         userRepository
-            .save(username, passwordEncoder.encode(password), externalId)
+            .save(username, passwordEncoder.encode(password)!!, externalId)
             .doOnNext { user ->
                 userPrivilegeRepository
                     .saveAll(

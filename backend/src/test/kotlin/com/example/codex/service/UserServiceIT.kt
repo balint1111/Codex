@@ -12,8 +12,7 @@ import reactor.test.StepVerifier
 import java.lang.Thread.sleep
 import java.util.UUID
 
-class UserServiceIT(
-    @Autowired
+class UserServiceIT @Autowired constructor(
     private val userService: UserService,
 ) : AbstractIntegrationTest() {
     @Test

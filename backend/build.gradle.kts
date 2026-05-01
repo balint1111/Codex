@@ -5,12 +5,12 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.jooq.meta.jaxb.Property
 import java.math.BigDecimal
 plugins {
-    kotlin("jvm") version "2.0.0"
-    id("org.jetbrains.kotlin.plugin.spring") version "2.1.21"
-    id("org.springframework.boot") version "3.1.1"
-    id("io.spring.dependency-management") version "1.1.0"
+    kotlin("jvm") version "2.3.0"
+    id("org.jetbrains.kotlin.plugin.spring") version "2.3.0"
+    id("org.springframework.boot") version "4.0.6"
+    id("io.spring.dependency-management") version "1.1.7"
     id("org.liquibase.gradle") version "2.2.1"
-    id("nu.studer.jooq") version "8.2"
+    id("nu.studer.jooq") version "10.2.1"
     id("com.diffplug.spotless") version "6.25.0"
     id("com.example.codex.testcontainers")
     jacoco
@@ -18,7 +18,7 @@ plugins {
 
 group = "com.example"
 version = "0.0.1-SNAPSHOT"
-java.sourceCompatibility = JavaVersion.VERSION_21
+java.sourceCompatibility = JavaVersion.VERSION_25
 
 repositories {
     mavenCentral()
@@ -45,12 +45,14 @@ dependencies {
     jooqGenerator("org.liquibase:liquibase-core")
     jooqGenerator("org.jooq:jooq-meta-extensions-liquibase:3.20.0")
     implementation("org.liquibase:liquibase-core")
+    implementation("org.springframework.boot:spring-boot-starter-liquibase")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation("io.github.oshai:kotlin-logging-jvm:5.1.0")
     testImplementation("io.mockk:mockk:1.14.6")
     testImplementation("com.ninja-squad:springmockk:4.0.2")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("org.springframework.boot:spring-boot-webtestclient")
     testImplementation("org.springframework.security:spring-security-test")
     testImplementation("io.projectreactor:reactor-test:3.8.0")
     testImplementation("org.springframework.boot:spring-boot-starter-webflux")
@@ -132,16 +134,35 @@ jooq {
 
 tasks.withType<KotlinCompile> {
     compilerOptions {
-        jvmTarget.set(JvmTarget.JVM_21)
+        jvmTarget.set(JvmTarget.JVM_25)
     }
 }
 
 tasks.register("lowercaseJooqNames") {
+    val generatedFiles = fileTree("src/main/generated") { include("**/*.kt") }
+
+    inputs.files(generatedFiles)
+    outputs.dir("src/main/generated")
+
     doLast {
-        println("Post-processing jOOQ sources to lowercase names")
-        fileTree("src/main/generated") { include("**/*.kt") }.forEach { file ->
-            exec {
-                commandLine("perl", "scripts/lowercase.pl", file.absolutePath)
+        // Regex patterns matching your Perl logic
+        val dslNameRegex = Regex("""DSL\.name\("([A-Z_]+)"\)""")
+        val nameAssignRegex = Regex("""name = "([A-Z_]+)"""")
+
+        generatedFiles.forEach { file ->
+            val originalContent = file.readText()
+
+            // Apply transformations
+            val updatedContent = originalContent
+                .replace(dslNameRegex) { match ->
+                    """DSL.name("${match.groupValues[1].lowercase()}")"""
+                }
+                .replace(nameAssignRegex) { match ->
+                    """name = "${match.groupValues[1].lowercase()}""""
+                }
+
+            if (originalContent != updatedContent) {
+                file.writeText(updatedContent)
             }
         }
     }

@@ -3,13 +3,11 @@ package com.example.codex.controller
 import com.example.codex.AbstractControllerITTest
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient
-import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.boot.webtestclient.autoconfigure.AutoConfigureWebTestClient
 import org.springframework.test.web.reactive.server.WebTestClient
 
 @AutoConfigureWebTestClient(timeout = "PT20S")
-class UserControllerIT(
-    @Autowired
+class UserControllerIT @Autowired constructor(
     private val webTestClient: WebTestClient,
 ) : AbstractControllerITTest() {
     @Test

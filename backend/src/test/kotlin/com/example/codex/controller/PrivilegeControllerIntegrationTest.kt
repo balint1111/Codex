@@ -1,24 +1,10 @@
 package com.example.codex.controller
 
 import com.example.codex.AbstractControllerITTest
-import com.example.codex.AbstractIntegrationTest
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.extension.ExtendWith
-import org.mockito.ArgumentMatchers.anyString
-import org.mockito.BDDMockito.given
-import org.mockito.junit.jupiter.MockitoExtension
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.boot.test.mock.mockito.MockBean
-import org.springframework.security.oauth2.jwt.Jwt
-import org.springframework.security.oauth2.jwt.ReactiveJwtDecoder
+import org.springframework.boot.webtestclient.autoconfigure.AutoConfigureWebTestClient
 import org.springframework.test.web.reactive.server.WebTestClient
-import org.springframework.web.reactive.function.BodyInserters
-import reactor.core.publisher.Mono
-import java.time.Instant
-import java.time.temporal.ChronoUnit
-import java.util.UUID
 
 @AutoConfigureWebTestClient(timeout = "PT20S")
 class PrivilegeControllerIntegrationTest(

@@ -9,8 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest
 import reactor.core.publisher.Hooks
 import reactor.test.StepVerifier
 
-class UserRepositoryIT(
-    @Autowired
+class UserRepositoryIT @Autowired constructor(
     private val userRepository: UserRepository,
 ) : AbstractIntegrationTest() {
     @Test

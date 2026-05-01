@@ -10,8 +10,7 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import reactor.test.StepVerifier
 
-class PrivilegeRepositoryIT(
-    @Autowired
+class PrivilegeRepositoryIT @Autowired constructor(
     private val privilegeRepository: PrivilegeRepository,
 ) : AbstractIntegrationTest() {
     @Test
