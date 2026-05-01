@@ -31,6 +31,7 @@ dependencies {
 
     implementation("org.springframework.boot:spring-boot-starter-data-r2dbc")
     implementation("org.postgresql:r2dbc-postgresql:1.1.1.RELEASE")
+    implementation("io.r2dbc:r2dbc-pool")
     implementation("io.projectreactor:reactor-core:3.8.0")
 
     implementation("org.springdoc:springdoc-openapi-starter-webflux-ui:2.3.0")
@@ -53,6 +54,7 @@ dependencies {
     testImplementation("org.springframework.security:spring-security-test")
     testImplementation("io.projectreactor:reactor-test:3.8.0")
     testImplementation("org.springframework.boot:spring-boot-starter-webflux")
+    testImplementation("org.postgresql:postgresql")
 }
 
 spotless {

@@ -9,7 +9,6 @@ import org.springframework.boot.test.context.SpringBootTest
 import reactor.core.publisher.Hooks
 import reactor.test.StepVerifier
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class UserRepositoryIT(
     @Autowired
     private val userRepository: UserRepository,

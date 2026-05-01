@@ -1,38 +1,38 @@
 package com.example.codex.testsupport
 
-import java.net.URI
-import java.security.MessageDigest
-import java.sql.DriverManager
-import java.util.concurrent.ConcurrentHashMap
 import org.springframework.boot.test.util.TestPropertyValues
 import org.springframework.context.ConfigurableApplicationContext
 import org.springframework.test.context.ContextConfigurationAttributes
 import org.springframework.test.context.ContextCustomizer
 import org.springframework.test.context.ContextCustomizerFactory
 import org.springframework.test.context.MergedContextConfiguration
+import java.net.URI
+import java.security.MessageDigest
+import java.sql.DriverManager
+import java.util.concurrent.ConcurrentHashMap
 
 class PerTestDatabaseContextCustomizerFactory : ContextCustomizerFactory {
     override fun createContextCustomizer(
         testClass: Class<*>,
         configAttributes: List<ContextConfigurationAttributes>,
     ): ContextCustomizer {
-        val databaseName = buildDatabaseName(testClass)
+        val databaseName = buildDatabaseName()
         return PerTestDatabaseContextCustomizer(databaseName)
     }
 
-    private fun buildDatabaseName(testClass: Class<*>): String {
-        val jobId = sequenceOf(
-            "CI_JOB_ID",
-            "GITHUB_RUN_ID",
-            "GITHUB_RUN_NUMBER",
-            "BUILD_ID",
-            "BUILD_NUMBER",
-            "TEAMCITY_BUILD_ID",
-        ).mapNotNull { System.getenv(it) }.firstOrNull() ?: "local"
+    private fun buildDatabaseName(): String {
+        val jobId =
+            sequenceOf(
+                "CI_JOB_ID",
+                "GITHUB_RUN_ID",
+                "GITHUB_RUN_NUMBER",
+                "BUILD_ID",
+                "BUILD_NUMBER",
+                "TEAMCITY_BUILD_ID",
+            ).firstNotNullOfOrNull { System.getenv(it) } ?: "local"
 
         val workerId = System.getProperty("org.gradle.test.worker") ?: "worker"
-        val threadId = Thread.currentThread().threadId()
-        val raw = "codex_${jobId}_${workerId}_${threadId}_${testClass.name}"
+        val raw = "codex_${jobId}_$workerId"
 
         val sanitized =
             raw
@@ -62,7 +62,6 @@ class PerTestDatabaseContextCustomizerFactory : ContextCustomizerFactory {
             context: ConfigurableApplicationContext,
             mergedConfig: MergedContextConfiguration,
         ) {
-            println("database name22: $databaseName")
             val settings = PerTestDatabaseSettings.fromEnvironment(context, databaseName)
             settings.ensureDatabase()
 
@@ -125,72 +124,56 @@ class PerTestDatabaseContextCustomizerFactory : ContextCustomizerFactory {
         }
 
         companion object {
-            fun fromEnvironment(context: ConfigurableApplicationContext, databaseName: String): PerTestDatabaseSettings {
+            fun fromEnvironment(
+                context: ConfigurableApplicationContext,
+                databaseName: String,
+            ): PerTestDatabaseSettings {
                 val env = context.environment
-                val jdbcUrl =
-                    env.getProperty("spring.liquibase.url")
-                        ?: System.getProperty("spring.liquibase.url")
-                        ?: System.getenv("SPRING_DATASOURCE_URL")
-                        ?: DEFAULT_JDBC_URL
+                val host =
+                    env.getProperty("integration.test.postgres.host")
+                        ?: System.getProperty("integration.test.postgres.host") ?: DEFAULT_HOST
+                val port =
+                    (
+                        env.getProperty("integration.test.postgres.port")
+                            ?: System.getProperty("integration.test.postgres.port")
+                    )?.toInt() ?: DEFAULT_PORT
 
-                val username =
-                    env.getProperty("spring.liquibase.user")
-                        ?: System.getProperty("spring.liquibase.user")
-                        ?: System.getenv("SPRING_DATASOURCE_USERNAME")
-                        ?: DEFAULT_USERNAME
+                val username = DEFAULT_USERNAME
+                val password = DEFAULT_PASSWORD
 
-                val password =
-                    env.getProperty("spring.liquibase.password")
-                        ?: System.getProperty("spring.liquibase.password")
-                        ?: System.getenv("SPRING_DATASOURCE_PASSWORD")
-                        ?: DEFAULT_PASSWORD
-
-                val parsed = parseJdbcUrl(jdbcUrl)
-                val jdbcWithDatabase = buildJdbcUrl(parsed.host, parsed.port, databaseName, parsed.query)
-                val r2dbcWithDatabase = buildR2dbcUrl(parsed.host, parsed.port, databaseName, parsed.query)
+                val jdbcWithDatabase = buildJdbcUrl(host, port, databaseName)
+                val r2dbcWithDatabase = buildR2dbcUrl(host, port, databaseName)
 
                 return PerTestDatabaseSettings(
                     jdbcUrl = jdbcWithDatabase,
                     r2dbcUrl = r2dbcWithDatabase,
                     username = username,
                     password = password,
-                    host = parsed.host,
-                    port = parsed.port,
+                    host = host,
+                    port = port,
                     databaseName = databaseName,
                 )
             }
 
-            private fun parseJdbcUrl(jdbcUrl: String): JdbcUrlParts {
-                val trimmed = jdbcUrl.removePrefix("jdbc:")
-                val uri = URI(trimmed)
-                val host = uri.host ?: DEFAULT_HOST
-                val port = if (uri.port == -1) DEFAULT_PORT else uri.port
-                val query = uri.query?.let { "?$it" } ?: ""
-                return JdbcUrlParts(host, port, query)
-            }
+            private fun buildJdbcUrl(
+                host: String,
+                port: Int,
+                database: String,
+            ): String = "jdbc:postgresql://$host:$port/$database"
 
-            private fun buildJdbcUrl(host: String, port: Int, database: String, query: String): String {
-                return "jdbc:postgresql://$host:$port/$database$query"
-            }
-
-            private fun buildR2dbcUrl(host: String, port: Int, database: String, query: String): String {
-                return "r2dbc:postgresql://$host:$port/$database$query"
-            }
+            private fun buildR2dbcUrl(
+                host: String,
+                port: Int,
+                database: String,
+            ): String = "r2dbc:postgresql://$host:$port/$database"
         }
     }
 
-    private data class JdbcUrlParts(
-        val host: String,
-        val port: Int,
-        val query: String,
-    )
-
     companion object {
-        private const val DEFAULT_JDBC_URL = "jdbc:postgresql://localhost:5432/postgresTest"
         private const val DEFAULT_HOST = "localhost"
         private const val DEFAULT_PORT = 5432
-        private const val DEFAULT_USERNAME = "postgres"
-        private const val DEFAULT_PASSWORD = "postgres"
+        private const val DEFAULT_USERNAME = "codex"
+        private const val DEFAULT_PASSWORD = "codex"
         private const val MAX_DB_NAME_LENGTH = 63
         private const val HASH_SUFFIX_LENGTH = 9
 

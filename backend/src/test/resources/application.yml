@@ -7,6 +7,10 @@ spring:
     url: r2dbc:postgresql://localhost:5432/codex
     username: codex
     password: codex
+    pool:
+      max-size: 4
+      initial-size: 0
+      max-idle-time: 30s
   jooq:
     sql-dialect: POSTGRES
   security:
