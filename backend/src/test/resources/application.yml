@@ -20,4 +20,6 @@ spring:
           jwk-set-uri: "http://keycloak-fake-set-uri"
 
 frontendUrl: localhost:8080
-logging.level.org.jooq.tools.LoggerListener: DEBUG
+logging:
+  level:
+    org.jooq.tools.LoggerListener: DEBUG
