@@ -1,14 +1,11 @@
 package com.example.codex.testsupport
 
-import liquibase.Liquibase
-import liquibase.database.DatabaseFactory
-import liquibase.database.jvm.JdbcConnection
-import liquibase.resource.ClassLoaderResourceAccessor
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.postgresql.copy.CopyManager
 import org.postgresql.core.BaseConnection
 import java.io.File
 import java.sql.DriverManager
-import java.util.Properties
+import java.util.*
 
 class DatabaseResetter(
     private val jdbcUrl: String,
@@ -19,17 +16,17 @@ class DatabaseResetter(
         private val snapshotDir = File("build/test-snapshot")
         private val snapshotMetadataFile = File("build/test-snapshot/tables.txt")
         private const val CHANGE_LOG_PATH = "db/changelog/db.changelog-master.yaml"
+        private val log = KotlinLogging.logger {}
     }
 
     fun resetDatabase() {
         // If a snapshot exists, truncate tables and restore from snapshot
         if (snapshotDir.exists() && snapshotMetadataFile.exists()) {
-            println("Restoring from snapshot")
             try {
                 recreateDatabaseFromSnapshot()
                 return
             } catch (ex: Exception) {
-                println("Snapshot restore failed: ${ex.message}. Falling back to Liquibase.")
+                log.warn(ex) { "Snapshot restore failed: ${ex.message}. Falling back to Liquibase." }
             }
         }
     }
@@ -52,16 +49,13 @@ class DatabaseResetter(
 
     private fun truncateAllTablesExceptLiquibase(conn: java.sql.Connection) {
         val tablesToTruncate = getTableNames(conn)
-            .filter { !it.equals("databasechangelog", ignoreCase = true) &&
-                    !it.equals("databasechangeloglock", ignoreCase = true) }
 
         conn.createStatement().use { stmt ->
             for (tableName in tablesToTruncate) {
                 try {
                     stmt.execute("TRUNCATE TABLE $tableName RESTART IDENTITY CASCADE")
-                    println("Truncated table: $tableName")
                 } catch (ex: Exception) {
-                    println("Warning: Failed to truncate table $tableName: ${ex.message}")
+                    log.warn(ex) { "Failed to truncate table $tableName: ${ex.message}" }
                 }
             }
         }
@@ -83,17 +77,16 @@ class DatabaseResetter(
             for (tableName in tables) {
                 val snapshotFile = File(snapshotDir, "$tableName.csv")
                 if (!snapshotFile.exists()) {
-                    println("Warning: Snapshot file not found for table $tableName")
+                    log.warn { "Snapshot file not found for table $tableName" }
                     continue
                 }
 
                 snapshotFile.inputStream().use { input ->
+                    println("input: " + String(input.readAllBytes()))
                     try {
-                        // COPY FROM restores data with header row
                         copyManager.copyIn("COPY $tableName FROM STDIN WITH (FORMAT CSV, HEADER)", input)
-                        println("Restored table: $tableName")
                     } catch (ex: Exception) {
-                        println("Failed to restore table $tableName: ${ex.message}")
+                        log.error(ex) { "Failed to restore table $tableName: ${ex.message}" }
                         throw ex
                     }
                 }
@@ -103,7 +96,6 @@ class DatabaseResetter(
 
     fun createSnapshotWithCopyManager() {
         snapshotDir.mkdirs()
-        println("Creating snapshot in: ${snapshotDir.absolutePath}")
 
         val props =
             Properties().apply {
@@ -114,24 +106,21 @@ class DatabaseResetter(
         DriverManager.getConnection(jdbcUrl, props).use { conn ->
             val copyManager = CopyManager(conn.unwrap(BaseConnection::class.java))
 
-            // Get all table names from the database
             val tables = getTableNames(conn)
 
-            // Write table names to metadata file
             snapshotMetadataFile.writeText(tables.joinToString("\n"))
-            println("Found ${tables.size} tables: $tables")
 
-            // Export each table to CSV format
             for (tableName in tables) {
                 val outputFile = File(snapshotDir, "$tableName.csv")
-                outputFile.outputStream().use { output ->
-                    try {
-                        // COPY TO streams table data with headers
-                        copyManager.copyOut("COPY $tableName TO STDOUT WITH (FORMAT CSV, HEADER)", output)
-                        println("Exported table: $tableName to ${outputFile.name}")
-                    } catch (ex: Exception) {
-                        println("Failed to export table $tableName: ${ex.message}")
-                        throw ex
+                if (!outputFile.exists()) {
+                    outputFile.outputStream().use { output ->
+                        try {
+                            // COPY TO streams table data with headers
+                            copyManager.copyOut("COPY $tableName TO STDOUT WITH (FORMAT CSV, HEADER)", output)
+                        } catch (ex: Exception) {
+                            log.error(ex) { "Failed to export table $tableName: ${ex.message}" }
+                            throw ex
+                        }
                     }
                 }
             }
@@ -158,16 +147,5 @@ class DatabaseResetter(
         }
 
         return tables
-    }
-
-    fun runLiquibase() {
-        DriverManager.getConnection(jdbcUrl, username, password).use { connection ->
-            val database =
-                DatabaseFactory
-                    .getInstance()
-                    .findCorrectDatabaseImplementation(JdbcConnection(connection))
-            val liquibase = Liquibase(CHANGE_LOG_PATH, ClassLoaderResourceAccessor(), database)
-            liquibase.update()
-        }
     }
 }

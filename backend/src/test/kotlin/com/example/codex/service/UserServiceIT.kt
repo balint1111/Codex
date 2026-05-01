@@ -54,6 +54,7 @@ class UserServiceIT(
                         .allPrivileges()
                         .collectList()
                         .flatMap { privilegeList ->
+                            privilegeList.forEach { privilege -> println("Privilege: ${privilege.name} (id=${privilege.id})") }
                             val byName = privilegeList.associateBy { it.name }
                             val dashboard = requireNotNull(byName["dashboard"])
                             val users = requireNotNull(byName["users"])

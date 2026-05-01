@@ -35,7 +35,6 @@ class UserRepositoryIT(
                 .save("john", "secret", "ext-john")
                 .flatMap { userRepository.findByUsername("john") }
                 .flatMap { user ->
-                    println("soft delete user $user")
                     userRepository
                         .softDelete(user.id)
                         .then(userRepository.findById(user.id).hasElement())

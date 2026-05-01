@@ -26,28 +26,21 @@ abstract class AbstractIntegrationTest {
                     username = resolveProperty("spring.liquibase.user", "spring.datasource.username"),
                     password = resolveProperty("spring.liquibase.password", "spring.datasource.password"),
                 )
-            println("before liquibase")
-            databaseResetter.runLiquibase()
-            println("after liquibase")
-            println("before createSnapshotWithCopyManager")
             databaseResetter.createSnapshotWithCopyManager()
-            println("after createSnapshotWithCopyManager")
         } catch (ex: Exception) {
             ex.printStackTrace()
-            println("Creating snapshot failed: ${ex.message}")
+            log.error(ex) { "Creating snapshot failed: ${ex.message}" }
         }
     }
 
     @AfterEach
     fun afterEach() {
         try {
-            println("before resetting database")
             DatabaseResetter(
                 jdbcUrl = resolveProperty("spring.liquibase.url", "spring.datasource.url"),
                 username = resolveProperty("spring.liquibase.user", "spring.datasource.username"),
                 password = resolveProperty("spring.liquibase.password", "spring.datasource.password"),
             ).resetDatabase()
-            println("after resetting database")
         } finally {
             databaseLock.unlock()
         }
