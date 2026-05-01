@@ -34,7 +34,7 @@ abstract class AbstractIntegrationTest {
             println("after createSnapshotWithCopyManager")
         } catch (ex: Exception) {
             ex.printStackTrace()
-            println("Creating snapshot failed: ${ex.message}. Tests will continue using Liquibase-based reseed.")
+            println("Creating snapshot failed: ${ex.message}")
         }
     }
 

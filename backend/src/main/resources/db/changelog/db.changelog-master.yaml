@@ -81,7 +81,6 @@ databaseChangeLog:
   - changeSet:
       id: "4"
       author: codex
-      context: seed
       changes:
         - insert:
             tableName: privilege
@@ -119,7 +118,6 @@ databaseChangeLog:
   - changeSet:
       id: "6"
       author: codex
-      context: seed
       changes:
         - insert:
             tableName: users
