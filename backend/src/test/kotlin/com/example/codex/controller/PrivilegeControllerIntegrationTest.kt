@@ -7,8 +7,7 @@ import org.springframework.boot.webtestclient.autoconfigure.AutoConfigureWebTest
 import org.springframework.test.web.reactive.server.WebTestClient
 
 @AutoConfigureWebTestClient(timeout = "PT20S")
-class PrivilegeControllerIntegrationTest(
-    @Autowired
+class PrivilegeControllerIntegrationTest @Autowired constructor(
     private val webTestClient: WebTestClient,
 ) : AbstractControllerITTest() {
     @Test

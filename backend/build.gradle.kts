@@ -76,8 +76,63 @@ tasks.withType<Test> {
     maxParallelForks = Runtime.getRuntime().availableProcessors()
 }
 
+// Project Leyden AOT cache - training and consumption for faster test startup
+// Cache file location (under build/leyden)
+val aotCacheFile = layout.buildDirectory.file("leyden/test-suite.aot")
+
+// 1. Create a helper task to package test classes into a JAR
+val testJar by tasks.registering(Jar::class) {
+    archiveClassifier.set("test")
+    from(project.extensions.getByType<SourceSetContainer>().named("test").get().output)
+}
+
+val testTraining by tasks.registering(Test::class) {
+    group = "verification"
+    dependsOn(tasks.jar, testJar)
+
+    val sourceSets = project.extensions.getByType<SourceSetContainer>()
+    val main = sourceSets.named("main").get()
+    val test = sourceSets.named("test").get()
+
+    testClassesDirs = test.output.classesDirs
+
+    classpath = project.files(
+        tasks.jar.get().archiveFile,
+        testJar.get().archiveFile,
+        test.runtimeClasspath.filter { it.extension == "jar" }
+    )
+
+    maxParallelForks = 1
+    useJUnitPlatform()
+    filter { includeTestsMatching("*ApplicationTest") }
+
+    jvmArgs(
+        "-XX:AOTCacheOutput=${aotCacheFile.get().asFile.absolutePath}",
+        "-XX:+UnlockDiagnosticVMOptions"
+    )
+
+    systemProperty("spring.context.exit", "onRefresh")
+    outputs.file(aotCacheFile)
+}
+
 tasks.named<Test>("test") {
-    dependsOn("clean")
+//    dependsOn("clean")
+    dependsOn(testTraining)
+
+    filter { includeTestsMatching("*IT") }
+
+    doFirst {
+        val f = aotCacheFile.get().asFile
+        if (f.exists()) {
+            if (!JavaVersion.current().isCompatibleWith(JavaVersion.VERSION_25)) {
+                logger.warn("Leyden AOT cache detected at ${f.absolutePath} but current JDK (${JavaVersion.current()}) is below the required JDK 25. Skipping AOT cache injection.")
+            } else {
+                jvmArgs("-XX:AOTCache=${f.absolutePath}")
+            }
+        } else {
+            logger.lifecycle("Leyden AOT cache not found at ${f.absolutePath}. To generate run: ./gradlew testTraining")
+        }
+    }
 }
 
 tasks.matching { it.name != "clean" }.configureEach {
