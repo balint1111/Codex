@@ -4,13 +4,13 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.jooq.meta.jaxb.Property
 
 plugins {
-    kotlin("jvm") version "2.3.0"
-    id("org.jetbrains.kotlin.plugin.spring") version "2.3.0"
-    id("org.springframework.boot") version "4.0.6"
-    id("io.spring.dependency-management") version "1.1.7"
-    id("org.liquibase.gradle") version "2.2.1"
-    id("nu.studer.jooq") version "10.2.1"
-    id("com.diffplug.spotless") version "6.25.0"
+    alias(libs.plugins.kotlinJvm)
+    alias(libs.plugins.kotlinSpring)
+    alias(libs.plugins.springBoot)
+    alias(libs.plugins.dependencyManagement)
+    alias(libs.plugins.liquibaseGradle)
+    alias(libs.plugins.nuStuderJooq)
+    alias(libs.plugins.spotless)
     id("com.example.codex.testcontainers")
     jacoco
 }
@@ -24,56 +24,53 @@ repositories {
 }
 
 dependencies {
-    implementation("org.springframework.boot:spring-boot-starter-webflux")
-    implementation("org.springframework.boot:spring-boot-starter-security")
-    implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
+    implementation(libs.springBootStarterWebflux)
+    implementation(libs.springBootStarterSecurity)
+    implementation(libs.springBootStarterOauth2ResourceServer)
 
-    implementation("org.springframework.boot:spring-boot-starter-data-r2dbc")
-    implementation("org.postgresql:r2dbc-postgresql:1.1.1.RELEASE")
-    implementation("io.r2dbc:r2dbc-pool")
-    implementation("io.projectreactor:reactor-core:3.8.0")
+    implementation(libs.springBootStarterDataR2dbc)
+    implementation(libs.r2dbcPostgresql)
+    implementation(libs.reactorCore)
 
-    implementation("org.springdoc:springdoc-openapi-starter-webflux-ui:2.3.0")
+    implementation(libs.springdocOpenapiStarterWebfluxUi)
 
-    implementation("org.jooq:jooq:3.21.2")
-    implementation("org.jooq:jooq-jpa-extensions:3.21.2")
+    implementation(libs.jooq)
+    implementation(libs.jooqJpaExtensions)
 
-    implementation("jakarta.persistence:jakarta.persistence-api:3.1.0")
-    runtimeOnly("org.postgresql:postgresql")
-    jooqGenerator("org.postgresql:postgresql")
-    jooqGenerator("org.liquibase:liquibase-core")
-    jooqGenerator("org.jooq:jooq-codegen:3.21.2")
-    jooqGenerator("org.jooq:jooq-meta:3.21.2")
-    jooqGenerator("org.jooq:jooq:3.21.2")
-    jooqGenerator("org.jooq:jooq-meta-extensions-liquibase:3.21.2")
-    implementation("org.liquibase:liquibase-core")
-    implementation("org.springframework.boot:spring-boot-starter-liquibase")
-    // Provide liquibase runtime classpath for the Gradle liquibase plugin
-    liquibaseRuntime("org.liquibase:liquibase-core")
-    liquibaseRuntime("org.postgresql:postgresql")
-    implementation("org.jetbrains.kotlin:kotlin-reflect")
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-    implementation("io.github.oshai:kotlin-logging-jvm:5.1.0")
-    testImplementation("io.mockk:mockk:1.14.6")
-    testImplementation("com.ninja-squad:springmockk:4.0.2")
-    testImplementation("org.springframework.boot:spring-boot-starter-test")
-    testImplementation("org.springframework.boot:spring-boot-webtestclient")
-    testImplementation("org.springframework.security:spring-security-test")
-    testImplementation("io.projectreactor:reactor-test:3.8.0")
-    testImplementation("org.springframework.boot:spring-boot-starter-webflux")
-    testImplementation("org.postgresql:postgresql")
-    liquibaseRuntime("info.picocli:picocli:4.7.5")
+    implementation(libs.jakartaPersistenceApi)
+    runtimeOnly(libs.postgresqlDriver)
+    jooqGenerator(libs.postgresqlDriver)
+    jooqGenerator(libs.liquibaseCore)
+    jooqGenerator(libs.jooqCodegen)
+    jooqGenerator(libs.jooqMeta)
+    jooqGenerator(libs.jooq)
+    jooqGenerator(libs.jooqMetaExtensionsLiquibase)
+    implementation(libs.liquibaseCore)
+    implementation(libs.springBootStarterLiquibase)
+    liquibaseRuntime(libs.liquibaseCore)
+    liquibaseRuntime(libs.postgresqlDriver)
+    implementation(libs.kotlinReflect)
+    implementation(libs.kotlinStdlibJdk8)
+    implementation(libs.kotlinLoggingJvm)
+    testImplementation(libs.mockk)
+    testImplementation(libs.springmockk)
+    testImplementation(libs.springBootStarterTest)
+    testImplementation(libs.springBootWebtestclient)
+    testImplementation(libs.springSecurityTest)
+    testImplementation(libs.reactorTest)
+    testImplementation(libs.postgresqlDriver)
+    liquibaseRuntime(libs.picocli)
 }
 
 spotless {
     kotlin {
         target("src/**/*.kt")
         targetExclude("src/main/generated/**")
-        ktlint("1.7.1")
+        ktlint(libs.versions.ktlint.get())
     }
     kotlinGradle {
         target("*.kts")
-        ktlint("1.7.1")
+        ktlint(libs.versions.ktlint.get())
     }
 }
 
@@ -82,154 +79,19 @@ tasks.withType<Test> {
     maxParallelForks = 1
 }
 
-// Project Leyden AOT cache - training and consumption for faster test startup
-// Cache file location (under build/leyden)
-val aotCacheFile = layout.buildDirectory.file("leyden/test-suite.aot")
-
-// 1. Create a helper task to package test classes into a JAR
-val testJar by tasks.registering(Jar::class) {
-    archiveClassifier.set("test")
-    from(
-        project.extensions
-            .getByType<SourceSetContainer>()
-            .named("test")
-            .get()
-            .output,
-    )
-}
-
-val testTraining by tasks.registering(Test::class) {
-    group = "verification"
-    dependsOn("generateInitSql")
-    dependsOn(tasks.jar, testJar)
-
-    val sourceSets = project.extensions.getByType<SourceSetContainer>()
-    val test = sourceSets.named("test").get()
-
-    testClassesDirs = test.output.classesDirs
-
-    classpath =
-        project.files(
-            tasks.jar.get().archiveFile,
-            testJar.get().archiveFile,
-            test.runtimeClasspath.filter { it.extension == "jar" },
-        )
-
-    filter { includeTestsMatching("*ApplicationTest") }
-
-    jvmArgs(
-        "-XX:AOTCacheOutput=${aotCacheFile.get().asFile.absolutePath}",
-        "-XX:+UnlockDiagnosticVMOptions",
-        "-XX:+UseCompactObjectHeaders",
-        "-Xshare:off",
-        "-Dorg.jooq.no-logo=true",
-        "-XX:+EnableDynamicAgentLoading",
-    )
-
-    systemProperty("spring.context.exit", "onRefresh")
-    outputs.file(aotCacheFile)
-}
-
-val aotEnabledInTest = false
-tasks.named<Test>("test") {
-    if (aotEnabledInTest) {
-        dependsOn(testTraining)
-    }
-    dependsOn("generateInitSql")
-    outputs.upToDateWhen { false }
-
-    filter { includeTestsMatching("*IT") }
-
-    doFirst {
-        if (!aotEnabledInTest) {
-            jvmArgs("-Xshare:off", "-XX:+UseCompactObjectHeaders", "-Dorg.jooq.no-logo=true", "-XX:+EnableDynamicAgentLoading")
-            return@doFirst
-        }
-        val f = aotCacheFile.get().asFile
-        if (f.exists()) {
-            if (!JavaVersion.current().isCompatibleWith(JavaVersion.VERSION_25)) {
-                logger.warn(
-                    "Leyden AOT cache detected at ${f.absolutePath} but current JDK (${JavaVersion.current()}) is below the required JDK 25. Skipping AOT cache injection.",
-                )
-            } else {
-                jvmArgs(
-                    "-XX:AOTCache=${f.absolutePath}",
-                    "-XX:+UseCompactObjectHeaders",
-                    "-Dorg.jooq.no-logo=true",
-                    "-XX:+EnableDynamicAgentLoading",
-                )
-            }
-        } else {
-            logger.lifecycle("Leyden AOT cache not found at ${f.absolutePath}. To generate run: ./gradlew testTraining")
-        }
-    }
-}
-
-tasks.matching { it.name != "clean" }.configureEach {
-    mustRunAfter("clean")
-}
-
-jooq {
-    version.set("3.21.2")
-    edition.set(JooqEdition.OSS)
-    configurations {
-        create("main") {
-            generateSchemaSourceOnCompilation.set(false)
-            jooqConfiguration.apply {
-                generator.apply {
-                    name = "org.jooq.codegen.KotlinGenerator"
-                    database.apply {
-                        name = "org.jooq.meta.extensions.ddl.DDLDatabase"
-
-                        properties.add(
-                            Property().apply {
-                                key = "scripts"
-                                value = "${project.layout.buildDirectory.get()}/init.sql"
-                            },
-                        )
-                    }
-                    target.apply {
-                        packageName = "com.example.codex.jooq"
-                        directory = "src/main/generated"
-                    }
-                    generate.apply {
-                        withDeprecated(false)
-                        withImmutablePojos(true)
-                        withFluentSetters(true)
-                        withJpaAnnotations(true)
-                        withImplicitJoinPathsAsKotlinProperties(true)
-                        withKotlinSetterJvmNameAnnotationsOnIsPrefix(true)
-                        withPojosAsKotlinDataClasses(true)
-                        withKotlinNotNullPojoAttributes(true)
-                        withKotlinNotNullRecordAttributes(true)
-                    }
-                }
-            }
-        }
-    }
-}
-
-tasks.withType<KotlinCompile> {
-    compilerOptions {
-        jvmTarget.set(JvmTarget.JVM_25)
-    }
-}
-
-tasks.register("lowercaseJooqNames") {
+val lowercaseJooqNames by tasks.registering {
     val generatedFiles = fileTree("src/main/generated") { include("**/*.kt") }
 
     inputs.files(generatedFiles)
     outputs.dir("src/main/generated")
 
     doLast {
-        // Regex patterns matching your Perl logic
         val dslNameRegex = Regex("""DSL\.name\("([A-Z_]+)"\)""")
         val nameAssignRegex = Regex("""name = "([A-Z_]+)"""")
 
         generatedFiles.forEach { file ->
             val originalContent = file.readText()
 
-            // Apply transformations
             val updatedContent =
                 originalContent
                     .replace(dslNameRegex) { match ->
@@ -245,14 +107,7 @@ tasks.register("lowercaseJooqNames") {
     }
 }
 
-tasks.named("generateJooq").configure {
-    dependsOn("generateInitSql")
-    finalizedBy("lowercaseJooqNames")
-    outputs.dir("src/main/generated")
-}
-val liquibaseRuntime = configurations.maybeCreate("liquibaseRuntime")
-
-tasks.register<JavaExec>("generateInitSql") {
+val generateInitSql by tasks.registering(JavaExec::class) {
     group = "documentation"
     description = "Generates a full init.sql from Liquibase YAML without a DB connection."
 
@@ -301,3 +156,141 @@ tasks.register<JavaExec>("generateInitSql") {
         }
     }
 }
+
+val aotCacheFile = layout.buildDirectory.file("leyden/test-suite.aot")
+
+val testJar by tasks.registering(Jar::class) {
+    archiveClassifier.set("test")
+    from(
+        project.extensions
+            .getByType<SourceSetContainer>()
+            .named("test")
+            .get()
+            .output,
+    )
+}
+
+val testTraining by tasks.registering(Test::class) {
+    group = "verification"
+    dependsOn(generateInitSql)
+    dependsOn(tasks.jar, testJar)
+
+    val sourceSets = project.extensions.getByType<SourceSetContainer>()
+    val test = sourceSets.named("test").get()
+
+    testClassesDirs = test.output.classesDirs
+
+    classpath =
+        project.files(
+            tasks.jar.get().archiveFile,
+            testJar.get().archiveFile,
+            test.runtimeClasspath.filter { it.extension == "jar" },
+        )
+
+    filter { includeTestsMatching("*ApplicationTest") }
+
+    jvmArgs(
+        "-XX:AOTCacheOutput=${aotCacheFile.get().asFile.absolutePath}",
+        "-XX:+UnlockDiagnosticVMOptions",
+        "-XX:+UseCompactObjectHeaders",
+        "-Xshare:off",
+        "-Dorg.jooq.no-logo=true",
+        "-XX:+EnableDynamicAgentLoading",
+    )
+
+    systemProperty("spring.context.exit", "onRefresh")
+    outputs.file(aotCacheFile)
+}
+
+val aotEnabledInTest = false
+tasks.named<Test>("test") {
+    if (aotEnabledInTest) {
+        dependsOn(testTraining)
+    }
+    dependsOn(generateInitSql)
+    outputs.upToDateWhen { false }
+
+    filter { includeTestsMatching("*IT") }
+
+    doFirst {
+        if (!aotEnabledInTest) {
+            jvmArgs("-Xshare:off", "-XX:+UseCompactObjectHeaders", "-Dorg.jooq.no-logo=true", "-XX:+EnableDynamicAgentLoading")
+            return@doFirst
+        }
+        val f = aotCacheFile.get().asFile
+        if (f.exists()) {
+            if (!JavaVersion.current().isCompatibleWith(JavaVersion.VERSION_25)) {
+                logger.warn(
+                    "Leyden AOT cache detected at ${f.absolutePath} but current JDK (${JavaVersion.current()}) is below the required JDK 25. Skipping AOT cache injection.",
+                )
+            } else {
+                jvmArgs(
+                    "-XX:AOTCache=${f.absolutePath}",
+                    "-XX:+UseCompactObjectHeaders",
+                    "-Dorg.jooq.no-logo=true",
+                    "-XX:+EnableDynamicAgentLoading",
+                )
+            }
+        } else {
+            logger.lifecycle("Leyden AOT cache not found at ${f.absolutePath}. To generate run: ./gradlew testTraining")
+        }
+    }
+}
+
+tasks.matching { it.name != "clean" }.configureEach {
+    mustRunAfter("clean")
+}
+
+jooq {
+    version.set(libs.versions.jooq.get())
+    edition.set(JooqEdition.OSS)
+    configurations {
+        create("main") {
+            generateSchemaSourceOnCompilation.set(false)
+            jooqConfiguration.apply {
+                generator.apply {
+                    name = "org.jooq.codegen.KotlinGenerator"
+                    database.apply {
+                        name = "org.jooq.meta.extensions.ddl.DDLDatabase"
+
+                        properties.add(
+                            Property().apply {
+                                key = "scripts"
+                                value = "${project.layout.buildDirectory.get()}/init.sql"
+                            },
+                        )
+                    }
+                    target.apply {
+                        packageName = "com.example.codex.jooq"
+                        directory = "src/main/generated"
+                    }
+                    generate.apply {
+                        withDeprecated(false)
+                        withImmutablePojos(true)
+                        withFluentSetters(true)
+                        withJpaAnnotations(true)
+                        withImplicitJoinPathsAsKotlinProperties(true)
+                        withKotlinSetterJvmNameAnnotationsOnIsPrefix(true)
+                        withPojosAsKotlinDataClasses(true)
+                        withKotlinNotNullPojoAttributes(true)
+                        withKotlinNotNullRecordAttributes(true)
+                    }
+                }
+            }
+        }
+    }
+}
+
+tasks.withType<KotlinCompile> {
+    compilerOptions {
+        jvmTarget.set(JvmTarget.JVM_25)
+    }
+}
+
+tasks.named("generateJooq").configure {
+    dependsOn(generateInitSql)
+    finalizedBy(lowercaseJooqNames)
+    outputs.dir("src/main/generated")
+}
+val liquibaseRuntime = configurations.maybeCreate("liquibaseRuntime")
+

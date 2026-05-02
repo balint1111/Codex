@@ -1,6 +1,5 @@
 package com.example.codex.config
 
-import io.r2dbc.postgresql.api.PostgresqlConnection
 import io.r2dbc.spi.ConnectionFactory
 import org.jooq.DSLContext
 import org.jooq.SQLDialect
@@ -22,7 +21,6 @@ class Beans {
     fun dsl(connectionFactory: ConnectionFactory): DSLContext {
         val dsl = using(connectionFactory, SQLDialect.POSTGRES)
 
-        // This is the crucial line:
         dsl.configuration().set(DefaultAnnotatedPojoMemberProvider())
 
         return dsl
