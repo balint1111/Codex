@@ -14,10 +14,7 @@ import jakarta.persistence.Id
 import jakarta.persistence.Table
 import jakarta.persistence.UniqueConstraint
 
-import org.jooq.Field
 import org.jooq.Record1
-import org.jooq.Record5
-import org.jooq.Row5
 import org.jooq.impl.UpdatableRecordImpl
 
 
@@ -33,7 +30,7 @@ import org.jooq.impl.UpdatableRecordImpl
         UniqueConstraint(name = "CONSTRAINT_4D4", columnNames = [ "EXTERNAL_ID" ])
     ]
 )
-open class UsersRecord private constructor() : UpdatableRecordImpl<UsersRecord>(Users.USERS), Record5<Long?, String?, String?, Boolean?, String?> {
+open class UsersRecord private constructor() : UpdatableRecordImpl<UsersRecord>(Users.USERS) {
 
     @get:Id
     @get:GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -67,62 +64,6 @@ open class UsersRecord private constructor() : UpdatableRecordImpl<UsersRecord>(
     // -------------------------------------------------------------------------
 
     override fun key(): Record1<Long?> = super.key() as Record1<Long?>
-
-    // -------------------------------------------------------------------------
-    // Record5 type implementation
-    // -------------------------------------------------------------------------
-
-    override fun fieldsRow(): Row5<Long?, String?, String?, Boolean?, String?> = super.fieldsRow() as Row5<Long?, String?, String?, Boolean?, String?>
-    override fun valuesRow(): Row5<Long?, String?, String?, Boolean?, String?> = super.valuesRow() as Row5<Long?, String?, String?, Boolean?, String?>
-    override fun field1(): Field<Long?> = Users.USERS.ID
-    override fun field2(): Field<String?> = Users.USERS.USERNAME
-    override fun field3(): Field<String?> = Users.USERS.PASSWORD
-    override fun field4(): Field<Boolean?> = Users.USERS.DELETED
-    override fun field5(): Field<String?> = Users.USERS.EXTERNAL_ID
-    override fun component1(): Long? = id
-    override fun component2(): String = username
-    override fun component3(): String? = password
-    override fun component4(): Boolean? = deleted
-    override fun component5(): String? = externalId
-    override fun value1(): Long? = id
-    override fun value2(): String = username
-    override fun value3(): String? = password
-    override fun value4(): Boolean? = deleted
-    override fun value5(): String? = externalId
-
-    override fun value1(value: Long?): UsersRecord {
-        set(0, value)
-        return this
-    }
-
-    override fun value2(value: String?): UsersRecord {
-        set(1, value)
-        return this
-    }
-
-    override fun value3(value: String?): UsersRecord {
-        set(2, value)
-        return this
-    }
-
-    override fun value4(value: Boolean?): UsersRecord {
-        set(3, value)
-        return this
-    }
-
-    override fun value5(value: String?): UsersRecord {
-        set(4, value)
-        return this
-    }
-
-    override fun values(value1: Long?, value2: String?, value3: String?, value4: Boolean?, value5: String?): UsersRecord {
-        this.value1(value1)
-        this.value2(value2)
-        this.value3(value3)
-        this.value4(value4)
-        this.value5(value5)
-        return this
-    }
 
     /**
      * Create a detached, initialised UsersRecord

@@ -13,8 +13,6 @@ import com.example.codex.jooq.tables.Privilege.PrivilegePath
 import com.example.codex.jooq.tables.UserPrivilege.UserPrivilegePath
 import com.example.codex.jooq.tables.records.UsersRecord
 
-import java.util.function.Function
-
 import kotlin.collections.Collection
 import kotlin.collections.List
 
@@ -28,15 +26,12 @@ import org.jooq.Path
 import org.jooq.PlainSQL
 import org.jooq.QueryPart
 import org.jooq.Record
-import org.jooq.Records
-import org.jooq.Row5
 import org.jooq.SQL
 import org.jooq.Schema
-import org.jooq.Select
-import org.jooq.SelectField
 import org.jooq.Stringly
 import org.jooq.Table
 import org.jooq.TableField
+import org.jooq.TableLike
 import org.jooq.TableOptions
 import org.jooq.UniqueKey
 import org.jooq.impl.DSL
@@ -85,7 +80,7 @@ open class Users(
     /**
      * The column <code>USERS.ID</code>.
      */
-    val ID: TableField<UsersRecord, Long?> = createField(DSL.name("id"), SQLDataType.BIGINT.nullable(false).identity(true), this, "")
+    val ID: TableField<UsersRecord, Long?> = createField(DSL.name("id"), SQLDataType.BIGINT.nullable(false).generatedByDefaultAsIdentity(), this, "")
 
     /**
      * The column <code>USERS.USERNAME</code>.
@@ -187,7 +182,7 @@ open class Users(
     /**
      * Create an inline derived table from this table
      */
-    override fun where(condition: Condition?): Users = Users(qualifiedName, if (aliased()) this else null, condition)
+    override fun where(condition: Condition?): Users = Users(qualifiedName, if (aliased()) this else null, Internal.condition(this, condition))
 
     /**
      * Create an inline derived table from this table
@@ -227,26 +222,10 @@ open class Users(
     /**
      * Create an inline derived table from this table
      */
-    override fun whereExists(select: Select<*>): Users = where(DSL.exists(select))
+    override fun whereExists(select: TableLike<*>): Users = where(DSL.exists(select))
 
     /**
      * Create an inline derived table from this table
      */
-    override fun whereNotExists(select: Select<*>): Users = where(DSL.notExists(select))
-
-    // -------------------------------------------------------------------------
-    // Row5 type methods
-    // -------------------------------------------------------------------------
-    override fun fieldsRow(): Row5<Long?, String?, String?, Boolean?, String?> = super.fieldsRow() as Row5<Long?, String?, String?, Boolean?, String?>
-
-    /**
-     * Convenience mapping calling {@link SelectField#convertFrom(Function)}.
-     */
-    fun <U> mapping(from: (Long?, String?, String?, Boolean?, String?) -> U): SelectField<U> = convertFrom(Records.mapping(from))
-
-    /**
-     * Convenience mapping calling {@link SelectField#convertFrom(Class,
-     * Function)}.
-     */
-    fun <U> mapping(toType: Class<U>, from: (Long?, String?, String?, Boolean?, String?) -> U): SelectField<U> = convertFrom(toType, Records.mapping(from))
+    override fun whereNotExists(select: TableLike<*>): Users = where(DSL.notExists(select))
 }

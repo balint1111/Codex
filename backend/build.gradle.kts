@@ -37,14 +37,17 @@ dependencies {
 
     implementation("org.springdoc:springdoc-openapi-starter-webflux-ui:2.3.0")
 
-    implementation("org.jooq:jooq:3.20.0")
-    implementation("org.jooq:jooq-jpa-extensions:3.20.0")
+    implementation("org.jooq:jooq:3.21.2")
+    implementation("org.jooq:jooq-jpa-extensions:3.21.2")
 
     implementation("jakarta.persistence:jakarta.persistence-api:3.1.0")
     runtimeOnly("org.postgresql:postgresql")
     jooqGenerator("org.postgresql:postgresql")
     jooqGenerator("org.liquibase:liquibase-core")
-    jooqGenerator("org.jooq:jooq-meta-extensions-liquibase:3.20.0")
+    jooqGenerator("org.jooq:jooq-codegen:3.21.2")
+    jooqGenerator("org.jooq:jooq-meta:3.21.2")
+    jooqGenerator("org.jooq:jooq:3.21.2")
+    jooqGenerator("org.jooq:jooq-meta-extensions-liquibase:3.21.2")
     implementation("org.liquibase:liquibase-core")
     implementation("org.springframework.boot:spring-boot-starter-liquibase")
     // Provide liquibase runtime classpath for the Gradle liquibase plugin
@@ -147,7 +150,7 @@ tasks.matching { it.name != "clean" }.configureEach {
 }
 
 jooq {
-    version.set("3.20.0")
+    version.set("3.21.2")
     edition.set(JooqEdition.OSS)
     configurations {
         create("main") {
@@ -232,6 +235,7 @@ tasks.register("lowercaseJooqNames") {
 
 tasks.named("generateJooq").configure {
     finalizedBy("lowercaseJooqNames")
+    outputs.dir("src/main/generated")
 }
 val liquibaseRuntime = configurations.maybeCreate("liquibaseRuntime")
 

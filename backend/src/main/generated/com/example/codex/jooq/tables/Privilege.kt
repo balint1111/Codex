@@ -12,8 +12,6 @@ import com.example.codex.jooq.tables.UserPrivilege.UserPrivilegePath
 import com.example.codex.jooq.tables.Users.UsersPath
 import com.example.codex.jooq.tables.records.PrivilegeRecord
 
-import java.util.function.Function
-
 import kotlin.collections.Collection
 import kotlin.collections.List
 
@@ -27,15 +25,12 @@ import org.jooq.Path
 import org.jooq.PlainSQL
 import org.jooq.QueryPart
 import org.jooq.Record
-import org.jooq.Records
-import org.jooq.Row2
 import org.jooq.SQL
 import org.jooq.Schema
-import org.jooq.Select
-import org.jooq.SelectField
 import org.jooq.Stringly
 import org.jooq.Table
 import org.jooq.TableField
+import org.jooq.TableLike
 import org.jooq.TableOptions
 import org.jooq.UniqueKey
 import org.jooq.impl.DSL
@@ -84,7 +79,7 @@ open class Privilege(
     /**
      * The column <code>PRIVILEGE.ID</code>.
      */
-    val ID: TableField<PrivilegeRecord, Long?> = createField(DSL.name("id"), SQLDataType.BIGINT.nullable(false).identity(true), this, "")
+    val ID: TableField<PrivilegeRecord, Long?> = createField(DSL.name("id"), SQLDataType.BIGINT.nullable(false).generatedByDefaultAsIdentity(), this, "")
 
     /**
      * The column <code>PRIVILEGE.NAME</code>.
@@ -170,7 +165,7 @@ open class Privilege(
     /**
      * Create an inline derived table from this table
      */
-    override fun where(condition: Condition?): Privilege = Privilege(qualifiedName, if (aliased()) this else null, condition)
+    override fun where(condition: Condition?): Privilege = Privilege(qualifiedName, if (aliased()) this else null, Internal.condition(this, condition))
 
     /**
      * Create an inline derived table from this table
@@ -210,26 +205,10 @@ open class Privilege(
     /**
      * Create an inline derived table from this table
      */
-    override fun whereExists(select: Select<*>): Privilege = where(DSL.exists(select))
+    override fun whereExists(select: TableLike<*>): Privilege = where(DSL.exists(select))
 
     /**
      * Create an inline derived table from this table
      */
-    override fun whereNotExists(select: Select<*>): Privilege = where(DSL.notExists(select))
-
-    // -------------------------------------------------------------------------
-    // Row2 type methods
-    // -------------------------------------------------------------------------
-    override fun fieldsRow(): Row2<Long?, String?> = super.fieldsRow() as Row2<Long?, String?>
-
-    /**
-     * Convenience mapping calling {@link SelectField#convertFrom(Function)}.
-     */
-    fun <U> mapping(from: (Long?, String?) -> U): SelectField<U> = convertFrom(Records.mapping(from))
-
-    /**
-     * Convenience mapping calling {@link SelectField#convertFrom(Class,
-     * Function)}.
-     */
-    fun <U> mapping(toType: Class<U>, from: (Long?, String?) -> U): SelectField<U> = convertFrom(toType, Records.mapping(from))
+    override fun whereNotExists(select: TableLike<*>): Privilege = where(DSL.notExists(select))
 }

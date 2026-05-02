@@ -14,10 +14,7 @@ import jakarta.persistence.Id
 import jakarta.persistence.Table
 import jakarta.persistence.UniqueConstraint
 
-import org.jooq.Field
 import org.jooq.Record1
-import org.jooq.Record2
-import org.jooq.Row2
 import org.jooq.impl.UpdatableRecordImpl
 
 
@@ -32,7 +29,7 @@ import org.jooq.impl.UpdatableRecordImpl
         UniqueConstraint(name = "CONSTRAINT_4", columnNames = [ "NAME" ])
     ]
 )
-open class PrivilegeRecord private constructor() : UpdatableRecordImpl<PrivilegeRecord>(Privilege.PRIVILEGE), Record2<Long?, String?> {
+open class PrivilegeRecord private constructor() : UpdatableRecordImpl<PrivilegeRecord>(Privilege.PRIVILEGE) {
 
     @get:Id
     @get:GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -51,35 +48,6 @@ open class PrivilegeRecord private constructor() : UpdatableRecordImpl<Privilege
     // -------------------------------------------------------------------------
 
     override fun key(): Record1<Long?> = super.key() as Record1<Long?>
-
-    // -------------------------------------------------------------------------
-    // Record2 type implementation
-    // -------------------------------------------------------------------------
-
-    override fun fieldsRow(): Row2<Long?, String?> = super.fieldsRow() as Row2<Long?, String?>
-    override fun valuesRow(): Row2<Long?, String?> = super.valuesRow() as Row2<Long?, String?>
-    override fun field1(): Field<Long?> = Privilege.PRIVILEGE.ID
-    override fun field2(): Field<String?> = Privilege.PRIVILEGE.NAME
-    override fun component1(): Long? = id
-    override fun component2(): String = name
-    override fun value1(): Long? = id
-    override fun value2(): String = name
-
-    override fun value1(value: Long?): PrivilegeRecord {
-        set(0, value)
-        return this
-    }
-
-    override fun value2(value: String?): PrivilegeRecord {
-        set(1, value)
-        return this
-    }
-
-    override fun values(value1: Long?, value2: String?): PrivilegeRecord {
-        this.value1(value1)
-        this.value2(value2)
-        return this
-    }
 
     /**
      * Create a detached, initialised PrivilegeRecord

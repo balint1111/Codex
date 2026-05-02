@@ -51,6 +51,10 @@ data class UserPrivilege(
         }
         else if (this.id != o.id)
             return false
+        if (this.userId != o.userId)
+            return false
+        if (this.privilegeId != o.privilegeId)
+            return false
         return true
     }
 
@@ -58,6 +62,8 @@ data class UserPrivilege(
         val prime = 31
         var result = 1
         result = prime * result + (if (this.id == null) 0 else this.id.hashCode())
+        result = prime * result + this.userId.hashCode()
+        result = prime * result + this.privilegeId.hashCode()
         return result
     }
 

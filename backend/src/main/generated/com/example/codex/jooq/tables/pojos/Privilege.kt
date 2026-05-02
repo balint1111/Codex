@@ -49,6 +49,8 @@ data class Privilege(
         }
         else if (this.id != o.id)
             return false
+        if (this.name != o.name)
+            return false
         return true
     }
 
@@ -56,6 +58,7 @@ data class Privilege(
         val prime = 31
         var result = 1
         result = prime * result + (if (this.id == null) 0 else this.id.hashCode())
+        result = prime * result + this.name.hashCode()
         return result
     }
 

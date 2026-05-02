@@ -56,6 +56,26 @@ data class Users(
         }
         else if (this.id != o.id)
             return false
+        if (this.username != o.username)
+            return false
+        if (this.password == null) {
+            if (o.password != null)
+                return false
+        }
+        else if (this.password != o.password)
+            return false
+        if (this.deleted == null) {
+            if (o.deleted != null)
+                return false
+        }
+        else if (this.deleted != o.deleted)
+            return false
+        if (this.externalId == null) {
+            if (o.externalId != null)
+                return false
+        }
+        else if (this.externalId != o.externalId)
+            return false
         return true
     }
 
@@ -63,6 +83,10 @@ data class Users(
         val prime = 31
         var result = 1
         result = prime * result + (if (this.id == null) 0 else this.id.hashCode())
+        result = prime * result + this.username.hashCode()
+        result = prime * result + (if (this.password == null) 0 else this.password.hashCode())
+        result = prime * result + (if (this.deleted == null) 0 else this.deleted.hashCode())
+        result = prime * result + (if (this.externalId == null) 0 else this.externalId.hashCode())
         return result
     }
 
