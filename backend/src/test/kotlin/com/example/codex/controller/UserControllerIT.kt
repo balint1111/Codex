@@ -7,33 +7,35 @@ import org.springframework.boot.webtestclient.autoconfigure.AutoConfigureWebTest
 import org.springframework.test.web.reactive.server.WebTestClient
 
 @AutoConfigureWebTestClient(timeout = "PT20S")
-class UserControllerIT @Autowired constructor(
-    private val webTestClient: WebTestClient,
-) : AbstractControllerITTest() {
-    @Test
-    fun `registers user and returns it from me`() {
-        webTestClient
-            .post()
-            .uri { uriBuilder ->
-                uriBuilder
-                    .path("/api/users/register")
-                    .queryParam("username", USERNAME)
-                    .queryParam("password", "secret")
-                    .queryParam("externalId", EXTERNAL_ID)
-                    .build()
-            }.exchange()
-            .expectStatus()
-            .isOk
+class UserControllerIT
+    @Autowired
+    constructor(
+        private val webTestClient: WebTestClient,
+    ) : AbstractControllerITTest() {
+        @Test
+        fun `registers user and returns it from me`() {
+            webTestClient
+                .post()
+                .uri { uriBuilder ->
+                    uriBuilder
+                        .path("/api/users/register")
+                        .queryParam("username", USERNAME)
+                        .queryParam("password", "secret")
+                        .queryParam("externalId", EXTERNAL_ID)
+                        .build()
+                }.exchange()
+                .expectStatus()
+                .isOk
 
-        webTestClient
-            .get()
-            .uri("/api/users/me")
-            .headers { it.setBearerAuth("dummy-token") }
-            .exchange()
-            .expectStatus()
-            .isOk
-            .expectBody()
-            .jsonPath("$.username")
-            .isEqualTo(USERNAME)
+            webTestClient
+                .get()
+                .uri("/api/users/me")
+                .headers { it.setBearerAuth("dummy-token") }
+                .exchange()
+                .expectStatus()
+                .isOk
+                .expectBody()
+                .jsonPath("$.username")
+                .isEqualTo(USERNAME)
+        }
     }
-}

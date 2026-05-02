@@ -12,7 +12,6 @@ import java.util.concurrent.locks.ReentrantLock
 
 @SpringBootTest
 abstract class AbstractIntegrationTest {
-
     @Autowired
     private lateinit var environment: Environment
 

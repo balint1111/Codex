@@ -1,10 +1,8 @@
 import nu.studer.gradle.jooq.JooqEdition
-import org.gradle.api.tasks.JavaExec
-import org.gradle.api.tasks.testing.Test
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.jooq.meta.jaxb.Property
-import java.math.BigDecimal
+
 plugins {
     kotlin("jvm") version "2.3.0"
     id("org.jetbrains.kotlin.plugin.spring") version "2.3.0"
@@ -91,7 +89,13 @@ val aotCacheFile = layout.buildDirectory.file("leyden/test-suite.aot")
 // 1. Create a helper task to package test classes into a JAR
 val testJar by tasks.registering(Jar::class) {
     archiveClassifier.set("test")
-    from(project.extensions.getByType<SourceSetContainer>().named("test").get().output)
+    from(
+        project.extensions
+            .getByType<SourceSetContainer>()
+            .named("test")
+            .get()
+            .output,
+    )
 }
 
 val testTraining by tasks.registering(Test::class) {
@@ -104,11 +108,12 @@ val testTraining by tasks.registering(Test::class) {
 
     testClassesDirs = test.output.classesDirs
 
-    classpath = project.files(
-        tasks.jar.get().archiveFile,
-        testJar.get().archiveFile,
-        test.runtimeClasspath.filter { it.extension == "jar" }
-    )
+    classpath =
+        project.files(
+            tasks.jar.get().archiveFile,
+            testJar.get().archiveFile,
+            test.runtimeClasspath.filter { it.extension == "jar" },
+        )
 
     filter { includeTestsMatching("*ApplicationTest") }
 
@@ -118,7 +123,7 @@ val testTraining by tasks.registering(Test::class) {
         "-XX:+UseCompactObjectHeaders",
         "-Xshare:off",
         "-Dorg.jooq.no-logo=true",
-        "-XX:+EnableDynamicAgentLoading"
+        "-XX:+EnableDynamicAgentLoading",
     )
 
     systemProperty("spring.context.exit", "onRefresh")
@@ -137,15 +142,22 @@ tasks.named<Test>("test") {
 
     doFirst {
         if (!aotEnabledInTest) {
-            jvmArgs( "-Xshare:off", "-XX:+UseCompactObjectHeaders", "-Dorg.jooq.no-logo=true", "-XX:+EnableDynamicAgentLoading")
+            jvmArgs("-Xshare:off", "-XX:+UseCompactObjectHeaders", "-Dorg.jooq.no-logo=true", "-XX:+EnableDynamicAgentLoading")
             return@doFirst
         }
         val f = aotCacheFile.get().asFile
         if (f.exists()) {
             if (!JavaVersion.current().isCompatibleWith(JavaVersion.VERSION_25)) {
-                logger.warn("Leyden AOT cache detected at ${f.absolutePath} but current JDK (${JavaVersion.current()}) is below the required JDK 25. Skipping AOT cache injection.")
+                logger.warn(
+                    "Leyden AOT cache detected at ${f.absolutePath} but current JDK (${JavaVersion.current()}) is below the required JDK 25. Skipping AOT cache injection.",
+                )
             } else {
-                jvmArgs("-XX:AOTCache=${f.absolutePath}", "-XX:+UseCompactObjectHeaders", "-Dorg.jooq.no-logo=true", "-XX:+EnableDynamicAgentLoading")
+                jvmArgs(
+                    "-XX:AOTCache=${f.absolutePath}",
+                    "-XX:+UseCompactObjectHeaders",
+                    "-Dorg.jooq.no-logo=true",
+                    "-XX:+EnableDynamicAgentLoading",
+                )
             }
         } else {
             logger.lifecycle("Leyden AOT cache not found at ${f.absolutePath}. To generate run: ./gradlew testTraining")
@@ -173,7 +185,7 @@ jooq {
                             Property().apply {
                                 key = "scripts"
                                 value = "${project.layout.buildDirectory.get()}/init.sql"
-                            }
+                            },
                         )
                     }
                     target.apply {
@@ -218,13 +230,13 @@ tasks.register("lowercaseJooqNames") {
             val originalContent = file.readText()
 
             // Apply transformations
-            val updatedContent = originalContent
-                .replace(dslNameRegex) { match ->
-                    """DSL.name("${match.groupValues[1].lowercase()}")"""
-                }
-                .replace(nameAssignRegex) { match ->
-                    """name = "${match.groupValues[1].lowercase()}""""
-                }
+            val updatedContent =
+                originalContent
+                    .replace(dslNameRegex) { match ->
+                        """DSL.name("${match.groupValues[1].lowercase()}")"""
+                    }.replace(nameAssignRegex) { match ->
+                        """name = "${match.groupValues[1].lowercase()}""""
+                    }
 
             if (originalContent != updatedContent) {
                 file.writeText(updatedContent)
@@ -245,7 +257,11 @@ tasks.register<JavaExec>("generateInitSql") {
     description = "Generates a full init.sql from Liquibase YAML without a DB connection."
 
     val changelogPath = "src/main/resources/db/changelog/db.changelog-master.yaml"
-    val outputFile = layout.buildDirectory.file("init.sql").get().asFile
+    val outputFile =
+        layout.buildDirectory
+            .file("init.sql")
+            .get()
+            .asFile
     val csvFile = layout.projectDirectory.file("databasechangelog.csv").asFile
     inputs.file(changelogPath).withPropertyName("changelogFile")
     outputs.file(outputFile).withPropertyName("generatedSql")
@@ -256,7 +272,7 @@ tasks.register<JavaExec>("generateInitSql") {
     args(
         "--changelogFile=$changelogPath",
         "--url=offline:postgresql",
-        "updateSql"
+        "updateSql",
     )
 
     environment("LIQUIBASE_SHOW_BANNER", "false")
@@ -268,10 +284,12 @@ tasks.register<JavaExec>("generateInitSql") {
 
     doLast {
         if (outputFile.exists()) {
-            val filteredSql = outputFile.readLines()
-                .filterNot { it.trimStart().startsWith("--") }
-                .filter { it.isNotBlank() }
-                .joinToString("\n")
+            val filteredSql =
+                outputFile
+                    .readLines()
+                    .filterNot { it.trimStart().startsWith("--") }
+                    .filter { it.isNotBlank() }
+                    .joinToString("\n")
 
             outputFile.writeText(filteredSql)
 

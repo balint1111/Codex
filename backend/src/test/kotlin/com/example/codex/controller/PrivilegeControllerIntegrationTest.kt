@@ -7,35 +7,37 @@ import org.springframework.boot.webtestclient.autoconfigure.AutoConfigureWebTest
 import org.springframework.test.web.reactive.server.WebTestClient
 
 @AutoConfigureWebTestClient(timeout = "PT20S")
-class PrivilegeControllerIntegrationTest @Autowired constructor(
-    private val webTestClient: WebTestClient,
-) : AbstractControllerITTest() {
-    @Test
-    fun `should list privileges`() {
-        webTestClient
-            .post()
-            .uri { uriBuilder ->
-                uriBuilder
-                    .path("/api/users/register")
-                    .queryParam("username", USERNAME)
-                    .queryParam("password", "secret")
-                    .queryParam("externalId", EXTERNAL_ID)
-                    .build()
-            }.exchange()
-            .expectStatus()
-            .isOk
+class PrivilegeControllerIntegrationTest
+    @Autowired
+    constructor(
+        private val webTestClient: WebTestClient,
+    ) : AbstractControllerITTest() {
+        @Test
+        fun `should list privileges`() {
+            webTestClient
+                .post()
+                .uri { uriBuilder ->
+                    uriBuilder
+                        .path("/api/users/register")
+                        .queryParam("username", USERNAME)
+                        .queryParam("password", "secret")
+                        .queryParam("externalId", EXTERNAL_ID)
+                        .build()
+                }.exchange()
+                .expectStatus()
+                .isOk
 
-        webTestClient
-            .get()
-            .uri("/api/privileges")
-            .headers { it.setBearerAuth("dummy-token") }
-            .exchange()
-            .expectStatus()
-            .isOk
-            .expectBody()
-            .jsonPath("$[?(@.name == 'dashboard')]")
-            .exists()
-            .jsonPath("$[?(@.name == 'users')]")
-            .exists()
+            webTestClient
+                .get()
+                .uri("/api/privileges")
+                .headers { it.setBearerAuth("dummy-token") }
+                .exchange()
+                .expectStatus()
+                .isOk
+                .expectBody()
+                .jsonPath("$[?(@.name == 'dashboard')]")
+                .exists()
+                .jsonPath("$[?(@.name == 'users')]")
+                .exists()
+        }
     }
-}

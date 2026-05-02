@@ -118,18 +118,24 @@ class PerTestDatabaseContextCustomizerFactory : ContextCustomizerFactory {
 
                 connection.createStatement().use { statement ->
                     statement.execute("create database \"$databaseName\"")
-                        // After creating the database, execute generated init SQL (if present) to populate schema
-                        try {
-                            runInitSql(host, port, databaseName, username, password)
-                        } catch (ex: Exception) {
-                            // Log but do not fail database creation; tests may still run with Liquibase
-                            println("Warning: running init SQL failed: ${ex.message}")
-                        }
+                    // After creating the database, execute generated init SQL (if present) to populate schema
+                    try {
+                        runInitSql(host, port, databaseName, username, password)
+                    } catch (ex: Exception) {
+                        // Log but do not fail database creation; tests may still run with Liquibase
+                        println("Warning: running init SQL failed: ${ex.message}")
+                    }
                 }
             }
         }
 
-        private fun runInitSql(host: String, port: Int, database: String, username: String, password: String) {
+        private fun runInitSql(
+            host: String,
+            port: Int,
+            database: String,
+            username: String,
+            password: String,
+        ) {
             DriverManager.getConnection(buildJdbcUrl(host, port, database), username, password).use { conn ->
                 conn.createStatement().use { stmt ->
                     stmt.execute(java.io.File("build/init.sql").readText())
