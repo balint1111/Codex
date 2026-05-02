@@ -14,6 +14,7 @@ class UserRepositoryIT @Autowired constructor(
 ) : AbstractIntegrationTest() {
     @Test
     fun `saves and retrieves user by username`() {
+        println("saves and retrieves user by username")
         val test =
             userRepository
                 .save("jane", "secret", "ext-jane")
@@ -29,6 +30,7 @@ class UserRepositoryIT @Autowired constructor(
 
     @Test
     fun `soft deletes user`() {
+        println("soft deletes user")
         val test =
             userRepository
                 .save("john", "secret", "ext-john")
@@ -47,6 +49,7 @@ class UserRepositoryIT @Autowired constructor(
 
     @Test
     fun `manages user privileges`() {
+        println("manages user privileges")
         val test =
             userRepository
                 .save("seed", "pw", "ext-seed")

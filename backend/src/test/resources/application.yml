@@ -1,8 +1,6 @@
 spring:
   liquibase:
-    url: jdbc:postgresql://localhost:5432/codex
-    user: codex
-    password: codex
+    enabled: false
   r2dbc:
     url: r2dbc:postgresql://localhost:5432/codex
     username: codex

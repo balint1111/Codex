@@ -1,4 +1,5 @@
 import nu.studer.gradle.jooq.JooqEdition
+import org.gradle.api.tasks.JavaExec
 import org.gradle.api.tasks.testing.Test
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
@@ -46,6 +47,9 @@ dependencies {
     jooqGenerator("org.jooq:jooq-meta-extensions-liquibase:3.20.0")
     implementation("org.liquibase:liquibase-core")
     implementation("org.springframework.boot:spring-boot-starter-liquibase")
+    // Provide liquibase runtime classpath for the Gradle liquibase plugin
+    liquibaseRuntime("org.liquibase:liquibase-core")
+    liquibaseRuntime("org.postgresql:postgresql")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation("io.github.oshai:kotlin-logging-jvm:5.1.0")
@@ -57,6 +61,7 @@ dependencies {
     testImplementation("io.projectreactor:reactor-test:3.8.0")
     testImplementation("org.springframework.boot:spring-boot-starter-webflux")
     testImplementation("org.postgresql:postgresql")
+    liquibaseRuntime("info.picocli:picocli:4.7.5")
 }
 
 spotless {
@@ -88,6 +93,7 @@ val testJar by tasks.registering(Jar::class) {
 
 val testTraining by tasks.registering(Test::class) {
     group = "verification"
+    dependsOn("generateInitSql")
     dependsOn(tasks.jar, testJar)
 
     val sourceSets = project.extensions.getByType<SourceSetContainer>()
@@ -116,8 +122,9 @@ val testTraining by tasks.registering(Test::class) {
 }
 
 tasks.named<Test>("test") {
-//    dependsOn("clean")
     dependsOn(testTraining)
+    dependsOn("generateInitSql")
+    outputs.upToDateWhen { false }
 
     filter { includeTestsMatching("*IT") }
 
@@ -225,4 +232,47 @@ tasks.register("lowercaseJooqNames") {
 
 tasks.named("generateJooq").configure {
     finalizedBy("lowercaseJooqNames")
+}
+val liquibaseRuntime = configurations.maybeCreate("liquibaseRuntime")
+
+tasks.register<JavaExec>("generateInitSql") {
+    group = "documentation"
+    description = "Generates a full init.sql from Liquibase YAML without a DB connection."
+
+    val changelogPath = "src/main/resources/db/changelog/db.changelog-master.yaml"
+    val outputFile = layout.buildDirectory.file("init.sql").get().asFile
+    val csvFile = layout.projectDirectory.file("databasechangelog.csv").asFile
+    inputs.file(changelogPath).withPropertyName("changelogFile")
+    outputs.file(outputFile).withPropertyName("generatedSql")
+
+    classpath = liquibaseRuntime
+    mainClass.set("liquibase.integration.commandline.Main")
+
+    args(
+        "--changelogFile=$changelogPath",
+        "--url=offline:postgresql",
+        "updateSql"
+    )
+
+    doFirst {
+        outputFile.parentFile.mkdirs()
+        standardOutput = outputFile.outputStream()
+    }
+
+    doLast {
+        if (outputFile.exists()) {
+            val filteredSql = outputFile.readLines()
+                .filterNot { it.trimStart().startsWith("--") }
+                .filter { it.isNotBlank() }
+                .joinToString("\n")
+
+            outputFile.writeText(filteredSql)
+
+            if (csvFile.exists()) {
+                csvFile.delete()
+                println("Removed temporary tracking file: ${csvFile.name}")
+            }
+            println("Successfully generated and filtered SQL to: ${outputFile.absolutePath}")
+        }
+    }
 }
