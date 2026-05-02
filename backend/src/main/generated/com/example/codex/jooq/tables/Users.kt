@@ -8,7 +8,7 @@ import com.example.codex.jooq.DefaultSchema
 import com.example.codex.jooq.keys.CONSTRAINT_4D
 import com.example.codex.jooq.keys.CONSTRAINT_4D4
 import com.example.codex.jooq.keys.FK_USER_PRIVILEGE_USER
-import com.example.codex.jooq.keys.PK_USERS
+import com.example.codex.jooq.keys.USERS_PKEY
 import com.example.codex.jooq.tables.Privilege.PrivilegePath
 import com.example.codex.jooq.tables.UserPrivilege.UserPrivilegePath
 import com.example.codex.jooq.tables.records.UsersRecord
@@ -135,7 +135,7 @@ open class Users(
     }
     override fun getSchema(): Schema? = if (aliased()) null else DefaultSchema.DEFAULT_SCHEMA
     override fun getIdentity(): Identity<UsersRecord, Long?> = super.getIdentity() as Identity<UsersRecord, Long?>
-    override fun getPrimaryKey(): UniqueKey<UsersRecord> = PK_USERS
+    override fun getPrimaryKey(): UniqueKey<UsersRecord> = USERS_PKEY
     override fun getUniqueKeys(): List<UniqueKey<UsersRecord>> = listOf(CONSTRAINT_4D, CONSTRAINT_4D4)
 
     private lateinit var _userPrivilege: UserPrivilegePath

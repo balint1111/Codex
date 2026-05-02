@@ -81,7 +81,7 @@ spotless {
 
 tasks.withType<Test> {
     useJUnitPlatform()
-    maxParallelForks = Runtime.getRuntime().availableProcessors()
+    maxParallelForks = 1
 }
 
 // Project Leyden AOT cache - training and consumption for faster test startup
@@ -100,7 +100,6 @@ val testTraining by tasks.registering(Test::class) {
     dependsOn(tasks.jar, testJar)
 
     val sourceSets = project.extensions.getByType<SourceSetContainer>()
-    val main = sourceSets.named("main").get()
     val test = sourceSets.named("test").get()
 
     testClassesDirs = test.output.classesDirs
@@ -111,33 +110,42 @@ val testTraining by tasks.registering(Test::class) {
         test.runtimeClasspath.filter { it.extension == "jar" }
     )
 
-    maxParallelForks = 1
-    useJUnitPlatform()
     filter { includeTestsMatching("*ApplicationTest") }
 
     jvmArgs(
         "-XX:AOTCacheOutput=${aotCacheFile.get().asFile.absolutePath}",
-        "-XX:+UnlockDiagnosticVMOptions"
+        "-XX:+UnlockDiagnosticVMOptions",
+        "-XX:+UseCompactObjectHeaders",
+        "-Xshare:off",
+        "-Dorg.jooq.no-logo=true",
+        "-XX:+EnableDynamicAgentLoading"
     )
 
     systemProperty("spring.context.exit", "onRefresh")
     outputs.file(aotCacheFile)
 }
 
+val aotEnabledInTest = false
 tasks.named<Test>("test") {
-    dependsOn(testTraining)
+    if (aotEnabledInTest) {
+        dependsOn(testTraining)
+    }
     dependsOn("generateInitSql")
     outputs.upToDateWhen { false }
 
     filter { includeTestsMatching("*IT") }
 
     doFirst {
+        if (!aotEnabledInTest) {
+            jvmArgs( "-Xshare:off", "-XX:+UseCompactObjectHeaders", "-Dorg.jooq.no-logo=true", "-XX:+EnableDynamicAgentLoading")
+            return@doFirst
+        }
         val f = aotCacheFile.get().asFile
         if (f.exists()) {
             if (!JavaVersion.current().isCompatibleWith(JavaVersion.VERSION_25)) {
                 logger.warn("Leyden AOT cache detected at ${f.absolutePath} but current JDK (${JavaVersion.current()}) is below the required JDK 25. Skipping AOT cache injection.")
             } else {
-                jvmArgs("-XX:AOTCache=${f.absolutePath}")
+                jvmArgs("-XX:AOTCache=${f.absolutePath}", "-XX:+UseCompactObjectHeaders", "-Dorg.jooq.no-logo=true", "-XX:+EnableDynamicAgentLoading")
             }
         } else {
             logger.lifecycle("Leyden AOT cache not found at ${f.absolutePath}. To generate run: ./gradlew testTraining")
@@ -159,18 +167,13 @@ jooq {
                 generator.apply {
                     name = "org.jooq.codegen.KotlinGenerator"
                     database.apply {
-                        name = "org.jooq.meta.extensions.liquibase.LiquibaseDatabase"
-                        properties.add(
-                            Property().apply {
-                                key = "rootPath"
-                                value = "$projectDir/src/main/resources"
-                            },
-                        )
+                        name = "org.jooq.meta.extensions.ddl.DDLDatabase"
+
                         properties.add(
                             Property().apply {
                                 key = "scripts"
-                                value = "db/changelog/db.changelog-master.yaml"
-                            },
+                                value = "${project.layout.buildDirectory.get()}/init.sql"
+                            }
                         )
                     }
                     target.apply {
@@ -179,15 +182,12 @@ jooq {
                     }
                     generate.apply {
                         withDeprecated(false)
-                        withRecords(true)
                         withImmutablePojos(true)
                         withFluentSetters(true)
-                        withJpaVersion("2.2")
                         withJpaAnnotations(true)
                         withImplicitJoinPathsAsKotlinProperties(true)
                         withKotlinSetterJvmNameAnnotationsOnIsPrefix(true)
                         withPojosAsKotlinDataClasses(true)
-                        withKotlinNotNullInterfaceAttributes(true)
                         withKotlinNotNullPojoAttributes(true)
                         withKotlinNotNullRecordAttributes(true)
                     }
@@ -234,6 +234,7 @@ tasks.register("lowercaseJooqNames") {
 }
 
 tasks.named("generateJooq").configure {
+    dependsOn("generateInitSql")
     finalizedBy("lowercaseJooqNames")
     outputs.dir("src/main/generated")
 }
@@ -257,6 +258,8 @@ tasks.register<JavaExec>("generateInitSql") {
         "--url=offline:postgresql",
         "updateSql"
     )
+
+    environment("LIQUIBASE_SHOW_BANNER", "false")
 
     doFirst {
         outputFile.parentFile.mkdirs()

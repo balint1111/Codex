@@ -7,8 +7,8 @@ package com.example.codex.jooq.tables
 import com.example.codex.jooq.DefaultSchema
 import com.example.codex.jooq.keys.FK_USER_PRIVILEGE_PRIVILEGE
 import com.example.codex.jooq.keys.FK_USER_PRIVILEGE_USER
-import com.example.codex.jooq.keys.PK_USER_PRIVILEGE
 import com.example.codex.jooq.keys.UQ_USER_PRIVILEGE_USER_ID_PRIVILEGE_ID
+import com.example.codex.jooq.keys.USER_PRIVILEGE_PKEY
 import com.example.codex.jooq.tables.Privilege.PrivilegePath
 import com.example.codex.jooq.tables.Users.UsersPath
 import com.example.codex.jooq.tables.records.UserPrivilegeRecord
@@ -125,7 +125,7 @@ open class UserPrivilege(
     }
     override fun getSchema(): Schema? = if (aliased()) null else DefaultSchema.DEFAULT_SCHEMA
     override fun getIdentity(): Identity<UserPrivilegeRecord, Long?> = super.getIdentity() as Identity<UserPrivilegeRecord, Long?>
-    override fun getPrimaryKey(): UniqueKey<UserPrivilegeRecord> = PK_USER_PRIVILEGE
+    override fun getPrimaryKey(): UniqueKey<UserPrivilegeRecord> = USER_PRIVILEGE_PKEY
     override fun getUniqueKeys(): List<UniqueKey<UserPrivilegeRecord>> = listOf(UQ_USER_PRIVILEGE_USER_ID_PRIVILEGE_ID)
     override fun getReferences(): List<ForeignKey<UserPrivilegeRecord, *>> = listOf(FK_USER_PRIVILEGE_PRIVILEGE, FK_USER_PRIVILEGE_USER)
 

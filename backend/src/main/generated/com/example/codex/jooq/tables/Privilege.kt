@@ -7,7 +7,7 @@ package com.example.codex.jooq.tables
 import com.example.codex.jooq.DefaultSchema
 import com.example.codex.jooq.keys.CONSTRAINT_4
 import com.example.codex.jooq.keys.FK_USER_PRIVILEGE_PRIVILEGE
-import com.example.codex.jooq.keys.PK_PRIVILEGE
+import com.example.codex.jooq.keys.PRIVILEGE_PKEY
 import com.example.codex.jooq.tables.UserPrivilege.UserPrivilegePath
 import com.example.codex.jooq.tables.Users.UsersPath
 import com.example.codex.jooq.tables.records.PrivilegeRecord
@@ -119,7 +119,7 @@ open class Privilege(
     }
     override fun getSchema(): Schema? = if (aliased()) null else DefaultSchema.DEFAULT_SCHEMA
     override fun getIdentity(): Identity<PrivilegeRecord, Long?> = super.getIdentity() as Identity<PrivilegeRecord, Long?>
-    override fun getPrimaryKey(): UniqueKey<PrivilegeRecord> = PK_PRIVILEGE
+    override fun getPrimaryKey(): UniqueKey<PrivilegeRecord> = PRIVILEGE_PKEY
     override fun getUniqueKeys(): List<UniqueKey<PrivilegeRecord>> = listOf(CONSTRAINT_4)
 
     private lateinit var _userPrivilege: UserPrivilegePath

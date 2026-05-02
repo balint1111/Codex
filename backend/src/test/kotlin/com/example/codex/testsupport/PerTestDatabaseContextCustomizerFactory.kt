@@ -15,11 +15,11 @@ class PerTestDatabaseContextCustomizerFactory : ContextCustomizerFactory {
         testClass: Class<*>,
         configAttributes: List<ContextConfigurationAttributes>,
     ): ContextCustomizer {
-        val databaseName = buildDatabaseName()
+        val databaseName = buildDatabaseName(testClass)
         return PerTestDatabaseContextCustomizer(databaseName)
     }
 
-    private fun buildDatabaseName(): String {
+    private fun buildDatabaseName(testClass: Class<*>): String {
         val jobId =
             sequenceOf(
                 "CI_JOB_ID",
@@ -31,7 +31,7 @@ class PerTestDatabaseContextCustomizerFactory : ContextCustomizerFactory {
             ).firstNotNullOfOrNull { System.getenv(it) } ?: "local"
 
         val workerId = System.getProperty("org.gradle.test.worker") ?: "worker"
-        val raw = "codex_${jobId}_$workerId"
+        val raw = "codex_${jobId}_${workerId}_${testClass.simpleName}"
 
         val sanitized =
             raw
