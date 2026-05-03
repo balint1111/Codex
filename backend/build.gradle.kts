@@ -12,6 +12,7 @@ plugins {
     alias(libs.plugins.nuStuderJooq)
     alias(libs.plugins.spotless)
     id("com.example.codex.testcontainers")
+    id("nl.littlerobots.version-catalog-update") version "1.1.0"
     jacoco
 }
 

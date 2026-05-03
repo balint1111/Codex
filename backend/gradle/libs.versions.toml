@@ -1,75 +1,49 @@
 [versions]
-# Kotlin and Spring Boot
-kotlin = "2.3.0"
-spring-boot = "4.0.6"
-
-# Libraries (hyphen-style keys)
-jooq = "3.21.2"
-r2dbc-postgres = "1.1.1.RELEASE"
-springdoc = "2.3.0"
-kotlin-logging = "5.1.0"
-ktlint = "1.7.1"
-mockk = "1.14.6"
-springmockk = "4.0.2"
-reactor-test = "3.8.0"
-postgresql = "42.7.11"
-liquibase = "4.21.1"
-spring-security = "6.2.0"
-jakarta-persistence = "3.1.0"
-
-# Plugin/library plugin versions
 dependency-management = "1.1.7"
+jakarta-persistence = "3.1.0"
+jooq = "3.21.2"
+kotlin = "2.3.0"
+liquibase = "4.21.1"
 liquibase-gradle = "2.2.1"
+mockk = "1.14.6"
 nu-studer-jooq = "10.2.1"
+postgresql = "42.7.11"
+r2dbc-postgres = "1.1.1.RELEASE"
+reactor-test = "3.8.0"
 spotless = "6.25.0"
-
-# CamelCase aliases to match build script accessors (e.g. libs.versions.r2dbcPostgres)
-# (Note: avoid duplicate name variants here to prevent accessor name clashes)
+spring-boot = "4.0.6"
+spring-security = "6.2.0"
+springdoc = "2.3.0"
+springmockk = "4.0.2"
 
 [plugins]
-# Plugin aliases for use in the build plugins block via `alias(libs.plugins.<name>)`
+dependencyManagement = { id = "io.spring.dependency-management", version.ref = "dependency-management" }
 kotlinJvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlinSpring = { id = "org.jetbrains.kotlin.plugin.spring", version.ref = "kotlin" }
-springBoot = { id = "org.springframework.boot", version.ref = "spring-boot" }
-dependencyManagement = { id = "io.spring.dependency-management", version.ref = "dependency-management" }
 liquibaseGradle = { id = "org.liquibase.gradle", version.ref = "liquibase-gradle" }
 nuStuderJooq = { id = "nu.studer.jooq", version.ref = "nu-studer-jooq" }
 spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
+springBoot = { id = "org.springframework.boot", version.ref = "spring-boot" }
 
 [libraries]
-# Spring Boot starters (version managed by version.ref = "spring-boot")
-springBootStarterWebflux = { module = "org.springframework.boot:spring-boot-starter-webflux", version.ref = "spring-boot" }
-springBootStarterSecurity = { module = "org.springframework.boot:spring-boot-starter-security", version.ref = "spring-boot" }
-springBootStarterOauth2ResourceServer = { module = "org.springframework.boot:spring-boot-starter-oauth2-resource-server", version.ref = "spring-boot" }
-springBootStarterDataR2dbc = { module = "org.springframework.boot:spring-boot-starter-data-r2dbc", version.ref = "spring-boot" }
-springBootStarterLiquibase = { module = "org.springframework.boot:spring-boot-starter-liquibase", version.ref = "spring-boot" }
-
-# R2DBC and Reactor
-r2dbcPostgresql = { module = "org.postgresql:r2dbc-postgresql", version.ref = "r2dbc-postgres" }
-reactorTest = { module = "io.projectreactor:reactor-test", version.ref = "reactor-test" }
-
-# Springdoc / OpenAPI
-springdocOpenapiStarterWebfluxUi = { module = "org.springdoc:springdoc-openapi-starter-webflux-ui", version.ref = "springdoc" }
-
-# jOOQ & Liquibase & DB drivers
+jakartaPersistenceApi = { module = "jakarta.persistence:jakarta.persistence-api", version.ref = "jakarta-persistence" }
 jooq = { module = "org.jooq:jooq", version.ref = "jooq" }
-jooqJpaExtensions = { module = "org.jooq:jooq-jpa-extensions", version.ref = "jooq" }
 jooqCodegen = { module = "org.jooq:jooq-codegen", version.ref = "jooq" }
+jooqJpaExtensions = { module = "org.jooq:jooq-jpa-extensions", version.ref = "jooq" }
 jooqMeta = { module = "org.jooq:jooq-meta", version.ref = "jooq" }
 jooqMetaExtensions = { module = "org.jooq:jooq-meta-extensions", version.ref = "jooq" }
 liquibaseCore = { module = "org.liquibase:liquibase-core", version.ref = "liquibase" }
-postgresqlDriver = { module = "org.postgresql:postgresql", version.ref = "postgresql" }
-
-# Kotlin
-kotlinStdlibJdk8 = { module = "org.jetbrains.kotlin:kotlin-stdlib-jdk8", version.ref = "kotlin" }
-kotlinLoggingJvm = { module = "io.github.oshai:kotlin-logging-jvm", version.ref = "kotlin-logging" }
-
-# Testing
 mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
-springmockk = { module = "com.ninja-squad:springmockk", version.ref = "springmockk" }
+postgresqlDriver = { module = "org.postgresql:postgresql", version.ref = "postgresql" }
+r2dbcPostgresql = { module = "org.postgresql:r2dbc-postgresql", version.ref = "r2dbc-postgres" }
+reactorTest = { module = "io.projectreactor:reactor-test", version.ref = "reactor-test" }
+springBootStarterDataR2dbc = { module = "org.springframework.boot:spring-boot-starter-data-r2dbc", version.ref = "spring-boot" }
+springBootStarterLiquibase = { module = "org.springframework.boot:spring-boot-starter-liquibase", version.ref = "spring-boot" }
+springBootStarterOauth2ResourceServer = { module = "org.springframework.boot:spring-boot-starter-oauth2-resource-server", version.ref = "spring-boot" }
+springBootStarterSecurity = { module = "org.springframework.boot:spring-boot-starter-security", version.ref = "spring-boot" }
 springBootStarterTest = { module = "org.springframework.boot:spring-boot-starter-test", version.ref = "spring-boot" }
+springBootStarterWebflux = { module = "org.springframework.boot:spring-boot-starter-webflux", version.ref = "spring-boot" }
 springBootWebtestclient = { module = "org.springframework.boot:spring-boot-webtestclient", version.ref = "spring-boot" }
 springSecurityTest = { module = "org.springframework.security:spring-security-test", version.ref = "spring-security" }
-jakartaPersistenceApi = { module = "jakarta.persistence:jakarta.persistence-api", version.ref = "jakarta-persistence" }
-
-
+springdocOpenapiStarterWebfluxUi = { module = "org.springdoc:springdoc-openapi-starter-webflux-ui", version.ref = "springdoc" }
+springmockk = { module = "com.ninja-squad:springmockk", version.ref = "springmockk" }
