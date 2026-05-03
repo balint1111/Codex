@@ -48,7 +48,7 @@ dependencies {
     implementation(libs.springBootStarterLiquibase)
     liquibaseRuntime(libs.liquibaseCore)
     liquibaseRuntime(libs.postgresqlDriver)
-    implementation(libs.kotlinReflect)
+    // implementation(libs.kotlinReflect) // removed: not referenced in codebase; try removing
     implementation(libs.kotlinStdlibJdk8)
     implementation(libs.kotlinLoggingJvm)
     testImplementation(libs.mockk)
@@ -58,7 +58,7 @@ dependencies {
     testImplementation(libs.springSecurityTest)
     testImplementation(libs.reactorTest)
     // testImplementation(libs.postgresqlDriver) // removed: rely on runtime/postgres driver or testcontainers-provided driver
-    liquibaseRuntime(libs.picocli)
+    // liquibaseRuntime(libs.picocli) // removed: not required by liquibase runtime in this setup
 }
 
 spotless {
