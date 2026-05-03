@@ -47,7 +47,7 @@ dependencies {
     // implementation(libs.liquibaseCore) // redundant with spring-boot-starter-liquibase
     implementation(libs.springBootStarterLiquibase)
     liquibaseRuntime(libs.liquibaseCore)
-    liquibaseRuntime(libs.postgresqlDriver)
+    // liquibaseRuntime(libs.postgresqlDriver) // removed: not required for generateInitSql (offline) or tests
     // implementation(libs.kotlinReflect) // removed: not referenced in codebase; try removing
     implementation(libs.kotlinStdlibJdk8)
     implementation(libs.kotlinLoggingJvm)
