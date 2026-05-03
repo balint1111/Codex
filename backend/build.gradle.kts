@@ -57,7 +57,7 @@ dependencies {
     testImplementation(libs.springBootWebtestclient)
     testImplementation(libs.springSecurityTest)
     testImplementation(libs.reactorTest)
-    testImplementation(libs.postgresqlDriver)
+    // testImplementation(libs.postgresqlDriver) // removed: rely on runtime/postgres driver or testcontainers-provided driver
     liquibaseRuntime(libs.picocli)
 }
 
