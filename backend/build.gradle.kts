@@ -30,7 +30,6 @@ dependencies {
 
     implementation(libs.springBootStarterDataR2dbc)
     implementation(libs.r2dbcPostgresql)
-    implementation(libs.reactorCore)
 
     implementation(libs.springdocOpenapiStarterWebfluxUi)
 
