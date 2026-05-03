@@ -38,7 +38,7 @@ dependencies {
 
     implementation(libs.jakartaPersistenceApi)
     runtimeOnly(libs.postgresqlDriver)
-    jooqGenerator(libs.postgresqlDriver)
+    // jooqGenerator(libs.postgresqlDriver) // removed: codegen uses DDL scripts (no DB connection), driver not required here
     jooqGenerator(libs.liquibaseCore)
     jooqGenerator(libs.jooqCodegen)
     jooqGenerator(libs.jooqMeta)
