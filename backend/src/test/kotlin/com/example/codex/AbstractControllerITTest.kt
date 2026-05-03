@@ -9,7 +9,7 @@ import org.springframework.security.oauth2.jwt.ReactiveJwtDecoder
 import reactor.core.publisher.Mono
 import java.time.Instant
 import java.time.temporal.ChronoUnit
-import java.util.UUID
+import java.util.*
 
 @SpringBootTest
 abstract class AbstractControllerITTest : AbstractIntegrationTest() {

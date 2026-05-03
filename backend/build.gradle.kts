@@ -27,6 +27,7 @@ dependencies {
     implementation(libs.springBootStarterWebflux)
     implementation(libs.springBootStarterSecurity)
     implementation(libs.springBootStarterOauth2ResourceServer)
+    implementation(libs.springBootStarterLiquibase)
 
     implementation(libs.springBootStarterDataR2dbc)
     implementation(libs.r2dbcPostgresql)
@@ -37,28 +38,19 @@ dependencies {
     implementation(libs.jooqJpaExtensions)
 
     implementation(libs.jakartaPersistenceApi)
+
     runtimeOnly(libs.postgresqlDriver)
-    // jooqGenerator(libs.postgresqlDriver) // removed: codegen uses DDL scripts (no DB connection), driver not required here
-    jooqGenerator(libs.liquibaseCore)
     jooqGenerator(libs.jooqCodegen)
     jooqGenerator(libs.jooqMeta)
     jooqGenerator(libs.jooq)
-    // jooqGenerator(libs.jooqMetaExtensionsLiquibase) // removed: codegen uses DDL script (init.sql) instead of liquibase meta extension
-    // implementation(libs.liquibaseCore) // redundant with spring-boot-starter-liquibase
-    implementation(libs.springBootStarterLiquibase)
+    jooqGenerator(libs.jooqMetaExtensions)
     liquibaseRuntime(libs.liquibaseCore)
-    // liquibaseRuntime(libs.postgresqlDriver) // removed: not required for generateInitSql (offline) or tests
-    // implementation(libs.kotlinReflect) // removed: not referenced in codebase; try removing
-    implementation(libs.kotlinStdlibJdk8)
-    implementation(libs.kotlinLoggingJvm)
     testImplementation(libs.mockk)
     testImplementation(libs.springmockk)
     testImplementation(libs.springBootStarterTest)
     testImplementation(libs.springBootWebtestclient)
     testImplementation(libs.springSecurityTest)
     testImplementation(libs.reactorTest)
-    // testImplementation(libs.postgresqlDriver) // removed: rely on runtime/postgres driver or testcontainers-provided driver
-    // liquibaseRuntime(libs.picocli) // removed: not required by liquibase runtime in this setup
 }
 
 spotless {

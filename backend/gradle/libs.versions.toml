@@ -6,15 +6,13 @@ spring-boot = "4.0.6"
 # Libraries (hyphen-style keys)
 jooq = "3.21.2"
 r2dbc-postgres = "1.1.1.RELEASE"
-reactor-core = "3.8.0"
 springdoc = "2.3.0"
 kotlin-logging = "5.1.0"
 ktlint = "1.7.1"
 mockk = "1.14.6"
 springmockk = "4.0.2"
 reactor-test = "3.8.0"
-picocli = "4.7.5"
-postgresql = "42.6.0"
+postgresql = "42.7.11"
 liquibase = "4.21.1"
 spring-security = "6.2.0"
 jakarta-persistence = "3.1.0"
@@ -48,7 +46,6 @@ springBootStarterLiquibase = { module = "org.springframework.boot:spring-boot-st
 
 # R2DBC and Reactor
 r2dbcPostgresql = { module = "org.postgresql:r2dbc-postgresql", version.ref = "r2dbc-postgres" }
-reactorCore = { module = "io.projectreactor:reactor-core", version.ref = "reactor-core" }
 reactorTest = { module = "io.projectreactor:reactor-test", version.ref = "reactor-test" }
 
 # Springdoc / OpenAPI
@@ -59,12 +56,11 @@ jooq = { module = "org.jooq:jooq", version.ref = "jooq" }
 jooqJpaExtensions = { module = "org.jooq:jooq-jpa-extensions", version.ref = "jooq" }
 jooqCodegen = { module = "org.jooq:jooq-codegen", version.ref = "jooq" }
 jooqMeta = { module = "org.jooq:jooq-meta", version.ref = "jooq" }
-jooqMetaExtensionsLiquibase = { module = "org.jooq:jooq-meta-extensions-liquibase", version.ref = "jooq" }
+jooqMetaExtensions = { module = "org.jooq:jooq-meta-extensions", version.ref = "jooq" }
 liquibaseCore = { module = "org.liquibase:liquibase-core", version.ref = "liquibase" }
 postgresqlDriver = { module = "org.postgresql:postgresql", version.ref = "postgresql" }
 
 # Kotlin
-kotlinReflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlin" }
 kotlinStdlibJdk8 = { module = "org.jetbrains.kotlin:kotlin-stdlib-jdk8", version.ref = "kotlin" }
 kotlinLoggingJvm = { module = "io.github.oshai:kotlin-logging-jvm", version.ref = "kotlin-logging" }
 
@@ -74,7 +70,6 @@ springmockk = { module = "com.ninja-squad:springmockk", version.ref = "springmoc
 springBootStarterTest = { module = "org.springframework.boot:spring-boot-starter-test", version.ref = "spring-boot" }
 springBootWebtestclient = { module = "org.springframework.boot:spring-boot-webtestclient", version.ref = "spring-boot" }
 springSecurityTest = { module = "org.springframework.security:spring-security-test", version.ref = "spring-security" }
-picocli = { module = "info.picocli:picocli", version.ref = "picocli" }
 jakartaPersistenceApi = { module = "jakarta.persistence:jakarta.persistence-api", version.ref = "jakarta-persistence" }
 
 

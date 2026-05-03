@@ -2,7 +2,6 @@ package com.example.codex.service
 
 import com.example.codex.domain.User
 import com.example.codex.jooq.tables.pojos.UserPrivilege
-import com.example.codex.repository.PrivilegeRepository
 import com.example.codex.repository.UserPrivilegeRepository
 import com.example.codex.repository.UserRepository
 import org.springframework.security.crypto.password.PasswordEncoder

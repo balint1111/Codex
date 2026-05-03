@@ -1,16 +1,12 @@
 package com.example.codex.service
 
 import com.example.codex.AbstractIntegrationTest
-import com.example.codex.repository.UserPrivilegeRepository
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
-import org.junit.jupiter.api.Assertions.assertNull
-import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import reactor.test.StepVerifier
-import java.lang.Thread.sleep
-import java.util.UUID
+import java.util.*
 
 class UserServiceIT
     @Autowired

@@ -8,8 +8,6 @@ import com.example.codex.jooq.tables.references.USERS
 import com.example.codex.jooq.tables.references.USER_PRIVILEGE
 import org.jooq.DSLContext
 import org.jooq.Field
-import org.jooq.Record
-import org.jooq.SelectJoinStep
 import org.jooq.impl.DSL
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional

@@ -4,7 +4,6 @@ import org.jooq.DSLContext
 import org.jooq.Field
 import org.jooq.Record
 import org.jooq.Table
-import org.jooq.conf.ParamType
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 
