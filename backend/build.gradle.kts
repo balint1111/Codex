@@ -44,7 +44,7 @@ dependencies {
     jooqGenerator(libs.jooqMeta)
     jooqGenerator(libs.jooq)
     jooqGenerator(libs.jooqMetaExtensionsLiquibase)
-    implementation(libs.liquibaseCore)
+    // implementation(libs.liquibaseCore) // redundant with spring-boot-starter-liquibase
     implementation(libs.springBootStarterLiquibase)
     liquibaseRuntime(libs.liquibaseCore)
     liquibaseRuntime(libs.postgresqlDriver)
