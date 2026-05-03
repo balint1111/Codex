@@ -43,7 +43,7 @@ dependencies {
     jooqGenerator(libs.jooqCodegen)
     jooqGenerator(libs.jooqMeta)
     jooqGenerator(libs.jooq)
-    jooqGenerator(libs.jooqMetaExtensionsLiquibase)
+    // jooqGenerator(libs.jooqMetaExtensionsLiquibase) // removed: codegen uses DDL script (init.sql) instead of liquibase meta extension
     // implementation(libs.liquibaseCore) // redundant with spring-boot-starter-liquibase
     implementation(libs.springBootStarterLiquibase)
     liquibaseRuntime(libs.liquibaseCore)
